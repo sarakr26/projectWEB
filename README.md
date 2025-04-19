@@ -9,11 +9,15 @@ The project follows a modern web application architecture with a clear separatio
 ```
 projectWEB/
 ├── core/
-│   ├── backend/           # Backend services (currently empty, planned for future)
+│   ├── backend/           # Backend services (planned for future implementation)
 │   ├── frontend/          # Next.js frontend application
 │   │   ├── app/           # Next.js app directory (pages, layouts)
+│   │   │   ├── page.tsx   # Landing page with tool listings
+│   │   │   ├── layout.tsx # Root layout
+│   │   │   ├── auth/      # Authentication pages
+│   │   │   └── globals.css # Global CSS
 │   │   ├── components/    # Reusable UI components
-│   │   │   ├── ui/        # UI component library (shadcn/ui)
+│   │   │   ├── ui/        # UI component library (shadcn/ui with 45+ components)
 │   │   │   └── theme-provider.tsx
 │   │   ├── hooks/         # Custom React hooks
 │   │   ├── lib/           # Utility functions and shared code
@@ -23,7 +27,7 @@ projectWEB/
 │   │   ├── package.json   # Frontend dependencies
 │   │   ├── tailwind.config.ts # Tailwind CSS configuration
 │   │   └── tsconfig.json  # TypeScript configuration
-│   └── infrastructure/    # Infrastructure as code (currently empty, planned for future)
+│   └── infrastructure/    # Infrastructure as code (planned for future implementation)
 └── README.md             # Project documentation
 ```
 
@@ -36,11 +40,26 @@ projectWEB/
   - Tailwind CSS for styling
   - shadcn/ui component library
   - Lucide React for icons
+  - Framer Motion for animations
 
 - **UI Components**:
-  - Built with Radix UI primitives
+  - Built with Radix UI primitives (45+ components)
   - Styled with Tailwind CSS
   - Fully accessible and customizable
+  - Motion animations with Framer Motion
+
+- **Form Handling**:
+  - React Hook Form
+  - Zod for validation
+
+## Current Features
+
+- Responsive landing page with mobile menu
+- Tool listing showcase with search functionality
+- Category filtering
+- Tool cards with rating, price, and location information
+- Dark/light mode theming
+- Animated UI elements for enhanced user experience
 
 ## Getting Started
 
@@ -77,6 +96,91 @@ projectWEB/
 
 2. Open your browser and navigate to `http://localhost:3000`
 
+### Platform-Specific Instructions
+
+#### Linux
+
+1. Install Node.js and npm:
+   ```bash
+   # Using apt (Debian/Ubuntu)
+   sudo apt update
+   sudo apt install nodejs npm
+
+   # Using dnf (Fedora)
+   sudo dnf install nodejs npm
+
+   # Check installation
+   node --version  # Should be v18 or later
+   npm --version
+   ```
+
+2. Optionally install pnpm:
+   ```bash
+   npm install -g pnpm
+   ```
+
+3. Run the application:
+   ```bash
+   cd core/frontend
+   npm run dev
+   # or with pnpm
+   pnpm dev
+   ```
+
+#### macOS
+
+1. Install Node.js and npm using Homebrew:
+   ```bash
+   # Install Homebrew if not already installed
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+   # Install Node.js
+   brew install node
+
+   # Check installation
+   node --version  # Should be v18 or later
+   npm --version
+   ```
+
+2. Optionally install pnpm:
+   ```bash
+   npm install -g pnpm
+   ```
+
+3. Run the application:
+   ```bash
+   cd core/frontend
+   npm run dev
+   # or with pnpm
+   pnpm dev
+   ```
+
+#### Windows
+
+1. Install Node.js:
+   - Download the installer from [nodejs.org](https://nodejs.org/)
+   - Run the installer and follow the installation wizard
+   - Ensure you select the option to install npm during installation
+
+2. Open Command Prompt or PowerShell:
+
+3. Optionally install pnpm:
+   ```powershell
+   npm install -g pnpm
+   ```
+
+4. Navigate to the project directory:
+   ```powershell
+   cd path\to\projectWEB\core\frontend
+   ```
+
+5. Run the application:
+   ```powershell
+   npm run dev
+   # or with pnpm
+   pnpm dev
+   ```
+
 ### Building for Production
 
 ```bash
@@ -86,19 +190,28 @@ npm run build
 pnpm build
 ```
 
-## Project Features
+## Roadmap
 
-- Tool rental marketplace
-- Search and filter tools by location
-- User authentication (planned)
-- Tool listing management (planned)
-- Booking and payment system (planned)
+- **Backend Implementation**:
+  - RESTful API with Node.js/Express or Next.js API routes
+  - Database integration (MongoDB or PostgreSQL)
+  - User authentication and authorization
 
-## Future Development
+- **Frontend Enhancements**:
+  - Complete user authentication flow
+  - Tool listing creation and management
+  - User profiles and ratings
+  - Booking system
+  - Payment integration
 
-- Backend API implementation
-- User authentication and profiles
-- Tool listing and rental management
-- Payment processing integration
-- Reviews and ratings system
-- Notification system
+- **Infrastructure**:
+  - Deployment configuration
+  - CI/CD pipeline
+  - Containerization with Docker
+
+## Project Goals
+
+- Create a sustainable, community-driven tool sharing marketplace
+- Reduce waste by maximizing the use of existing tools
+- Make DIY projects more accessible and affordable
+- Build a trust-based community of tool owners and renters
