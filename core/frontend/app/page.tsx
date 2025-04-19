@@ -720,42 +720,54 @@ export default function LandingPage() {
                 icon: DollarSign,
                 title: "Save Money",
                 description: "Rent tools at a fraction of the purchase price",
-                color: "green",
+                colorBg: "bg-green-100",
+                colorText: "text-green-600",
+                colorHover: "group-hover:bg-green-200",
                 delay: 0.3,
               },
               {
                 icon: Repeat,
                 title: "Sustainability",
                 description: "Reduce waste by sharing resources in your community",
-                color: "blue",
+                colorBg: "bg-blue-100",
+                colorText: "text-blue-600",
+                colorHover: "group-hover:bg-blue-200",
                 delay: 0.4,
               },
               {
                 icon: CheckCircle,
                 title: "Quality Guaranteed",
                 description: "All tools are verified and rated by users",
-                color: "yellow",
+                colorBg: "bg-yellow-100",
+                colorText: "text-yellow-600",
+                colorHover: "group-hover:bg-yellow-200",
                 delay: 0.5,
               },
               {
                 icon: Users,
                 title: "Community Trust",
                 description: "Connect with verified local tool owners",
-                color: "purple",
+                colorBg: "bg-purple-100",
+                colorText: "text-purple-600",
+                colorHover: "group-hover:bg-purple-200",
                 delay: 0.6,
               },
               {
                 icon: Wrench,
                 title: "Wide Selection",
                 description: "Find exactly what you need for any project",
-                color: "red",
+                colorBg: "bg-red-100",
+                colorText: "text-red-600",
+                colorHover: "group-hover:bg-red-200",
                 delay: 0.7,
               },
               {
                 icon: Calendar,
                 title: "Convenient Delivery",
                 description: "Optional tool delivery service available for larger items in select areas",
-                color: "orange",
+                colorBg: "bg-orange-100",
+                colorText: "text-orange-600",
+                colorHover: "group-hover:bg-orange-200",
                 delay: 0.8,
               },
             ].map((feature, i) => (
@@ -768,8 +780,8 @@ export default function LandingPage() {
                 className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 group hover:shadow-xl transition-all duration-300"
               >
                 <div className="flex flex-col items-center text-center">
-                  <div className={`w-16 h-16 rounded-2xl bg-${feature.color}-100 flex items-center justify-center mb-6 group-hover:bg-${feature.color}-200 transition-colors duration-300`}>
-                    <feature.icon className={`h-8 w-8 text-${feature.color}-600`} />
+                  <div className={`w-16 h-16 rounded-2xl ${feature.colorBg} flex items-center justify-center mb-6 ${feature.colorHover} transition-colors duration-300`}>
+                    <feature.icon className={`h-8 w-8 ${feature.colorText}`} />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
                   <p className="text-gray-600">{feature.description}</p>
