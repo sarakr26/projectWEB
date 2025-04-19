@@ -335,39 +335,65 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
+            className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300"
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input placeholder="What tool do you need?" className="pl-12 py-6 text-base rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 shadow-sm" />
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-green-500 transition-colors duration-200" />
+                <Input 
+                  placeholder="What tool do you need?" 
+                  className="pl-12 py-6 text-base rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 shadow-sm hover:border-green-300 transition-all duration-200"
+                />
+                <div className="absolute inset-x-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-30">
+                  <div className="p-3 border-b border-gray-100">
+                    <h4 className="font-medium text-sm text-gray-500">Popular Searches</h4>
+                  </div>
+                  <ul className="py-2">
+                    {['Power Drill', 'Circular Saw', 'Pressure Washer', 'Ladder', 'Paint Sprayer'].map((item, i) => (
+                      <li key={i} className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center text-gray-700">
+                        <Search className="h-4 w-4 mr-2 text-gray-400" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <div className="relative">
-                <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input placeholder="Your location" className="pl-12 py-6 text-base rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 shadow-sm" />
+              <div className="relative group">
+                <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-green-500 transition-colors duration-200" />
+                <Input 
+                  placeholder="Your location" 
+                  className="pl-12 py-6 text-base rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 shadow-sm hover:border-green-300 transition-all duration-200"
+                />
+                <div className="absolute inset-x-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-30">
+                  <div className="p-3 border-b border-gray-100">
+                    <h4 className="font-medium text-sm text-gray-500">Nearby Locations</h4>
+                  </div>
+                  <ul className="py-2">
+                    {['Current Location', 'Seattle, WA', 'Portland, OR', 'Bellevue, WA', 'Tacoma, WA'].map((item, i) => (
+                      <li key={i} className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center text-gray-700">
+                        <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <Button className="bg-green-600 hover:bg-green-700 transition-all py-6 rounded-xl text-base font-medium shadow-lg shadow-green-600/20">
+              <Button className="bg-green-600 hover:bg-green-700 transition-all py-6 rounded-xl text-base font-medium shadow-lg shadow-green-600/20 hover:shadow-green-600/30 transform hover:-translate-y-1 duration-200">
                 Search Tools
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
             
             <div className="mt-8 flex flex-wrap gap-2 justify-center">
-              <Badge variant="outline" className="px-4 py-2 border border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all text-gray-700">
-                Power Tools
-              </Badge>
-              <Badge variant="outline" className="px-4 py-2 border border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all text-gray-700">
-                Hand Tools
-              </Badge>
-              <Badge variant="outline" className="px-4 py-2 border border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all text-gray-700">
-                Garden Equipment
-              </Badge>
-              <Badge variant="outline" className="px-4 py-2 border border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all text-gray-700">
-                Power Washers
-              </Badge>
-              <Badge variant="outline" className="px-4 py-2 border border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all text-gray-700">
-                Ladders
-              </Badge>
+              {['Power Tools', 'Hand Tools', 'Garden Equipment', 'Power Washers', 'Ladders'].map((category, i) => (
+                <Badge 
+                  key={i}
+                  variant="outline" 
+                  className="px-4 py-2 border border-gray-200 bg-gray-50 hover:bg-green-50 hover:text-green-700 hover:border-green-200 cursor-pointer transition-all text-gray-700 transform hover:-translate-y-1 duration-200"
+                >
+                  {category}
+                </Badge>
+              ))}
             </div>
           </motion.div>
         </div>

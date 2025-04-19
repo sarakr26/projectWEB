@@ -34,40 +34,40 @@ export default function ClientLayout({
 
 function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-white border-b">
+    <header className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800 shadow-lg">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2">
-              <Logo />
-              <span className="text-xl font-bold text-green-600">ToolNest</span>
+              <Logo className="text-white" />
+              <span className="text-xl font-bold text-green-400">ToolNest</span>
             </Link>
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/#find-tool" className="text-gray-600 hover:text-gray-900 hover:underline">
+            <Link href="/#find-tool" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
               Find a Tool
             </Link>
-            <Link href="/#find-what-you-need" className="text-gray-600 hover:text-gray-900 hover:underline">
+            <Link href="/#find-what-you-need" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
               Categories
             </Link>
-            <Link href="/#popular-tools" className="text-gray-600 hover:text-gray-900 hover:underline">
+            <Link href="/#popular-tools" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
               Popular Tools
             </Link>
-            <Link href="/#how-it-works" className="text-gray-600 hover:text-gray-900 hover:underline">
+            <Link href="/#how-it-works" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
               How It Works
             </Link>
-            <Link href="/#why-choose-us" className="text-gray-600 hover:text-gray-900 hover:underline">
+            <Link href="/#why-choose-us" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
               Why Choose Us
             </Link>
           </nav>
 
           <div className="flex items-center gap-4">
             <Link href="/auth/signin">
-              <Button variant="outline">Sign In</Button>
+              <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white">Sign In</Button>
             </Link>
             <Link href="/auth/signup" className="hidden sm:block">
-              <Button className="bg-green-600 hover:bg-green-700">Sign Up</Button>
+              <Button className="bg-green-600 hover:bg-green-700 text-white">Sign Up</Button>
             </Link>
             <MobileMenu />
           </div>
@@ -82,41 +82,41 @@ function MobileMenu() {
 
   return (
     <div className="md:hidden">
-      <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} className="text-gray-500">
+      <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} className="text-gray-300 hover:text-white">
         <Menu className="h-6 w-6" />
       </Button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-white">
-          <div className="flex items-center justify-between h-16 px-4 border-b">
+        <div className="fixed inset-0 z-50 bg-gray-900">
+          <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
             <Link href="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
-              <Logo />
-              <span className="text-xl font-bold text-green-600">ToolNest</span>
+              <Logo className="text-white" />
+              <span className="text-xl font-bold text-green-400">ToolNest</span>
             </Link>
-            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-gray-300">
               <X className="h-6 w-6" />
             </Button>
           </div>
 
           <nav className="px-4 py-6 space-y-6">
-            <Link href="/#find-tool" className="block text-lg" onClick={() => setIsOpen(false)}>
+            <Link href="/#find-tool" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
               Find a Tool
             </Link>
-            <Link href="/#find-what-you-need" className="block text-lg" onClick={() => setIsOpen(false)}>
+            <Link href="/#find-what-you-need" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
               Categories
             </Link>
-            <Link href="/#popular-tools" className="block text-lg" onClick={() => setIsOpen(false)}>
+            <Link href="/#popular-tools" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
               Popular Tools
             </Link>
-            <Link href="/#how-it-works" className="block text-lg" onClick={() => setIsOpen(false)}>
+            <Link href="/#how-it-works" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
               How It Works
             </Link>
-            <Link href="/#why-choose-us" className="block text-lg" onClick={() => setIsOpen(false)}>
+            <Link href="/#why-choose-us" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
               Why Choose Us
             </Link>
-            <div className="pt-6 border-t">
+            <div className="pt-6 border-t border-gray-800">
               <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
-                <Button variant="outline" className="w-full mb-4">
+                <Button variant="outline" className="w-full mb-4 border-gray-700 text-gray-300 hover:bg-gray-800">
                   Sign In
                 </Button>
               </Link>
