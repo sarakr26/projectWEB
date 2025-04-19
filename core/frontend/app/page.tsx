@@ -374,44 +374,87 @@ export default function LandingPage() {
       </section>
 
       {/* Find What You Need Section */}
-      <section ref={findWhatYouNeedRef} className="py-16 px-4 sm:px-6 bg-gray-50" id="find-what-you-need">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Find What You Need</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+      <section ref={findWhatYouNeedRef} className="py-24 bg-gray-50 relative overflow-hidden" id="find-what-you-need">
+        <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-white to-transparent"></div>
+        <div className="absolute -right-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
+        <div className="absolute -left-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4"
+            >
+              Browse Categories
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-3xl font-bold text-gray-900 mb-4"
+            >
+              Find What You Need
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-xl text-gray-600 max-w-2xl mx-auto"
+            >
               Browse popular categories to find the right tools for your project
-            </p>
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+          >
             {categories.map((category, i) => (
               <motion.div
                 key={i}
-                initial="hidden"
-                whileInView="visible"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                variants={fadeIn}
-                custom={i}
+                transition={{ duration: 0.5, delay: 0.3 + (i * 0.1) }}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 group hover:shadow-xl transition-all duration-300"
               >
-                <Card className="h-full hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6 flex flex-col items-center text-center">
-                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <Card className="h-full border-0 shadow-none">
+                  <CardContent className="p-8 flex flex-col items-center text-center">
+                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-6 group-hover:bg-green-200 transition-colors duration-300">
                       <category.icon className="h-8 w-8 text-green-600" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-2">{category.name}</h3>
-                    <Badge variant="outline" className="bg-gray-100">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">{category.name}</h3>
+                    <Badge className="bg-gray-100 hover:bg-gray-200 text-gray-700 border-0 px-3 py-1 transition-colors duration-300">
                       {category.count} tools
                     </Badge>
                   </CardContent>
                 </Card>
               </motion.div>
             ))}
+          </motion.div>
+          
+          <div className="text-center mt-12">
+            <Button variant="outline" className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base">
+              View All Categories
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </div>
         </div>
       </section>
 
       {/* How it Works Section - Redesigned */}
-      <section className="py-24 bg-gray-50 relative overflow-hidden">
+      <section 
+        ref={howItWorksRef}
+        id="how-it-works"
+        className="py-24 bg-gray-50 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-white to-transparent"></div>
         <div className="absolute -left-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
         <div className="absolute -right-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
@@ -507,7 +550,10 @@ export default function LandingPage() {
       </section>
 
       {/* Popular Tools Section - Redesigned */}
-      <section className="py-24 bg-white relative">
+      <section 
+        ref={popularToolsRef}
+        id="popular-tools"
+        className="py-24 bg-white relative">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <motion.div
@@ -626,65 +672,126 @@ export default function LandingPage() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section ref={whyChooseRef} className="py-16 px-4 sm:px-6 bg-white" id="why-choose-us">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose ToolNest</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+      <section ref={whyChooseRef} className="py-24 bg-white relative overflow-hidden" id="why-choose-us">
+        <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-gray-50 to-transparent"></div>
+        <div className="absolute -right-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
+        <div className="absolute -left-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="inline-block px-3 py-1 bg-purple-100 rounded-full text-purple-700 text-sm font-medium mb-4"
+            >
+              Our Benefits
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-3xl font-bold text-gray-900 mb-4"
+            >
+              Why Choose ToolNest
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-xl text-gray-600 max-w-2xl mx-auto"
+            >
               Benefits that make us the preferred choice for tool rentals
-            </p>
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
             {[
               {
                 icon: DollarSign,
                 title: "Save Money",
                 description: "Rent tools at a fraction of the purchase price",
+                color: "green",
+                delay: 0.3,
               },
               {
                 icon: Repeat,
                 title: "Sustainability",
                 description: "Reduce waste by sharing resources in your community",
+                color: "blue",
+                delay: 0.4,
               },
               {
                 icon: CheckCircle,
                 title: "Quality Guaranteed",
                 description: "All tools are verified and rated by users",
+                color: "yellow",
+                delay: 0.5,
               },
               {
                 icon: Users,
                 title: "Community Trust",
                 description: "Connect with verified local tool owners",
+                color: "purple",
+                delay: 0.6,
               },
               {
                 icon: Wrench,
                 title: "Wide Selection",
                 description: "Find exactly what you need for any project",
+                color: "red",
+                delay: 0.7,
               },
               {
                 icon: Calendar,
                 title: "Convenient Delivery",
                 description: "Optional tool delivery service available for larger items in select areas",
+                color: "orange",
+                delay: 0.8,
               },
             ].map((feature, i) => (
               <motion.div
                 key={i}
-                initial="hidden"
-                whileInView="visible"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                variants={fadeIn}
-                custom={i}
-                className="text-center"
+                transition={{ duration: 0.5, delay: feature.delay }}
+                className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 group hover:shadow-xl transition-all duration-300"
               >
-                <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
-                  <feature.icon className="h-8 w-8 text-green-600" />
+                <div className="flex flex-col items-center text-center">
+                  <div className={`w-16 h-16 rounded-2xl bg-${feature.color}-100 flex items-center justify-center mb-6 group-hover:bg-${feature.color}-200 transition-colors duration-300`}>
+                    <feature.icon className={`h-8 w-8 text-${feature.color}-600`} />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.9 }}
+            className="text-center mt-16"
+          >
+            <Link href="/auth/signup">
+              <Button className="bg-green-600 hover:bg-green-700 transition-all px-8 py-6 text-base shadow-lg shadow-green-600/20">
+                Join ToolNest Today
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </motion.div>
         </div>
       </section>
 
