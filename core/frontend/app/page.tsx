@@ -796,7 +796,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer (Kept same/unchanged) */}
-      // ... existing code ...
+      {/* The footer is handled in the ClientLayout.tsx file */}
     </>
   )
 }
