@@ -38,36 +38,49 @@ function Header() {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <Logo className="text-white" />
-              <span className="text-xl font-bold text-green-400">ToolNest</span>
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="transform group-hover:rotate-12 transition-transform duration-300">
+                <Logo className="text-white" />
+              </div>
+              <span className="text-xl font-bold text-green-400 group-hover:text-white transition-colors duration-300">ToolNest</span>
             </Link>
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/#find-tool" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
-              Find a Tool
-            </Link>
-            <Link href="/#find-what-you-need" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
-              Categories
-            </Link>
-            <Link href="/#popular-tools" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
-              Popular Tools
-            </Link>
-            <Link href="/#how-it-works" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
-              How It Works
-            </Link>
-            <Link href="/#why-choose-us" className="text-gray-300 hover:text-green-400 transition-colors duration-200">
-              Why Choose Us
-            </Link>
+            {[
+              { href: "/#find-tool", label: "Find a Tool" },
+              { href: "/#find-what-you-need", label: "Categories" },
+              { href: "/#popular-tools", label: "Popular Tools" },
+              { href: "/#how-it-works", label: "How It Works" },
+              { href: "/#why-choose-us", label: "Why Choose Us" }
+            ].map((item, index) => (
+              <Link 
+                key={index} 
+                href={item.href} 
+                className="relative text-gray-300 hover:text-green-400 transition-colors duration-300 group py-1"
+              >
+                {item.label}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-green-400 group-hover:w-full transition-all duration-300 ease-in-out"></span>
+              </Link>
+            ))}
           </nav>
 
           <div className="flex items-center gap-4">
             <Link href="/auth/signin">
-              <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white">Sign In</Button>
+              <Button 
+                variant="outline" 
+                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-green-500 transition-all duration-300 transform hover:scale-105"
+              >
+                Sign In
+              </Button>
             </Link>
-            <Link href="/auth/signup" className="hidden sm:block">
-              <Button className="bg-green-600 hover:bg-green-700 text-white">Sign Up</Button>
+            <Link href="/auth/signup" className="hidden sm:block overflow-hidden">
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white transition-all duration-300 relative group overflow-hidden"
+              >
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-green-500 to-green-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span className="relative z-10">Sign Up</span>
+              </Button>
             </Link>
             <MobileMenu />
           </div>
@@ -82,46 +95,70 @@ function MobileMenu() {
 
   return (
     <div className="md:hidden">
-      <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} className="text-gray-300 hover:text-white">
-        <Menu className="h-6 w-6" />
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={() => setIsOpen(true)} 
+        className="text-gray-300 hover:text-white relative overflow-hidden group"
+      >
+        <span className="absolute inset-0 w-0 h-full bg-green-600/20 group-hover:w-full transition-all duration-300 ease-out rounded-full"></span>
+        <Menu className="h-6 w-6 relative z-10 transform group-hover:rotate-90 transition-transform duration-300" />
       </Button>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-gray-900">
           <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
-            <Link href="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
-              <Logo className="text-white" />
-              <span className="text-xl font-bold text-green-400">ToolNest</span>
+            <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
+              <div className="transform group-hover:rotate-12 transition-transform duration-300">
+                <Logo className="text-white" />
+              </div>
+              <span className="text-xl font-bold text-green-400 group-hover:text-white transition-colors duration-300">ToolNest</span>
             </Link>
-            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-gray-300">
-              <X className="h-6 w-6" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsOpen(false)} 
+              className="text-gray-300 hover:text-white relative overflow-hidden group"
+            >
+              <span className="absolute inset-0 w-0 h-full bg-red-600/20 group-hover:w-full transition-all duration-300 ease-out rounded-full"></span>
+              <X className="h-6 w-6 relative z-10 transform group-hover:rotate-90 transition-transform duration-300" />
             </Button>
           </div>
 
           <nav className="px-4 py-6 space-y-6">
-            <Link href="/#find-tool" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
-              Find a Tool
-            </Link>
-            <Link href="/#find-what-you-need" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
-              Categories
-            </Link>
-            <Link href="/#popular-tools" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
-              Popular Tools
-            </Link>
-            <Link href="/#how-it-works" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
-              How It Works
-            </Link>
-            <Link href="/#why-choose-us" className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-200" onClick={() => setIsOpen(false)}>
-              Why Choose Us
-            </Link>
+            {[
+              { href: "/#find-tool", label: "Find a Tool" },
+              { href: "/#find-what-you-need", label: "Categories" },
+              { href: "/#popular-tools", label: "Popular Tools" },
+              { href: "/#how-it-works", label: "How It Works" },
+              { href: "/#why-choose-us", label: "Why Choose Us" }
+            ].map((item, index) => (
+              <Link 
+                key={index}
+                href={item.href} 
+                className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-300 transform hover:translate-x-2 hover:scale-105 flex items-center" 
+                onClick={() => setIsOpen(false)}
+              >
+                <span className="w-0 h-0.5 bg-green-400 mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300"></span>
+                {item.label}
+              </Link>
+            ))}
             <div className="pt-6 border-t border-gray-800">
               <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
-                <Button variant="outline" className="w-full mb-4 border-gray-700 text-gray-300 hover:bg-gray-800">
+                <Button 
+                  variant="outline" 
+                  className="w-full mb-4 border-gray-700 text-gray-300 hover:bg-gray-800 hover:border-green-400 transition-all duration-300 transform hover:scale-105"
+                >
                   Sign In
                 </Button>
               </Link>
               <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-green-600 hover:bg-green-700">Sign Up</Button>
+                <Button 
+                  className="w-full relative overflow-hidden group"
+                >
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-green-500 to-green-700 group-hover:scale-105 transition-transform duration-300"></span>
+                  <span className="relative z-10">Sign Up</span>
+                </Button>
               </Link>
             </div>
           </nav>
