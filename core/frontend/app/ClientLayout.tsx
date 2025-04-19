@@ -22,12 +22,112 @@ export default function ClientLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light">
           <div className="flex min-h-screen flex-col">
+            <Header />
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
         </ThemeProvider>
       </body>
     </html>
+  )
+}
+
+function Header() {
+  return (
+    <header className="sticky top-0 z-50 bg-white border-b">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center gap-2">
+              <Logo />
+              <span className="text-xl font-bold text-green-600">ToolNest</span>
+            </Link>
+          </div>
+
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="/#find-tool" className="text-gray-600 hover:text-gray-900 hover:underline">
+              Find a Tool
+            </Link>
+            <Link href="/#find-what-you-need" className="text-gray-600 hover:text-gray-900 hover:underline">
+              Categories
+            </Link>
+            <Link href="/#popular-tools" className="text-gray-600 hover:text-gray-900 hover:underline">
+              Popular Tools
+            </Link>
+            <Link href="/#how-it-works" className="text-gray-600 hover:text-gray-900 hover:underline">
+              How It Works
+            </Link>
+            <Link href="/#why-choose-us" className="text-gray-600 hover:text-gray-900 hover:underline">
+              Why Choose Us
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <Link href="/auth/signin">
+              <Button variant="outline">Sign In</Button>
+            </Link>
+            <Link href="/auth/signup" className="hidden sm:block">
+              <Button className="bg-green-600 hover:bg-green-700">Sign Up</Button>
+            </Link>
+            <MobileMenu />
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
+
+function MobileMenu() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className="md:hidden">
+      <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} className="text-gray-500">
+        <Menu className="h-6 w-6" />
+      </Button>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 bg-white">
+          <div className="flex items-center justify-between h-16 px-4 border-b">
+            <Link href="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
+              <Logo />
+              <span className="text-xl font-bold text-green-600">ToolNest</span>
+            </Link>
+            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+              <X className="h-6 w-6" />
+            </Button>
+          </div>
+
+          <nav className="px-4 py-6 space-y-6">
+            <Link href="/#find-tool" className="block text-lg" onClick={() => setIsOpen(false)}>
+              Find a Tool
+            </Link>
+            <Link href="/#find-what-you-need" className="block text-lg" onClick={() => setIsOpen(false)}>
+              Categories
+            </Link>
+            <Link href="/#popular-tools" className="block text-lg" onClick={() => setIsOpen(false)}>
+              Popular Tools
+            </Link>
+            <Link href="/#how-it-works" className="block text-lg" onClick={() => setIsOpen(false)}>
+              How It Works
+            </Link>
+            <Link href="/#why-choose-us" className="block text-lg" onClick={() => setIsOpen(false)}>
+              Why Choose Us
+            </Link>
+            <div className="pt-6 border-t">
+              <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
+                <Button variant="outline" className="w-full mb-4">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
+                <Button className="w-full bg-green-600 hover:bg-green-700">Sign Up</Button>
+              </Link>
+            </div>
+          </nav>
+        </div>
+      )}
+    </div>
   )
 }
 
