@@ -126,7 +126,19 @@ export default function LandingPage() {
   // Smooth scroll function
   const scrollToSection = (elementRef: React.RefObject<HTMLElement | null>) => {
     if (elementRef.current) {
-      elementRef.current.scrollIntoView({ behavior: "smooth" })
+      const yOffset = -80; // Accounting for the fixed header height
+      const y = elementRef.current.getBoundingClientRect().top + window.scrollY + yOffset;
+      
+      window.scrollTo({
+        top: y,
+        behavior: 'smooth'
+      });
+      
+      // Add a highlight animation to the section
+      elementRef.current.classList.add('section-highlight');
+      setTimeout(() => {
+        elementRef.current?.classList.remove('section-highlight');
+      }, 1500);
     }
   }
 
@@ -207,15 +219,19 @@ export default function LandingPage() {
               >
                 <Button
                   size="lg"
-                  className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-base px-8"
+                  className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-base px-8 relative overflow-hidden group"
                   onClick={() => scrollToSection(findToolRef)}
                 >
-                  Find Tools
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                  <span className="relative flex items-center">
+                    Find Tools
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
                 </Button>
                 <Link href="/auth/signup">
-                  <Button size="lg" variant="outline" className="border-green-600 text-green-700 hover:bg-green-50 transition-all text-base">
-                    List Your Tools
+                  <Button size="lg" variant="outline" className="border-green-600 text-green-700 hover:bg-green-50 transition-all text-base group relative overflow-hidden">
+                    <span className="absolute inset-0 w-0 h-full bg-green-100/50 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                    <span className="relative">List Your Tools</span>
                   </Button>
                 </Link>
               </motion.div>
@@ -295,7 +311,7 @@ export default function LandingPage() {
       {/* Find a Tool Section - Improved */}
       <section 
         ref={findToolRef} 
-        className="py-20 px-4 sm:px-6 bg-white relative" 
+        className="py-20 px-4 sm:px-6 bg-white relative transition-all duration-700" 
         id="find-tool"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-white via-green-50/20 to-white pointer-events-none"></div>
@@ -436,7 +452,11 @@ export default function LandingPage() {
       </section>
 
       {/* Find What You Need Section */}
-      <section ref={findWhatYouNeedRef} className="py-24 bg-gray-50 relative overflow-hidden" id="find-what-you-need">
+      <section 
+        ref={findWhatYouNeedRef} 
+        className="py-24 bg-gray-50 relative overflow-hidden transition-all duration-700" 
+        id="find-what-you-need"
+      >
         <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-white to-transparent"></div>
         <div className="absolute -right-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
         <div className="absolute -left-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
@@ -516,7 +536,7 @@ export default function LandingPage() {
       <section 
         ref={howItWorksRef}
         id="how-it-works"
-        className="py-24 bg-gray-50 relative overflow-hidden">
+        className="py-24 bg-gray-50 relative overflow-hidden transition-all duration-700">
         <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-white to-transparent"></div>
         <div className="absolute -left-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
         <div className="absolute -right-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
@@ -615,7 +635,7 @@ export default function LandingPage() {
       <section 
         ref={popularToolsRef}
         id="popular-tools"
-        className="py-24 bg-white relative">
+        className="py-24 bg-white relative transition-all duration-700">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <motion.div
@@ -734,7 +754,10 @@ export default function LandingPage() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section ref={whyChooseRef} className="py-24 bg-white relative overflow-hidden" id="why-choose-us">
+      <section 
+        ref={whyChooseRef} 
+        className="py-24 bg-white relative overflow-hidden transition-all duration-700" 
+        id="why-choose-us">
         <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-gray-50 to-transparent"></div>
         <div className="absolute -right-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
         <div className="absolute -left-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
@@ -869,8 +892,66 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer (Kept same/unchanged) */}
-      {/* The footer is handled in the ClientLayout.tsx file */}
+      {/* Back to top button */}
+      <div className="fixed bottom-8 right-8 z-40">
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-lg shadow-green-600/20 transition-all duration-300 hover:shadow-xl hover:shadow-green-600/30 group"
+        >
+          <ArrowUp className="h-6 w-6 group-hover:-translate-y-1 transition-transform duration-300" />
+        </motion.button>
+      </div>
+
+      <style jsx global>{`
+        .section-highlight {
+          animation: highlight 1.5s ease-out;
+        }
+        
+        @keyframes highlight {
+          0% { 
+            box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+          }
+          30% { 
+            box-shadow: 0 0 0 15px rgba(22, 163, 74, 0.1);
+          }
+          100% { 
+            box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+          }
+        }
+        
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+          100% { transform: translateY(0px); }
+        }
+        
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-pulse-subtle {
+          animation: pulse-subtle 2s infinite;
+        }
+        
+        .animate-pulse-slow {
+          animation: pulse-slow 3s infinite;
+        }
+        
+        @keyframes pulse-subtle {
+          0% { opacity: 0.8; }
+          50% { opacity: 1; }
+          100% { opacity: 0.8; }
+        }
+        
+        @keyframes pulse-slow {
+          0% { opacity: 0.5; }
+          50% { opacity: 0.8; }
+          100% { opacity: 0.5; }
+        }
+      `}</style>
     </>
   )
 }

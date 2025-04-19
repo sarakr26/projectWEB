@@ -57,9 +57,11 @@ function Header() {
               <Link 
                 key={index} 
                 href={item.href} 
-                className="relative text-gray-300 hover:text-green-400 transition-colors duration-300 group py-1"
+                className="relative text-gray-300 hover:text-white transition-colors duration-300 group py-1.5 px-4 rounded-lg overflow-hidden"
               >
-                {item.label}
+                <span className="absolute inset-0 bg-green-600/0 group-hover:bg-green-600/20 transition-all duration-300 rounded-lg transform scale-95 group-hover:scale-100"></span>
+                <span className="absolute inset-0 border border-transparent group-hover:border-green-500/30 rounded-lg transition-all duration-300 scale-95 group-hover:scale-100"></span>
+                <span className="relative z-10">{item.label}</span>
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-green-400 group-hover:w-full transition-all duration-300 ease-in-out"></span>
               </Link>
             ))}
@@ -136,11 +138,12 @@ function MobileMenu() {
               <Link 
                 key={index}
                 href={item.href} 
-                className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-300 transform hover:translate-x-2 hover:scale-105 flex items-center" 
+                className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-300 transform hover:translate-x-2 hover:scale-105 flex items-center p-3 rounded-lg relative group" 
                 onClick={() => setIsOpen(false)}
               >
-                <span className="w-0 h-0.5 bg-green-400 mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300"></span>
-                {item.label}
+                <span className="absolute inset-0 bg-green-600/0 group-hover:bg-green-600/20 transition-all duration-300 rounded-lg"></span>
+                <span className="w-0 h-0.5 bg-green-400 mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300 relative z-10"></span>
+                <span className="relative z-10">{item.label}</span>
               </Link>
             ))}
             <div className="pt-6 border-t border-gray-800">
