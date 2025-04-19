@@ -524,109 +524,16 @@ export default function LandingPage() {
           </motion.div>
           
           <div className="text-center mt-12">
-            <Button variant="outline" className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base">
-              View All Categories
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button 
+              variant="outline" 
+              className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group"
+              onClick={() => scrollToSection(findWhatYouNeedRef)}
+            >
+              <span className="relative flex items-center">
+                View All Categories
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+              </span>
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* How it Works Section - Redesigned */}
-      <section 
-        ref={howItWorksRef}
-        id="how-it-works"
-        className="py-24 bg-gray-50 relative overflow-hidden transition-all duration-700">
-        <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-white to-transparent"></div>
-        <div className="absolute -left-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
-        <div className="absolute -right-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
-        
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-3 py-1 bg-blue-100 rounded-full text-blue-700 text-sm font-medium mb-4"
-            >
-              Simple Process
-            </motion.div>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-3xl font-bold text-gray-900 mb-4"
-            >
-              How ToolNest Works
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
-            >
-              Borrowing tools has never been easier
-            </motion.p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {[
-              {
-                icon: <Search className="w-10 h-10 text-blue-600" />,
-                title: "Find a Tool",
-                description:
-                  "Search our extensive database of tools available in your area. Filter by category, price, and availability.",
-                delay: 0.3,
-                accent: "blue"
-              },
-              {
-                icon: <Calendar className="w-10 h-10 text-green-600" />,
-                title: "Book & Pay",
-                description:
-                  "Reserve your tools for the dates you need. Secure payment through our platform protects both parties.",
-                delay: 0.5,
-                accent: "green"
-              },
-              {
-                icon: <Hammer className="w-10 h-10 text-yellow-600" />,
-                title: "Collect & Use",
-                description:
-                  "Pick up the tool from the owner and get to work on your project. Return it when you're done.",
-                delay: 0.7,
-                accent: "yellow"
-              },
-            ].map((step, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: step.delay }}
-                className="relative"
-              >
-                <div className={`bg-white rounded-2xl p-8 shadow-xl border border-gray-100 h-full relative z-10 hover:shadow-2xl transition-all duration-300 group`}>
-                  <div className="mb-6">
-                    <div className={`w-16 h-16 rounded-xl bg-${step.accent}-100 flex items-center justify-center mb-8 group-hover:bg-${step.accent}-200 transition-colors duration-200`}>
-                      {step.icon}
-                    </div>
-                    <span className="absolute top-6 right-8 text-5xl font-bold text-gray-100 group-hover:text-gray-200 transition-colors duration-300">
-                      {index + 1}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
-                  
-                  {index < 2 && (
-                    <div className="hidden md:block absolute top-1/4 -right-6 w-12 h-12 text-gray-300 z-10">
-                      <ArrowRight className="w-12 h-12" />
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>
@@ -745,10 +652,115 @@ export default function LandingPage() {
           </motion.div>
 
           <div className="text-center mt-12">
-            <Button variant="outline" className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base">
-              View All Tools
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button 
+              variant="outline" 
+              className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group"
+              onClick={() => scrollToSection(popularToolsRef)}
+            >
+              <span className="relative flex items-center">
+                View All Tools
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+              </span>
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works Section - Redesigned */}
+      <section 
+        ref={howItWorksRef}
+        id="how-it-works"
+        className="py-24 bg-gray-50 relative overflow-hidden transition-all duration-700">
+        <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-white to-transparent"></div>
+        <div className="absolute -left-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
+        <div className="absolute -right-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="inline-block px-3 py-1 bg-blue-100 rounded-full text-blue-700 text-sm font-medium mb-4"
+            >
+              Simple Process
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-3xl font-bold text-gray-900 mb-4"
+            >
+              How ToolNest Works
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-xl text-gray-600 max-w-2xl mx-auto"
+            >
+              Borrowing tools has never been easier
+            </motion.p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              {
+                icon: <Search className="w-10 h-10 text-blue-600" />,
+                title: "Find a Tool",
+                description:
+                  "Search our extensive database of tools available in your area. Filter by category, price, and availability.",
+                delay: 0.3,
+                accent: "blue"
+              },
+              {
+                icon: <Calendar className="w-10 h-10 text-green-600" />,
+                title: "Book & Pay",
+                description:
+                  "Reserve your tools for the dates you need. Secure payment through our platform protects both parties.",
+                delay: 0.5,
+                accent: "green"
+              },
+              {
+                icon: <Hammer className="w-10 h-10 text-yellow-600" />,
+                title: "Collect & Use",
+                description:
+                  "Pick up the tool from the owner and get to work on your project. Return it when you're done.",
+                delay: 0.7,
+                accent: "yellow"
+              },
+            ].map((step, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: step.delay }}
+                className="relative"
+              >
+                <div className={`bg-white rounded-2xl p-8 shadow-xl border border-gray-100 h-full relative z-10 hover:shadow-2xl transition-all duration-300 group`}>
+                  <div className="mb-6">
+                    <div className={`w-16 h-16 rounded-xl bg-${step.accent}-100 flex items-center justify-center mb-8 group-hover:bg-${step.accent}-200 transition-colors duration-200`}>
+                      {step.icon}
+                    </div>
+                    <span className="absolute top-6 right-8 text-5xl font-bold text-gray-100 group-hover:text-gray-200 transition-colors duration-300">
+                      {index + 1}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
+                  <p className="text-gray-600">{step.description}</p>
+                  
+                  {index < 2 && (
+                    <div className="hidden md:block absolute top-1/4 -right-6 w-12 h-12 text-gray-300 z-10">
+                      <ArrowRight className="w-12 h-12" />
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -882,12 +894,16 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.9 }}
             className="text-center mt-16"
           >
-            <Link href="/auth/signup">
-              <Button className="bg-green-600 hover:bg-green-700 transition-all px-8 py-6 text-base shadow-lg shadow-green-600/20">
+            <Button 
+              className="bg-green-600 hover:bg-green-700 transition-all px-8 py-6 text-base shadow-lg shadow-green-600/20 group relative overflow-hidden"
+              onClick={() => scrollToSection(findToolRef)}
+            >
+              <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+              <span className="relative flex items-center">
                 Join ToolNest Today
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+              </span>
+            </Button>
           </motion.div>
         </div>
       </section>
@@ -908,6 +924,7 @@ export default function LandingPage() {
       <style jsx global>{`
         .section-highlight {
           animation: highlight 1.5s ease-out;
+          position: relative;
         }
         
         @keyframes highlight {
@@ -915,10 +932,38 @@ export default function LandingPage() {
             box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
           }
           30% { 
-            box-shadow: 0 0 0 15px rgba(22, 163, 74, 0.1);
+            box-shadow: 0 0 0 25px rgba(22, 163, 74, 0.15);
           }
           100% { 
             box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+          }
+        }
+        
+        .section-highlight::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border-radius: 8px;
+          animation: pulse-border 1.5s ease-out;
+          pointer-events: none;
+          z-index: 1;
+        }
+        
+        @keyframes pulse-border {
+          0% {
+            box-shadow: inset 0 0 0 0 rgba(22, 163, 74, 0);
+            border: 2px solid rgba(22, 163, 74, 0);
+          }
+          30% {
+            box-shadow: inset 0 0 40px 0 rgba(22, 163, 74, 0.1);
+            border: 2px solid rgba(22, 163, 74, 0.3);
+          }
+          100% {
+            box-shadow: inset 0 0 0 0 rgba(22, 163, 74, 0);
+            border: 2px solid rgba(22, 163, 74, 0);
           }
         }
         
@@ -950,6 +995,14 @@ export default function LandingPage() {
           0% { opacity: 0.5; }
           50% { opacity: 0.8; }
           100% { opacity: 0.5; }
+        }
+        
+        html {
+          scroll-behavior: smooth;
+        }
+        
+        section {
+          scroll-margin-top: 80px;
         }
       `}</style>
     </>

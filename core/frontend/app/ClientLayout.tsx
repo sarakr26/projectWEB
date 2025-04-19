@@ -48,22 +48,41 @@ function Header() {
 
           <nav className="hidden md:flex items-center space-x-8">
             {[
-              { href: "/#find-tool", label: "Find a Tool" },
-              { href: "/#find-what-you-need", label: "Categories" },
-              { href: "/#popular-tools", label: "Popular Tools" },
-              { href: "/#how-it-works", label: "How It Works" },
-              { href: "/#why-choose-us", label: "Why Choose Us" }
+              { href: "#find-tool", label: "Find a Tool" },
+              { href: "#find-what-you-need", label: "Categories" },
+              { href: "#popular-tools", label: "Popular Tools" },
+              { href: "#how-it-works", label: "How It Works" },
+              { href: "#why-choose-us", label: "Why Choose Us" }
             ].map((item, index) => (
-              <Link 
+              <a 
                 key={index} 
                 href={item.href} 
-                className="relative text-gray-300 hover:text-white transition-colors duration-300 group py-1.5 px-4 rounded-lg overflow-hidden"
+                className="relative text-gray-300 hover:text-white transition-colors duration-300 group py-1.5 px-4 rounded-lg overflow-hidden cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const element = document.getElementById(item.href.substring(1));
+                  if (element) {
+                    const yOffset = -80;
+                    const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+                    
+                    window.scrollTo({
+                      top: y,
+                      behavior: 'smooth'
+                    });
+                    
+                    // Add a highlight animation to the section
+                    element.classList.add('section-highlight');
+                    setTimeout(() => {
+                      element.classList.remove('section-highlight');
+                    }, 1500);
+                  }
+                }}
               >
                 <span className="absolute inset-0 bg-green-600/0 group-hover:bg-green-600/20 transition-all duration-300 rounded-lg transform scale-95 group-hover:scale-100"></span>
                 <span className="absolute inset-0 border border-transparent group-hover:border-green-500/30 rounded-lg transition-all duration-300 scale-95 group-hover:scale-100"></span>
                 <span className="relative z-10">{item.label}</span>
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-green-400 group-hover:w-full transition-all duration-300 ease-in-out"></span>
-              </Link>
+              </a>
             ))}
           </nav>
 
@@ -94,6 +113,29 @@ function Header() {
 
 function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleNavClick = (href: string) => {
+    setIsOpen(false);
+    
+    setTimeout(() => {
+      const element = document.getElementById(href.substring(1));
+      if (element) {
+        const yOffset = -80;
+        const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+        
+        window.scrollTo({
+          top: y,
+          behavior: 'smooth'
+        });
+        
+        // Add a highlight animation to the section
+        element.classList.add('section-highlight');
+        setTimeout(() => {
+          element.classList.remove('section-highlight');
+        }, 1500);
+      }
+    }, 300); // Small delay to let the mobile menu close first
+  };
 
   return (
     <div className="md:hidden">
@@ -129,22 +171,25 @@ function MobileMenu() {
 
           <nav className="px-4 py-6 space-y-6">
             {[
-              { href: "/#find-tool", label: "Find a Tool" },
-              { href: "/#find-what-you-need", label: "Categories" },
-              { href: "/#popular-tools", label: "Popular Tools" },
-              { href: "/#how-it-works", label: "How It Works" },
-              { href: "/#why-choose-us", label: "Why Choose Us" }
+              { href: "#find-tool", label: "Find a Tool" },
+              { href: "#find-what-you-need", label: "Categories" },
+              { href: "#popular-tools", label: "Popular Tools" },
+              { href: "#how-it-works", label: "How It Works" },
+              { href: "#why-choose-us", label: "Why Choose Us" }
             ].map((item, index) => (
-              <Link 
+              <a 
                 key={index}
                 href={item.href} 
-                className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-300 transform hover:translate-x-2 hover:scale-105 flex items-center p-3 rounded-lg relative group" 
-                onClick={() => setIsOpen(false)}
+                className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-300 transform hover:translate-x-2 hover:scale-105 flex items-center p-3 rounded-lg relative group cursor-pointer" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(item.href);
+                }}
               >
                 <span className="absolute inset-0 bg-green-600/0 group-hover:bg-green-600/20 transition-all duration-300 rounded-lg"></span>
                 <span className="w-0 h-0.5 bg-green-400 mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300 relative z-10"></span>
                 <span className="relative z-10">{item.label}</span>
-              </Link>
+              </a>
             ))}
             <div className="pt-6 border-t border-gray-800">
               <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
