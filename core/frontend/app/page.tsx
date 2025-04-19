@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -23,9 +23,9 @@ import {
   Users,
   DollarSign,
   Repeat,
+  Menu,
+  X,
 } from "lucide-react"
-import { Logo } from "@/components/logo"
-import { MobileMenu } from "@/components/mobile-menu"
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -112,6 +112,116 @@ const featuredTools = [
     },
   },
 ]
+
+// Logo component
+function Logo({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative w-8 h-8 ${className}`}>
+      <div className="absolute inset-0 rounded-full bg-green-600 flex items-center justify-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="w-5 h-5 text-white"
+        >
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+        </svg>
+      </div>
+      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
+    </div>
+  )
+}
+
+// Mobile Menu component
+function MobileMenu({
+  onFindTool,
+  onFindWhatYouNeed,
+  onPopularTools,
+  onHowItWorks,
+  onWhyChoose,
+}: {
+  onFindTool: () => void
+  onFindWhatYouNeed: () => void
+  onPopularTools: () => void
+  onHowItWorks: () => void
+  onWhyChoose: () => void
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleClick = (callback: () => void) => {
+    setIsOpen(false)
+    callback()
+  }
+
+  return (
+    <div className="md:hidden">
+      <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} className="text-gray-500">
+        <Menu className="h-6 w-6" />
+      </Button>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 bg-white">
+          <div className="flex items-center justify-between h-16 px-4 border-b">
+            <Link href="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
+              <Logo />
+              <span className="text-xl font-bold text-green-600">ToolNest</span>
+            </Link>
+            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+              <X className="h-6 w-6" />
+            </Button>
+          </div>
+
+          <nav className="px-4 py-6 space-y-6">
+            <button
+              onClick={() => handleClick(onFindTool)}
+              className="block text-lg w-full text-left hover:text-green-600"
+            >
+              Find a Tool
+            </button>
+            <button
+              onClick={() => handleClick(onFindWhatYouNeed)}
+              className="block text-lg w-full text-left hover:text-green-600"
+            >
+              Categories
+            </button>
+            <button
+              onClick={() => handleClick(onPopularTools)}
+              className="block text-lg w-full text-left hover:text-green-600"
+            >
+              Popular Tools
+            </button>
+            <button
+              onClick={() => handleClick(onHowItWorks)}
+              className="block text-lg w-full text-left hover:text-green-600"
+            >
+              How It Works
+            </button>
+            <button
+              onClick={() => handleClick(onWhyChoose)}
+              className="block text-lg w-full text-left hover:text-green-600"
+            >
+              Why Choose Us
+            </button>
+            <div className="pt-6 border-t">
+              <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
+                <Button variant="outline" className="w-full mb-4">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
+                <Button className="w-full bg-green-600 hover:bg-green-700">Sign Up</Button>
+              </Link>
+            </div>
+          </nav>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function LandingPage() {
   // Refs for scroll targets
@@ -420,9 +530,7 @@ export default function LandingPage() {
           <div className="container mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Renting tools has never been easier
-              </p>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">Renting tools has never been easier</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
@@ -560,9 +668,7 @@ export default function LandingPage() {
                 <Logo className="text-white" />
                 <span className="text-xl font-bold text-white">ToolNest</span>
               </div>
-              <p className="text-gray-400 mb-4">
-                Connecting DIY enthusiasts with local tool owners since 2023.
-              </p>
+              <p className="text-gray-400 mb-4">Connecting DIY enthusiasts with local tool owners since 2023.</p>
               <div className="flex space-x-4">
                 <a href="#" className="text-gray-400 hover:text-white">
                   <span className="sr-only">Facebook</span>
@@ -587,4 +693,66 @@ export default function LandingPage() {
                 <a href="#" className="text-gray-400 hover:text-white">
                   <span className="sr-only">Twitter</span>
                   <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.7433 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072\
+                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-bold text-white mb-4">Company</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    About Us
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Careers
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Contact Us
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-bold text-white mb-4">Resources</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Help Center
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Privacy Policy
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-bold text-white mb-4">List Your Tools</h3>
+              <p className="text-gray-400 mb-4">
+                Earn extra income by renting out your tools to local DIY enthusiasts.
+              </p>
+              <Link href="/list-tools">
+                <Button className="bg-green-600 hover:bg-green-700">Get Started</Button>
+              </Link>
+            </div>
+          </div>
+          <div className="mt-12 border-t border-gray-800 pt-8 text-center">
+            <p className="text-gray-500">&copy; {new Date().getFullYear()} ToolNest. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
