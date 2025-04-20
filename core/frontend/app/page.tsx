@@ -51,6 +51,418 @@ const allCategoryData = [
   { name: "Lawn & Landscaping", count: 89, iconType: "scissors" }
 ];
 
+// Tools data organized by category
+const toolsByCategory = {
+  "Power Tools": [
+    {
+      name: "Professional Drill Kit",
+      price: "8.50",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Pro+Drill+Kit",
+      location: "0.8 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Impact Driver",
+      price: "7.25",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Impact+Driver",
+      location: "1.2 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Circular Saw",
+      price: "12.00",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Circular+Saw",
+      location: "1.5 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Reciprocating Saw",
+      price: "10.50",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Reciprocating+Saw",
+      location: "2.0 miles away",
+      delay: 0.6
+    }
+  ],
+  "Hand Tools": [
+    {
+      name: "Socket Wrench Set",
+      price: "5.50",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Socket+Set",
+      location: "0.5 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Premium Hammer",
+      price: "3.25",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Premium+Hammer",
+      location: "1.0 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Screwdriver Set",
+      price: "4.00",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Screwdriver+Set",
+      location: "1.3 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Pliers Kit",
+      price: "3.75",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Pliers+Kit",
+      location: "1.8 miles away",
+      delay: 0.6
+    }
+  ],
+  "Garden Tools": [
+    {
+      name: "Cordless Lawn Mower",
+      price: "22.00",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Lawn+Mower",
+      location: "0.7 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Hedge Trimmer",
+      price: "13.50",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Hedge+Trimmer",
+      location: "1.1 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Garden Tiller",
+      price: "18.00",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Garden+Tiller",
+      location: "1.4 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Pressure Washer",
+      price: "25.00",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Pressure+Washer",
+      location: "1.9 miles away",
+      delay: 0.6
+    }
+  ],
+  "Painting": [
+    {
+      name: "Paint Sprayer",
+      price: "15.00",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Paint+Sprayer",
+      location: "0.6 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Airless Sprayer",
+      price: "18.50",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Airless+Sprayer",
+      location: "1.0 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Premium Roller Set",
+      price: "6.75",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Roller+Set",
+      location: "1.5 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Extension Ladder",
+      price: "12.25",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Extension+Ladder",
+      location: "2.1 miles away",
+      delay: 0.6
+    }
+  ],
+  "Woodworking": [
+    {
+      name: "Table Saw",
+      price: "22.50",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Table+Saw",
+      location: "0.9 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Router",
+      price: "12.25",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Router",
+      location: "1.3 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Miter Saw",
+      price: "18.00",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Miter+Saw",
+      location: "1.6 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Belt Sander",
+      price: "9.50",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Belt+Sander",
+      location: "2.2 miles away",
+      delay: 0.6
+    }
+  ],
+  "Plumbing": [
+    {
+      name: "Pipe Wrench Set",
+      price: "7.50",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Pipe+Wrench",
+      location: "0.7 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Drain Snake",
+      price: "9.25",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Drain+Snake",
+      location: "1.2 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Pipe Cutter",
+      price: "6.00",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Pipe+Cutter",
+      location: "1.5 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Soldering Kit",
+      price: "8.75",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Soldering+Kit",
+      location: "1.9 miles away",
+      delay: 0.6
+    }
+  ],
+  "Electrical": [
+    {
+      name: "Wire Stripper Set",
+      price: "5.50",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Wire+Stripper",
+      location: "0.6 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Multimeter",
+      price: "7.25",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Multimeter",
+      location: "1.1 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Circuit Tester",
+      price: "4.50",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Circuit+Tester",
+      location: "1.4 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Cable Conduit Kit",
+      price: "8.25",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Conduit+Kit",
+      location: "1.8 miles away",
+      delay: 0.6
+    }
+  ],
+  "Measuring": [
+    {
+      name: "Laser Level",
+      price: "11.50",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Laser+Level",
+      location: "0.8 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Tape Measure Set",
+      price: "3.75",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Tape+Measure",
+      location: "1.2 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Digital Caliper",
+      price: "6.00",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Digital+Caliper",
+      location: "1.5 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Angle Finder",
+      price: "4.25",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Angle+Finder",
+      location: "1.9 miles away",
+      delay: 0.6
+    }
+  ],
+  "Safety Equipment": [
+    {
+      name: "Hard Hat",
+      price: "4.50",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Hard+Hat",
+      location: "0.7 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Safety Goggles",
+      price: "3.25",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Safety+Goggles",
+      location: "1.1 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Work Gloves",
+      price: "2.75",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Work+Gloves",
+      location: "1.4 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Respirator Kit",
+      price: "5.50",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Respirator+Kit",
+      location: "1.8 miles away",
+      delay: 0.6
+    }
+  ],
+  "Automotive": [
+    {
+      name: "OBD Scanner",
+      price: "14.50",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=OBD+Scanner",
+      location: "0.9 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Torque Wrench",
+      price: "8.75",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Torque+Wrench",
+      location: "1.3 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Car Jack",
+      price: "12.00",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Car+Jack",
+      location: "1.6 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Battery Charger",
+      price: "9.50",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Battery+Charger",
+      location: "2.0 miles away",
+      delay: 0.6
+    }
+  ],
+  "Ladders & Scaffolding": [
+    {
+      name: "Extension Ladder",
+      price: "15.50",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Extension+Ladder",
+      location: "0.8 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Step Ladder",
+      price: "9.25",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Step+Ladder",
+      location: "1.2 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Multi-Position Ladder",
+      price: "18.00",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Multi+Ladder",
+      location: "1.5 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Scaffolding Set",
+      price: "25.50",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Scaffolding",
+      location: "1.9 miles away",
+      delay: 0.6
+    }
+  ],
+  "Lawn & Landscaping": [
+    {
+      name: "Lawn Mower",
+      price: "22.50",
+      rating: 4.8,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Lawn+Mower",
+      location: "0.7 miles away",
+      delay: 0.3
+    },
+    {
+      name: "Leaf Blower",
+      price: "12.75",
+      rating: 4.7,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Leaf+Blower",
+      location: "1.1 miles away",
+      delay: 0.4
+    },
+    {
+      name: "Hedge Trimmer",
+      price: "13.50",
+      rating: 4.9,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Hedge+Trimmer",
+      location: "1.4 miles away",
+      delay: 0.5
+    },
+    {
+      name: "Weed Whacker",
+      price: "10.25",
+      rating: 4.6,
+      image: "https://placehold.co/300x300/e9f5e9/1a8754?text=Weed+Whacker",
+      location: "1.8 miles away",
+      delay: 0.6
+    }
+  ],
+};
+
 const featuredTools = [
   {
     id: 1,
@@ -195,6 +607,9 @@ export default function LandingPage() {
   // State to track selected category
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
+  // State to show category-specific tools section
+  const [showCategoryTools, setShowCategoryTools] = useState(false);
+  
   // Determine how many categories to show
   const categoriesToShow = showMore ? allCategoryData : allCategoryData.slice(0, 4);
   
@@ -240,6 +655,19 @@ export default function LandingPage() {
         when: "afterChildren"
       }
     }
+  };
+
+  // Reference for category tools section
+  const categoryToolsRef = useRef<HTMLElement>(null)
+  
+  // Function to handle the "Browse Category Tools" button click
+  const handleBrowseCategoryTools = (category: string) => {
+    setSelectedCategory(category);
+    setShowCategoryTools(true);
+    // Scroll to the category tools section with a slight delay to ensure it's visible
+    setTimeout(() => {
+      scrollToSection(categoryToolsRef);
+    }, 100);
   };
 
   return (
@@ -826,7 +1254,7 @@ export default function LandingPage() {
                 <Button
                   size="sm" 
                   className="bg-green-600 hover:bg-green-700 text-white"
-                  onClick={() => scrollToSection(findToolRef)}
+                  onClick={() => handleBrowseCategoryTools(selectedCategory)}
                 >
                   Browse {selectedCategory} Tools
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -847,6 +1275,117 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Category-specific Tools Section */}
+      {showCategoryTools && selectedCategory && (
+        <section 
+          ref={categoryToolsRef}
+          id="category-tools"
+          className="py-24 bg-white relative transition-all duration-700">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="text-center mb-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4"
+              >
+                Category Tools
+              </motion.div>
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3"
+              >
+                <span>{selectedCategory}</span>
+                {renderCategoryIcon(allCategoryData.find(cat => cat.name === selectedCategory)?.iconType || 'default')}
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-xl text-gray-600 max-w-2xl mx-auto"
+              >
+                Available {selectedCategory} tools in your area
+              </motion.p>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
+              {(toolsByCategory[selectedCategory as keyof typeof toolsByCategory] || []).map((tool, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: tool.delay }}
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 group hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="relative overflow-hidden">
+                    <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-sm font-medium text-gray-900 flex items-center gap-1">
+                      <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                      {tool.rating}
+                    </div>
+                    <img
+                      src={tool.image}
+                      alt={tool.name}
+                      className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-bold text-gray-900">{tool.name}</h3>
+                      <div className="text-green-700 font-bold">${tool.price}/day</div>
+                    </div>
+                    <div className="flex items-center text-gray-500 text-sm mb-4">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      {tool.location}
+                    </div>
+                    <Button className="w-full bg-green-600 hover:bg-green-700 transition-all shadow-md shadow-green-600/10 group-hover:shadow-lg group-hover:shadow-green-600/20">
+                      Book Now
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <div className="text-center mt-12 space-y-4">
+              <Button 
+                variant="outline" 
+                className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group"
+                onClick={() => setShowCategoryTools(false)}
+              >
+                <span className="relative flex items-center">
+                  Close Category View
+                  <ArrowUp className="ml-2 h-4 w-4 group-hover:-translate-y-1 transition-transform duration-300" />
+                </span>
+              </Button>
+              
+              <div>
+                <Button 
+                  variant="ghost" 
+                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all text-sm"
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    scrollToSection(findWhatYouNeedRef);
+                  }}
+                >
+                  Back to Categories
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Popular Tools Section - Redesigned */}
       <section 
