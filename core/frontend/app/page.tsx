@@ -1396,6 +1396,8 @@ export default function LandingPage() {
                 onClick={() => {
                   setShowCategoryTools(false);
                   setShowBrowseButton(true); // Keep the browse button visible after closing
+                  // Scroll back to the categories section
+                  scrollToSection(findWhatYouNeedRef);
                 }}
               >
                 <span className="relative flex items-center">
@@ -1409,9 +1411,12 @@ export default function LandingPage() {
                   variant="ghost" 
                   className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all text-sm"
                   onClick={() => {
-                    setSelectedCategory(null);
-                    setShowCategoryTools(false);
-                    setShowBrowseButton(false);
+                    // Don't close the category tools view
+                    // setSelectedCategory(null);
+                    // setShowCategoryTools(false);
+                    // setShowBrowseButton(false);
+                    
+                    // Just scroll back to the categories section
                     scrollToSection(findWhatYouNeedRef);
                   }}
                 >
