@@ -872,30 +872,27 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-white via-green-50/20 to-white pointer-events-none"></div>
         <div className="container mx-auto relative z-10">
           <div className="text-center mb-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4"
-            >
-              Search & Discover
-            </motion.div>
-            <motion.h2 
+            <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-3xl font-bold text-gray-900 mb-4"
+              className="inline-flex items-center gap-4 justify-center relative"
             >
-              Find the Perfect Tool
-            </motion.h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 relative inline-block">
+                <span className="bg-gradient-to-r from-gray-900 via-amber-700 to-gray-900 bg-clip-text text-transparent">
+                  Find the Perfect Tool
+                </span>
+                <span className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent rounded-full"></span>
+              </h2>
+              <span className="font-medium text-sm tracking-wider uppercase bg-gradient-to-r from-amber-600 to-yellow-500 bg-clip-text text-transparent px-3 py-1 border border-yellow-200 rounded-full">Search & Discover</span>
+            </motion.div>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
+              className="text-xl text-gray-600 max-w-2xl mx-auto mt-5"
             >
               Search for exactly what you need for your next project
             </motion.p>
@@ -1014,30 +1011,28 @@ export default function LandingPage() {
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4"
-            >
-              Browse Categories
-            </motion.div>
-            <motion.h2
+            <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-3xl font-bold text-gray-900 mb-4"
+              className="inline-flex items-center gap-4 justify-center relative"
             >
-              Find What You Need
-            </motion.h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 relative inline-block">
+                <span className="bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent">
+                  Find What You Need
+                </span>
+                <span className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent rounded-full"></span>
+              </h2>
+              <span className="font-medium text-sm tracking-wider uppercase bg-gradient-to-r from-green-700 to-green-500 bg-clip-text text-transparent px-3 py-1 border border-green-200 rounded-full">Browse Categories</span>
+            </motion.div>
+            
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
+              className="text-xl text-gray-600 max-w-2xl mx-auto mt-5"
             >
               Browse popular categories to find the right tools for your project
             </motion.p>
@@ -1319,25 +1314,29 @@ export default function LandingPage() {
           className="py-24 bg-white relative transition-all duration-700">
           <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-                className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4"
-            >
-                Category Tools
-            </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3"
+              className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-3 relative"
             >
-                <span>{selectedCategory}</span>
-                {renderCategoryIcon(allCategoryData.find(cat => cat.name === selectedCategory)?.iconType || 'default')}
+              <span className="bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent">
+                {selectedCategory}
+              </span>
+              {renderCategoryIcon(allCategoryData.find(cat => cat.name === selectedCategory)?.iconType || 'default')}
+              <span className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent rounded-full"></span>
             </motion.h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="inline-block relative mb-5 overflow-hidden"
+            >
+              <span className="font-medium text-sm tracking-wider uppercase bg-gradient-to-r from-green-700 to-green-500 bg-clip-text text-transparent">Category Tools</span>
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-green-500/50 to-transparent"></span>
+            </motion.div>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1444,30 +1443,28 @@ export default function LandingPage() {
         className="py-24 bg-white relative transition-all duration-700">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-3 py-1 bg-yellow-100 rounded-full text-yellow-700 text-sm font-medium mb-4"
-            >
-              Top Rated
-            </motion.div>
-            <motion.h2
+            <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-3xl font-bold text-gray-900 mb-4"
+              className="inline-flex items-center gap-4 justify-center relative"
             >
-              Popular Tools Near You
-            </motion.h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 relative inline-block">
+                <span className="bg-gradient-to-r from-gray-900 via-yellow-800 to-gray-900 bg-clip-text text-transparent">
+                  Popular Tools Near You
+                </span>
+                <span className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent rounded-full"></span>
+              </h2>
+              <span className="font-medium text-sm tracking-wider uppercase bg-gradient-to-r from-yellow-700 to-yellow-500 bg-clip-text text-transparent px-3 py-1 border border-yellow-200 rounded-full">Top Rated</span>
+            </motion.div>
+            
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
+              className="text-xl text-gray-600 max-w-2xl mx-auto mt-5"
             >
               Browse the most requested tools in your area
             </motion.p>
@@ -1577,60 +1574,61 @@ export default function LandingPage() {
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-3 py-1 bg-blue-100 rounded-full text-blue-700 text-sm font-medium mb-4"
-            >
-              Simple Process
-            </motion.div>
-            <motion.h2
+            <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-3xl font-bold text-gray-900 mb-4"
+              className="inline-flex items-center gap-4 justify-center relative"
             >
-              How ToolNest Works
-            </motion.h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 relative inline-block">
+                <span className="bg-gradient-to-r from-gray-900 via-red-800 to-gray-900 bg-clip-text text-transparent">
+                  How ToolNest Works
+                </span>
+                <span className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent rounded-full"></span>
+              </h2>
+              <span className="font-medium text-sm tracking-wider uppercase bg-gradient-to-r from-red-700 to-red-500 bg-clip-text text-transparent px-3 py-1 border border-red-200 rounded-full">Simple Process</span>
+            </motion.div>
+            
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
+              className="text-xl text-gray-600 max-w-2xl mx-auto mt-5"
             >
               Borrowing tools has never been easier
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+            {/* Process timeline - visible only on desktop */}
+            <div className="hidden md:block absolute top-1/2 left-[16%] right-[16%] h-1 bg-gradient-to-r from-red-300 via-orange-300 to-amber-300 transform -translate-y-1/2 rounded-full opacity-30 z-0"></div>
+            
             {[
               {
-                icon: <Search className="w-10 h-10 text-blue-600" />,
+                icon: <Search className="w-10 h-10 text-red-600" />,
                 title: "Find a Tool",
                 description:
                   "Search our extensive database of tools available in your area. Filter by category, price, and availability.",
                 delay: 0.3,
-                accent: "blue"
+                accent: "red"
               },
               {
-                icon: <Calendar className="w-10 h-10 text-green-600" />,
+                icon: <Calendar className="w-10 h-10 text-orange-600" />,
                 title: "Book & Pay",
                 description:
                   "Reserve your tools for the dates you need. Secure payment through our platform protects both parties.",
                 delay: 0.5,
-                accent: "green"
+                accent: "orange"
               },
               {
-                icon: <Hammer className="w-10 h-10 text-yellow-600" />,
+                icon: <Hammer className="w-10 h-10 text-amber-600" />,
                 title: "Collect & Use",
                 description:
                   "Pick up the tool from the owner and get to work on your project. Return it when you're done.",
                 delay: 0.7,
-                accent: "yellow"
+                accent: "amber"
               },
             ].map((step, index) => (
               <motion.div
@@ -1641,23 +1639,98 @@ export default function LandingPage() {
                 transition={{ duration: 0.6, delay: step.delay }}
                 className="relative"
               >
-                <div className={`bg-white rounded-2xl p-8 shadow-xl border border-gray-100 h-full relative z-10 hover:shadow-2xl transition-all duration-300 group`}>
-                  <div className="mb-6">
-                    <div className={`w-16 h-16 rounded-xl bg-${step.accent}-100 flex items-center justify-center mb-8 group-hover:bg-${step.accent}-200 transition-colors duration-200`}>
-                      {step.icon}
-                    </div>
-                    <span className="absolute top-6 right-8 text-5xl font-bold text-gray-100 group-hover:text-gray-200 transition-colors duration-300">
-                      {index + 1}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
+                <div className={`bg-white rounded-2xl p-8 shadow-xl border border-gray-100 h-full relative z-10 hover:shadow-2xl transition-all duration-500 group overflow-hidden`}>
+                  {/* Remove the background gradient that covers the whole card */}
                   
+                  {/* Smaller decorative corner accent that's more subtle */}
+                  <div className={`absolute top-0 right-0 w-16 h-16 ${step.accent === 'red' ? 'bg-gradient-to-bl from-red-100/30 to-transparent' : 
+                                                             step.accent === 'orange' ? 'bg-gradient-to-bl from-orange-100/30 to-transparent' : 
+                                                             'bg-gradient-to-bl from-amber-100/30 to-transparent'} opacity-50 group-hover:opacity-70 transition-opacity duration-300`}></div>
+                  
+                  <div className="mb-8 relative flex items-center justify-center">
+                    {/* Step number integrated with the icon container */}
+                    <motion.div 
+                      whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
+                      transition={{ duration: 0.5 }}
+                      className={`w-24 h-24 rounded-2xl ${step.accent === 'red' ? 'bg-red-50 group-hover:bg-red-100 shadow-red-100/20 group-hover:shadow-red-200/30' : 
+                                                     step.accent === 'orange' ? 'bg-orange-50 group-hover:bg-orange-100 shadow-orange-100/20 group-hover:shadow-orange-200/30' : 
+                                                     'bg-amber-50 group-hover:bg-amber-100 shadow-amber-100/20 group-hover:shadow-amber-200/30'} flex items-center justify-center mb-0 shadow-sm transition-all duration-300 mx-auto relative`}
+                    >
+                      {/* Step number positioned elegantly */}
+                      <span className={`absolute -top-3 -right-3 w-8 h-8 rounded-full ${step.accent === 'red' ? 'bg-red-500' : 
+                                                                                     step.accent === 'orange' ? 'bg-orange-500' : 
+                                                                                     'bg-amber-500'} text-white flex items-center justify-center text-sm font-bold group-hover:scale-110 transition-transform duration-300 shadow-md z-10`}>
+                        {index + 1}
+                      </span>
+                      
+                      {/* Icon with slight animation */}
+                      <motion.div
+                        animate={{ 
+                          scale: [1, 1.05, 1],
+                          rotate: [0, 2, 0, -2, 0]
+                        }}
+                        transition={{ 
+                          duration: 4,
+                          repeat: Infinity,
+                          repeatType: "mirror"
+                        }}
+                      >
+                        {step.icon}
+                      </motion.div>
+                      
+                      {/* Decorative ring around icon */}
+                      <div className={`absolute inset-0 border-2 ${step.accent === 'red' ? 'border-red-200' : 
+                                                               step.accent === 'orange' ? 'border-orange-200' : 
+                                                               'border-amber-200'} rounded-2xl opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-500`}></div>
+                    </motion.div>
+                  </div>
+                  
+                  {/* Title with enhanced animated underline */}
+                  <h3 className={`text-2xl font-bold text-gray-900 mb-4 relative text-center ${step.accent === 'red' ? 'group-hover:text-red-700' : 
+                                                                                         step.accent === 'orange' ? 'group-hover:text-orange-700' : 
+                                                                                         'group-hover:text-amber-700'} transition-colors duration-300`}>
+                    {step.title}
+                    <span className={`absolute -bottom-1 left-1/4 right-1/4 h-0.5 ${step.accent === 'red' ? 'bg-gradient-to-r from-transparent via-red-500 to-transparent' : 
+                                                                            step.accent === 'orange' ? 'bg-gradient-to-r from-transparent via-orange-500 to-transparent' : 
+                                                                            'bg-gradient-to-r from-transparent via-amber-500 to-transparent'} scale-0 group-hover:scale-100 transition-all duration-500 ease-out`}></span>
+                  </h3>
+                  
+                  <p className="text-gray-600 transition-colors duration-300 relative z-10 text-center">
+                    {step.description}
+                  </p>
+                  
+                  {/* Enhanced learn more button that appears on hover */}
+                  <div className={`mt-6 transition-all duration-500 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 text-center`}>
+                    <Button variant="ghost" className={`px-4 py-2 ${step.accent === 'red' ? 'text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200' : 
+                                                                  step.accent === 'orange' ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-200' : 
+                                                                  'text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200'} rounded-full border shadow-sm flex items-center mx-auto`}>
+                      <span className="mr-2">Learn more</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                    </Button>
+                  </div>
+                  
+                  {/* Connection arrow between cards */}
                   {index < 2 && (
-                    <div className="hidden md:block absolute top-1/4 -right-6 w-12 h-12 text-gray-300 z-10">
-                      <ArrowRight className="w-12 h-12" />
+                    <div className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2 z-20 w-12">
+                      <div className="relative">
+                        {/* Main connector line with gradient */}
+                        <div className={`absolute top-1/2 w-full h-1 ${index === 0 ? 'bg-gradient-to-r from-red-400 to-orange-400' : 'bg-gradient-to-r from-orange-400 to-amber-400'} transform -translate-y-1/2 opacity-60 group-hover:opacity-80 transition-all duration-500 rounded-full`}></div>
+                        
+                        {/* Enhanced animated particles along the line */}
+                        <div className={`absolute top-1/2 w-2 h-2 rounded-full ${step.accent === 'red' ? 'bg-red-500' : 
+                                                                                  step.accent === 'orange' ? 'bg-orange-500' : 
+                                                                                  'bg-amber-500'} transform -translate-y-1/2 animate-pulse-fast opacity-70`} style={{ left: '20%' }}></div>
+                        <div className={`absolute top-1/2 w-1.5 h-1.5 rounded-full ${index === 0 ? 'bg-orange-500' : 'bg-amber-500'} transform -translate-y-1/2 animate-pulse-fast opacity-70 animation-delay-500`} style={{ left: '70%' }}></div>
+                        
+                        {/* Arrow with enhanced styling */}
+                        <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 group-hover:translate-x-1 transition-all duration-300">
+                          <ArrowRight className={`relative z-10 w-7 h-7 ${index === 0 ? 'text-orange-500' : 'text-amber-500'}`} />
+                        </div>
+                      </div>
                     </div>
                   )}
+                  
+                  {/* Remove the bottom gradient glow effect */}
                 </div>
               </motion.div>
             ))}
@@ -1676,30 +1749,28 @@ export default function LandingPage() {
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-3 py-1 bg-purple-100 rounded-full text-purple-700 text-sm font-medium mb-4"
-            >
-              Our Benefits
-            </motion.div>
-            <motion.h2
+            <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-3xl font-bold text-gray-900 mb-4"
+              className="inline-flex items-center gap-4 justify-center relative"
             >
-              Why Choose ToolNest
-            </motion.h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 relative inline-block">
+                <span className="bg-gradient-to-r from-gray-900 via-purple-800 to-gray-900 bg-clip-text text-transparent">
+                  Why Choose ToolNest
+                </span>
+                <span className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent rounded-full"></span>
+              </h2>
+              <span className="font-medium text-sm tracking-wider uppercase bg-gradient-to-r from-purple-700 to-purple-500 bg-clip-text text-transparent px-3 py-1 border border-purple-200 rounded-full">Our Benefits</span>
+            </motion.div>
+            
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
+              className="text-xl text-gray-600 max-w-2xl mx-auto mt-5"
             >
               Benefits that make us the preferred choice for tool rentals
             </motion.p>
@@ -1885,6 +1956,10 @@ export default function LandingPage() {
           animation: pulse-slow 3s infinite;
         }
         
+        .animate-pulse-fast {
+          animation: pulse-fast 1.5s infinite;
+        }
+        
         @keyframes pulse-subtle {
           0% { opacity: 0.8; }
           50% { opacity: 1; }
@@ -1895,6 +1970,20 @@ export default function LandingPage() {
           0% { opacity: 0.5; }
           50% { opacity: 0.8; }
           100% { opacity: 0.5; }
+        }
+        
+        @keyframes pulse-fast {
+          0% { opacity: 0.7; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.3); }
+          100% { opacity: 0.7; transform: scale(1); }
+        }
+        
+        .animation-delay-300 {
+          animation-delay: 300ms;
+        }
+        
+        .animation-delay-500 {
+          animation-delay: 500ms;
         }
         
         html {
