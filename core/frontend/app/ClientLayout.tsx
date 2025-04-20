@@ -3,13 +3,18 @@
 import React, { useState, useEffect } from "react"
 
 import "./globals.css"
-import { Inter } from "next/font/google"
+import { Inter, Poppins } from "next/font/google"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeProvider } from "@/components/theme-provider"
-import { Menu, X, ArrowRight } from "lucide-react"
+import { Menu, X, ArrowRight, Tool } from "lucide-react"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], variable: '--font-inter' })
+const poppins = Poppins({ 
+  weight: ['300', '400', '500', '600', '700'],
+  subsets: ["latin"], 
+  variable: '--font-poppins'
+})
 
 export default function ClientLayout({
   children,
@@ -18,7 +23,7 @@ export default function ClientLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${poppins.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="light">
           <div className="flex min-h-screen flex-col">
             <Header />
@@ -69,15 +74,28 @@ function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800 shadow-lg">
+    <header className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800 shadow-lg backdrop-blur-sm bg-opacity-95">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="transform group-hover:rotate-12 transition-transform duration-300">
-                <Logo className="text-white" />
+            <Link href="/" className="flex items-center gap-3 group relative">
+              <div className="transform group-hover:rotate-12 transition-all duration-500 relative overflow-visible">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 opacity-0 group-hover:opacity-80 rounded-full blur-md transition-all duration-500 scale-125"></div>
+                <Logo className="text-white relative z-10" />
               </div>
-              <span className="text-xl font-bold text-green-400 group-hover:text-white transition-colors duration-300">ToolNest</span>
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <span className="text-2xl font-bold font-poppins bg-gradient-to-r from-green-400 via-green-300 to-green-400 bg-clip-text text-transparent group-hover:from-white group-hover:via-green-100 group-hover:to-white transition-all duration-300 tracking-tight">
+                    Tool<span className="text-white group-hover:text-green-300 transition-colors duration-300">Nest</span>
+                  </span>
+                  <div className="relative ml-1.5">
+                    <span className="absolute -inset-1 bg-green-400/20 blur-sm rounded-full transform scale-75 group-hover:bg-green-400/30 group-hover:scale-100 transition-all duration-500"></span>
+                    <span className="relative block w-1.5 h-1.5 rounded-full bg-green-400 group-hover:bg-white transition-colors duration-300 animate-pulse"></span>
+                  </div>
+                </div>
+                <span className="text-[10px] text-green-400/80 uppercase tracking-widest font-medium -mt-1 group-hover:text-white/90 transition-colors duration-300 font-sans">Community Tools</span>
+              </div>
+              <div className="absolute inset-0 -m-1 rounded-xl border border-transparent group-hover:border-green-500/20 scale-105 transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
             </Link>
           </div>
 
@@ -94,7 +112,7 @@ function Header() {
                 <a 
                   key={index} 
                   href={item.href} 
-                  className={`relative text-gray-300 hover:text-white transition-all duration-300 group py-2 px-4 rounded-md overflow-hidden cursor-pointer ${isActive ? 'text-white' : ''}`}
+                  className={`relative text-gray-300 hover:text-white transition-all duration-300 group py-2 px-4 rounded-md overflow-hidden cursor-pointer font-medium ${isActive ? 'text-white' : ''}`}
                   onClick={(e) => {
                     e.preventDefault();
                     const sectionId = item.href.substring(1);
@@ -132,7 +150,7 @@ function Header() {
           <div className="flex items-center gap-4">
             <Link href="/auth/signin">
               <Button 
-                className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group"
+                className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group font-medium"
               >
                 <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
                 <span className="relative flex items-center">
@@ -143,7 +161,7 @@ function Header() {
             </Link>
             <Link href="/auth/signup" className="hidden sm:block overflow-hidden">
               <Button 
-                className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group"
+                className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group font-medium"
               >
                 <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
                 <span className="relative flex items-center">
@@ -201,13 +219,19 @@ function MobileMenu({ activeSection, setActiveSection }) {
       </Button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-gray-900">
+        <div className="fixed inset-0 z-50 bg-gray-900 bg-opacity-95 backdrop-blur-sm">
           <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
-            <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
-              <div className="transform group-hover:rotate-12 transition-transform duration-300">
+            <Link href="/" className="flex items-center gap-3 group" onClick={() => setIsOpen(false)}>
+              <div className="transform group-hover:rotate-12 transition-all duration-300 relative">
                 <Logo className="text-white" />
               </div>
-              <span className="text-xl font-bold text-green-400 group-hover:text-white transition-colors duration-300">ToolNest</span>
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <span className="text-xl font-bold font-poppins bg-gradient-to-r from-green-400 via-green-300 to-green-400 bg-clip-text text-transparent group-hover:from-white group-hover:via-green-100 group-hover:to-white transition-all duration-300">
+                    Tool<span className="text-white group-hover:text-green-300 transition-colors duration-300">Nest</span>
+                  </span>
+                </div>
+              </div>
             </Link>
             <Button 
               variant="ghost" 
@@ -285,9 +309,19 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-3 mb-4 group">
               <Logo className="text-white" />
-              <span className="text-xl font-bold text-white">ToolNest</span>
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <span className="text-xl font-bold font-poppins bg-gradient-to-r from-green-400 via-green-300 to-green-400 bg-clip-text text-transparent group-hover:from-white group-hover:via-green-100 group-hover:to-white transition-all duration-300 tracking-tight">
+                    Tool<span className="text-white group-hover:text-green-300 transition-colors duration-300">Nest</span>
+                  </span>
+                  <div className="relative ml-1.5">
+                    <span className="absolute -inset-1 bg-green-400/20 blur-sm rounded-full transform scale-75 group-hover:bg-green-400/30 group-hover:scale-100 transition-all duration-500"></span>
+                    <span className="relative block w-1.5 h-1.5 rounded-full bg-green-400 group-hover:bg-white transition-colors duration-300 animate-pulse"></span>
+                  </div>
+                </div>
+              </div>
             </div>
             <p className="text-gray-400 mb-4">Connecting DIY enthusiasts with local tool owners since 2023.</p>
             <div className="flex space-x-4">
@@ -362,8 +396,14 @@ function Footer() {
           <div>
             <h3 className="font-bold text-white mb-4">List Your Tools</h3>
             <p className="text-gray-400 mb-4">Earn extra income by renting out your tools to local DIY enthusiasts.</p>
-            <Link href="/list-tools">
-              <Button className="bg-green-600 hover:bg-green-700">Get Started</Button>
+            <Link href="/auth/signin">
+              <Button className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 relative overflow-hidden group">
+                <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                <span className="relative flex items-center">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                </span>
+              </Button>
             </Link>
           </div>
         </div>
@@ -377,22 +417,41 @@ function Footer() {
 
 function Logo({ className = "" }: { className?: string }) {
   return (
-    <div className={`relative w-8 h-8 ${className}`}>
-      <div className="absolute inset-0 rounded-full bg-green-600 flex items-center justify-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="w-5 h-5 text-white"
-        >
-          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-        </svg>
+    <div className={`relative w-12 h-12 ${className}`}>
+      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center transform transition-all duration-500 shadow-lg shadow-green-600/30 group-hover:shadow-green-500/50 group-hover:scale-105">
+        {/* Glow effect */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400/0 to-green-600/0 opacity-0 group-hover:from-green-400/20 group-hover:to-green-600/40 transition-all duration-500"></div>
+        
+        {/* Inner circular highlight */}
+        <div className="absolute inset-1.5 rounded-full bg-gradient-to-tl from-green-400/0 to-white/10 opacity-30 group-hover:opacity-40 transition-opacity duration-500"></div>
+        
+        {/* Icon */}
+        <div className="relative z-10 w-full h-full flex items-center justify-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="w-6 h-6 text-white relative z-10 group-hover:rotate-12 transform transition-transform duration-500"
+          >
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>
+        </div>
       </div>
-      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
+      
+      {/* Light points */}
+      <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-400 border-2 border-gray-900 shadow-lg animate-pulse-slow group-hover:scale-110 transition-transform duration-500">
+        <span className="absolute inset-0 rounded-full bg-yellow-300 opacity-0 group-hover:opacity-60 group-hover:animate-ping blur-sm transition-opacity duration-300"></span>
+      </div>
+      
+      <div className="absolute -top-0.5 -left-0.5 w-3 h-3 rounded-full bg-gradient-to-br from-green-300 to-green-400 border border-gray-900/30 opacity-80 shadow-md group-hover:scale-110 transition-transform duration-500">
+        <span className="absolute inset-0 rounded-full bg-green-300 opacity-0 group-hover:opacity-60 animate-ping blur-sm transition-opacity duration-300 delay-150"></span>
+      </div>
+      
+      <div className="absolute top-1/2 right-0 w-2 h-2 rounded-full bg-gradient-to-br from-blue-300 to-cyan-400 border border-gray-900/30 opacity-0 group-hover:opacity-80 shadow-md animate-pulse-slow transition-opacity duration-500 delay-300"></div>
     </div>
   )
 }
