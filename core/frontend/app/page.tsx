@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -18,34 +18,30 @@ import {
   Hammer,
   Drill,
   Scissors,
-  PaintBucket,
   CheckCircle,
   Users,
   DollarSign,
-  Repeat,
+  Clock,
   Calendar,
   Quote,
-  ArrowUp,
+  ArrowUp
 } from "lucide-react"
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.5,
-    },
-  }),
-}
-
-const categories = [
-  { name: "Power Tools", icon: Drill, count: 245 },
-  { name: "Hand Tools", icon: Hammer, count: 189 },
-  { name: "Garden Tools", icon: Scissors, count: 124 },
-  { name: "Painting", icon: PaintBucket, count: 97 },
-]
+// Create a fixed set of categories without complex icons
+const allCategoryData = [
+  { name: "Power Tools", count: 245, iconType: "drill" },
+  { name: "Hand Tools", count: 189, iconType: "hammer" },
+  { name: "Garden Tools", count: 124, iconType: "scissors" },
+  { name: "Painting", count: 97, iconType: "brush" },
+  { name: "Woodworking", count: 78, iconType: "tool" },
+  { name: "Plumbing", count: 112, iconType: "wrench" },
+  { name: "Electrical", count: 93, iconType: "tool" },
+  { name: "Measuring", count: 67, iconType: "tool" },
+  { name: "Safety Equipment", count: 42, iconType: "tool" },
+  { name: "Automotive", count: 55, iconType: "tool" },
+  { name: "Ladders & Scaffolding", count: 36, iconType: "tool" },
+  { name: "Lawn & Landscaping", count: 89, iconType: "scissors" }
+];
 
 const featuredTools = [
   {
@@ -114,6 +110,18 @@ const featuredTools = [
   },
 ]
 
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.5,
+    },
+  }),
+}
+
 export default function LandingPage() {
   // Refs for scroll targets
   const findToolRef = useRef<HTMLElement>(null)
@@ -122,11 +130,14 @@ export default function LandingPage() {
   const howItWorksRef = useRef<HTMLElement>(null)
   const whyChooseRef = useRef<HTMLElement>(null)
   const statsRef = useRef<HTMLElement>(null)
-
+  
+  // Simple boolean state for showing all categories
+  const [showMore, setShowMore] = useState(false)
+  
   // Smooth scroll function
   const scrollToSection = (elementRef: React.RefObject<HTMLElement | null>) => {
     if (elementRef.current) {
-      const yOffset = -80; // Accounting for the fixed header height
+      const yOffset = -80;
       const y = elementRef.current.getBoundingClientRect().top + window.scrollY + yOffset;
       
       window.scrollTo({
@@ -134,13 +145,31 @@ export default function LandingPage() {
         behavior: 'smooth'
       });
       
-      // Add a highlight animation to the section
       elementRef.current.classList.add('section-highlight');
       setTimeout(() => {
         elementRef.current?.classList.remove('section-highlight');
       }, 1500);
     }
   }
+
+  // Simple helper to render the correct icon based on type
+  const renderCategoryIcon = (iconType) => {
+    switch(iconType) {
+      case 'drill':
+        return <Drill className="h-8 w-8 text-green-600" />;
+      case 'hammer':
+        return <Hammer className="h-8 w-8 text-green-600" />;
+      case 'scissors':
+        return <Scissors className="h-8 w-8 text-green-600" />;
+      case 'wrench':
+        return <Wrench className="h-8 w-8 text-green-600" />;
+      default:
+        return <Wrench className="h-8 w-8 text-green-600" />;
+    }
+  };
+  
+  // Determine how many categories to show
+  const categoriesToShow = showMore ? allCategoryData : allCategoryData.slice(0, 4);
 
   return (
     <>
@@ -459,77 +488,58 @@ export default function LandingPage() {
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4"
-            >
+            <div className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4">
               Browse Categories
-            </motion.div>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-3xl font-bold text-gray-900 mb-4"
-            >
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Find What You Need
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
-            >
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Browse popular categories to find the right tools for your project
-            </motion.p>
+            </p>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8"
-          >
-            {categories.map((category, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 + (i * 0.1) }}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 group hover:shadow-xl transition-all duration-300"
+          {/* Simple grid of categories */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {categoriesToShow.map((category, index) => (
+              <div
+                key={category.name}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 group hover:shadow-xl hover:border-green-200 transition-all duration-300 cursor-pointer"
               >
-                <Card className="h-full border-0 shadow-none">
-                  <CardContent className="p-8 flex flex-col items-center text-center">
-                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-6 group-hover:bg-green-200 transition-colors duration-300">
-                      <category.icon className="h-8 w-8 text-green-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">{category.name}</h3>
-                    <Badge className="bg-gray-100 hover:bg-gray-200 text-gray-700 border-0 px-3 py-1 transition-colors duration-300">
-                      {category.count} tools
-                    </Badge>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                <div className="p-8 flex flex-col items-center text-center">
+                  <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-6 group-hover:bg-green-200 transition-all duration-300">
+                    {renderCategoryIcon(category.iconType)}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{category.name}</h3>
+                  <Badge className="bg-gray-100 text-gray-700 border-0 px-3 py-1">
+                    {category.count} tools
+                  </Badge>
+                </div>
+              </div>
             ))}
-          </motion.div>
+          </div>
           
+          {/* Simple toggle button */}
           <div className="text-center mt-12">
             <Button 
               variant="outline" 
-              className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group"
-              onClick={() => scrollToSection(findWhatYouNeedRef)}
+              className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base"
+              onClick={() => setShowMore(!showMore)}
             >
-              <span className="relative flex items-center">
-                View All Categories
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+              <span className="flex items-center">
+                {showMore ? "Show Less" : "View All Categories"}
+                {showMore ? 
+                  <ArrowUp className="ml-2 h-4 w-4" /> : 
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                }
               </span>
             </Button>
+            
+            {!showMore && (
+              <p className="text-sm text-gray-500 mt-3">
+                Discover 12+ more categories of tools
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -819,7 +829,7 @@ export default function LandingPage() {
                 delay: 0.3,
               },
               {
-                icon: Repeat,
+                icon: Clock,
                 title: "Sustainability",
                 description: "Reduce waste by sharing resources in your community",
                 colorBg: "bg-blue-100",
