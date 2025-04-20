@@ -46,7 +46,7 @@ function Header() {
             </Link>
           </div>
 
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-4">
             {[
               { href: "#find-tool", label: "Find a Tool" },
               { href: "#find-what-you-need", label: "Categories" },
@@ -57,7 +57,7 @@ function Header() {
               <a 
                 key={index} 
                 href={item.href} 
-                className="relative text-gray-300 hover:text-white transition-colors duration-300 group py-1.5 px-4 rounded-lg overflow-hidden cursor-pointer"
+                className="relative text-gray-300 hover:text-white transition-all duration-300 group py-2 px-4 rounded-md overflow-hidden cursor-pointer"
                 onClick={(e) => {
                   e.preventDefault();
                   const element = document.getElementById(item.href.substring(1));
@@ -78,10 +78,13 @@ function Header() {
                   }
                 }}
               >
-                <span className="absolute inset-0 bg-green-600/0 group-hover:bg-green-600/20 transition-all duration-300 rounded-lg transform scale-95 group-hover:scale-100"></span>
-                <span className="absolute inset-0 border border-transparent group-hover:border-green-500/30 rounded-lg transition-all duration-300 scale-95 group-hover:scale-100"></span>
-                <span className="relative z-10">{item.label}</span>
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-green-400 group-hover:w-full transition-all duration-300 ease-in-out"></span>
+                <span className="absolute inset-0 bg-gradient-to-r from-green-600/0 to-green-600/0 group-hover:from-green-600/20 group-hover:to-green-600/5 transition-all duration-300 rounded-md transform scale-95 group-hover:scale-100"></span>
+                <span className="absolute inset-0 border border-transparent group-hover:border-green-500/30 rounded-md transition-all duration-300 scale-95 group-hover:scale-100"></span>
+                <span className="relative z-10 flex items-center">
+                  <span className="block w-0 group-hover:w-3 h-0.5 bg-green-400 mr-0 group-hover:mr-2 transition-all duration-300 opacity-0 group-hover:opacity-100"></span>
+                  {item.label}
+                </span>
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-400 to-green-400/0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
               </a>
             ))}
           </nav>
@@ -175,7 +178,7 @@ function MobileMenu() {
             </Button>
           </div>
 
-          <nav className="px-4 py-6 space-y-6">
+          <nav className="px-4 py-6 space-y-4">
             {[
               { href: "#find-tool", label: "Find a Tool" },
               { href: "#find-what-you-need", label: "Categories" },
@@ -186,15 +189,18 @@ function MobileMenu() {
               <a 
                 key={index}
                 href={item.href} 
-                className="block text-lg text-gray-300 hover:text-green-400 transition-colors duration-300 transform hover:translate-x-2 hover:scale-105 flex items-center p-3 rounded-lg relative group cursor-pointer" 
+                className="block text-lg text-gray-300 hover:text-green-400 transition-all duration-300 transform hover:translate-x-2 flex items-center p-4 rounded-lg relative group cursor-pointer overflow-hidden" 
                 onClick={(e) => {
                   e.preventDefault();
                   handleNavClick(item.href);
                 }}
               >
-                <span className="absolute inset-0 bg-green-600/0 group-hover:bg-green-600/20 transition-all duration-300 rounded-lg"></span>
-                <span className="w-0 h-0.5 bg-green-400 mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300 relative z-10"></span>
+                <span className="absolute inset-0 bg-gradient-to-r from-green-600/10 to-transparent group-hover:from-green-600/20 group-hover:to-green-600/5 transition-all duration-300 rounded-lg"></span>
+                <span className="w-0 h-0.5 bg-green-400 mr-0 group-hover:w-6 group-hover:mr-3 transition-all duration-300 relative z-10"></span>
                 <span className="relative z-10">{item.label}</span>
+                <span className="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <ArrowRight className="h-4 w-4 text-green-400" />
+                </span>
               </a>
             ))}
             <div className="pt-6 border-t border-gray-800">
