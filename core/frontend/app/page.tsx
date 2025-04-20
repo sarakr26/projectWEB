@@ -610,6 +610,9 @@ export default function LandingPage() {
   // State to show category-specific tools section
   const [showCategoryTools, setShowCategoryTools] = useState(false);
   
+  // State to display the browse button when a category is selected
+  const [showBrowseButton, setShowBrowseButton] = useState(false);
+  
   // Determine how many categories to show
   const categoriesToShow = showMore ? allCategoryData : allCategoryData.slice(0, 4);
   
@@ -660,6 +663,30 @@ export default function LandingPage() {
   // Reference for category tools section
   const categoryToolsRef = useRef<HTMLElement>(null)
   
+  // Function to handle category selection
+  const handleCategorySelection = (categoryName: string) => {
+    // If the user clicks on the same category that is currently selected
+    if (categoryName === selectedCategory) {
+      setSelectedCategory(null);
+      setShowBrowseButton(false);
+    } else {
+      // If we're currently showing category tools and select a different category
+      if (showCategoryTools) {
+        setSelectedCategory(categoryName);
+        setShowCategoryTools(false);
+        setShowBrowseButton(true);
+        // Scroll back to the categories section
+        setTimeout(() => {
+          scrollToSection(findWhatYouNeedRef);
+        }, 100);
+      } else {
+        // Normal case - just select the category and show browse button
+        setSelectedCategory(categoryName);
+        setShowBrowseButton(true);
+      }
+    }
+  };
+
   // Function to handle the "Browse Category Tools" button click
   const handleBrowseCategoryTools = (category: string) => {
     setSelectedCategory(category);
@@ -1031,7 +1058,7 @@ export default function LandingPage() {
                 animate="visible"
                 exit="exit"
                 variants={gridItemVariants}
-                onClick={() => setSelectedCategory(category.name === selectedCategory ? null : category.name)}
+                onClick={() => handleCategorySelection(category.name)}
                 className={`bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 
                   ${selectedCategory === category.name ? 'ring-2 ring-green-500 ring-offset-2' : ''}
                   group hover:shadow-xl hover:border-green-200 transition-all duration-300 cursor-pointer 
@@ -1139,7 +1166,11 @@ export default function LandingPage() {
                 onClick={() => {
                   // Add a slight delay when showing less categories to allow for animation
                   if (showMore) {
-                    setTimeout(() => setShowMore(false), 50);
+                    setTimeout(() => {
+                      setShowMore(false);
+                      // If we're showing less, we should also hide the browse button
+                      setShowBrowseButton(false);
+                    }, 50);
                   } else {
                     setShowMore(true);
                   }
@@ -1244,7 +1275,7 @@ export default function LandingPage() {
               </motion.div>
             )}
             
-            {showMore && selectedCategory && (
+            {showBrowseButton && selectedCategory && (
               <motion.div
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1362,7 +1393,10 @@ export default function LandingPage() {
               <Button 
                 variant="outline" 
                 className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group"
-                onClick={() => setShowCategoryTools(false)}
+                onClick={() => {
+                  setShowCategoryTools(false);
+                  setShowBrowseButton(true); // Keep the browse button visible after closing
+                }}
               >
                 <span className="relative flex items-center">
                   Close Category View
@@ -1376,6 +1410,8 @@ export default function LandingPage() {
                   className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all text-sm"
                   onClick={() => {
                     setSelectedCategory(null);
+                    setShowCategoryTools(false);
+                    setShowBrowseButton(false);
                     scrollToSection(findWhatYouNeedRef);
                   }}
                 >
