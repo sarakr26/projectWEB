@@ -583,7 +583,16 @@ export default function LandingPage() {
                 className={`bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 
                   ${selectedCategory === category.name ? 'ring-2 ring-green-500 ring-offset-2' : ''}
                   group hover:shadow-xl hover:border-green-200 transition-all duration-300 cursor-pointer 
-                  transform hover:-translate-y-1 hover:scale-[1.02] relative isolate`}
+                  transform hover:-translate-y-2 hover:scale-110 relative isolate`}
+                whileHover={{ 
+                  scale: 1.1, 
+                  y: -10,
+                  transition: { 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 15 
+                  }
+                }}
               >
                 <div className="p-8 flex flex-col items-center text-center relative overflow-hidden">
                   {/* Background decorative element */}
@@ -593,7 +602,7 @@ export default function LandingPage() {
                   <motion.div 
                     whileHover={{ 
                       rotate: [0, -10, 10, -5, 0], 
-                      scale: 1.1,
+                      scale: 1.15,
                       transition: { duration: 0.5 }
                     }}
                     className={`w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-6 
@@ -620,7 +629,7 @@ export default function LandingPage() {
                   </motion.div>
                   
                   {/* Name with underline effect */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 relative">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 relative group-hover:text-green-700 transition-colors duration-300">
                     {category.name}
                     <motion.div 
                       initial={{ width: 0 }}
@@ -656,8 +665,11 @@ export default function LandingPage() {
                   )}
                 </div>
                 
-                {/* Gradient overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+                {/* Enhanced gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-green-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+                
+                {/* Additional hover effects */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-green-300 to-green-500 rounded-2xl opacity-0 group-hover:opacity-20 blur-md transition-all duration-500 -z-20"></div>
               </motion.div>
             ))}
           </motion.div>
