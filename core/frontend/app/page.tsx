@@ -542,6 +542,16 @@ const fadeIn = {
   }),
 }
 
+// Add global CSS at the root level instead of nested styled-jsx
+const gridPatternStyle = `
+  .bg-grid {
+    background-image: 
+      linear-gradient(to right, rgba(229, 231, 235, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(229, 231, 235, 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+`;
+
 export default function LandingPage() {
   // Refs for scroll targets
   const findToolRef = useRef<HTMLElement>(null)
@@ -2075,25 +2085,29 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Why Choose Us Section - with improved spacing and positioning */}
+      {/* Why Choose Us Section - with improved design and visuals */}
       <section 
         ref={whyChooseRef} 
-        className="pt-32 pb-24 bg-white relative overflow-hidden transition-all duration-700 mt-12" 
+        className="py-24 bg-white relative overflow-hidden transition-all duration-700" 
         id="why-choose-us"
       >
         {/* Section separator - creates visual distinction between sections */}
         <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-gray-50 to-white -mt-24 z-10"></div>
         
-        {/* Enhanced decorative elements positioned to avoid overlap */}
-        <div className="absolute -right-40 top-1/4 w-80 h-80 bg-green-100 rounded-full opacity-40 blur-3xl"></div>
-        <div className="absolute -left-40 bottom-1/4 w-80 h-80 bg-yellow-100 rounded-full opacity-40 blur-3xl"></div>
+        {/* Enhanced decorative elements */}
+        <div className="absolute -right-40 top-1/4 w-80 h-80 bg-gradient-to-br from-purple-200 to-purple-100 rounded-full opacity-40 blur-3xl"></div>
+        <div className="absolute -left-40 bottom-1/4 w-80 h-80 bg-gradient-to-tr from-green-200 to-blue-100 rounded-full opacity-40 blur-3xl"></div>
+        
+        {/* Decorative pattern - using a class instead of styled-jsx */}
+        <div className="absolute inset-0 opacity-5 pointer-events-none bg-grid"></div>
         
         <div className="container mx-auto px-4 sm:px-6 relative z-20">
+          {/* Improved section header with visually appealing elements */}
           <div className="text-center mb-16">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-10%" }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
               className="inline-flex items-center gap-4 justify-center relative"
             >
@@ -2109,7 +2123,7 @@ export default function LandingPage() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-10%" }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-xl text-gray-600 max-w-2xl mx-auto mt-5"
             >
@@ -2117,66 +2131,79 @@ export default function LandingPage() {
             </motion.p>
           </div>
 
+          {/* Enhanced feature grid with improved card design */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-5%" }}
             transition={{ duration: 0.7 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-10"
           >
             {[
               {
                 icon: DollarSign,
                 title: "Save Money",
-                description: "Rent tools at a fraction of the purchase price",
+                description: "Rent tools at a fraction of the purchase price, avoiding large upfront costs on items you'll only use occasionally.",
                 colorBg: "bg-green-100",
                 colorText: "text-green-600",
                 colorHover: "group-hover:bg-green-200",
+                colorBorder: "border-green-200",
+                colorGradient: "from-green-500 to-green-600",
                 delay: 0.3,
               },
               {
                 icon: Clock,
                 title: "Sustainability",
-                description: "Reduce waste by sharing resources in your community",
+                description: "Reduce waste by sharing resources in your community, helping the environment while connecting with neighbors.",
                 colorBg: "bg-blue-100",
                 colorText: "text-blue-600",
                 colorHover: "group-hover:bg-blue-200",
+                colorBorder: "border-blue-200",
+                colorGradient: "from-blue-500 to-blue-600",
                 delay: 0.4,
               },
               {
                 icon: CheckCircle,
                 title: "Quality Guaranteed",
-                description: "All tools are verified and rated by users",
+                description: "All tools are verified and rated by users, ensuring you'll receive reliable equipment that's ready to use.",
                 colorBg: "bg-yellow-100",
                 colorText: "text-yellow-600",
                 colorHover: "group-hover:bg-yellow-200",
+                colorBorder: "border-yellow-200",
+                colorGradient: "from-yellow-500 to-yellow-600",
                 delay: 0.5,
               },
               {
                 icon: Users,
                 title: "Community Trust",
-                description: "Connect with verified local tool owners",
+                description: "Connect with verified local tool owners through our secure platform with built-in identification verification.",
                 colorBg: "bg-purple-100",
                 colorText: "text-purple-600",
                 colorHover: "group-hover:bg-purple-200",
+                colorBorder: "border-purple-200",
+                colorGradient: "from-purple-500 to-purple-600",
                 delay: 0.6,
               },
               {
                 icon: Wrench,
                 title: "Wide Selection",
-                description: "Find exactly what you need for any project",
+                description: "Find exactly what you need for any project with our extensive database of tools from everyday to specialized equipment.",
                 colorBg: "bg-red-100",
                 colorText: "text-red-600",
                 colorHover: "group-hover:bg-red-200",
+                colorBorder: "border-red-200",
+                colorGradient: "from-red-500 to-red-600",
                 delay: 0.7,
               },
               {
                 icon: Calendar,
                 title: "Convenient Delivery",
-                description: "Optional tool delivery service available for larger items in select areas",
+                description: "Optional tool delivery service available for larger items in select areas, making your rental experience hassle-free.",
                 colorBg: "bg-orange-100",
                 colorText: "text-orange-600",
                 colorHover: "group-hover:bg-orange-200",
+                colorBorder: "border-orange-200",
+                colorGradient: "from-orange-500 to-orange-600",
                 delay: 0.8,
               },
             ].map((feature, i) => (
@@ -2186,25 +2213,63 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-5%" }}
                 transition={{ duration: 0.5, delay: feature.delay }}
-                className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 group hover:shadow-xl transition-all duration-300"
+                className="relative group"
+                whileHover={{ 
+                  y: -5,
+                  transition: { duration: 0.2 }
+                }}
               >
-                <div className="flex flex-col items-center text-center">
-                  <div className={`w-16 h-16 rounded-2xl ${feature.colorBg} flex items-center justify-center mb-6 ${feature.colorHover} transition-colors duration-300`}>
-                    <feature.icon className={`h-8 w-8 ${feature.colorText}`} />
-                </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
+                {/* Enhanced card with better styling and hover effects */}
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 group-hover:shadow-xl transition-all duration-500 overflow-hidden group-hover:border-gray-200 h-full">
+                  {/* Gradient overlay that appears on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.colorGradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-2xl`}></div>
+                  
+                  {/* Corner decoration */}
+                  <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-${feature.colorBg.split('-')[1]}-200/40 to-transparent rounded-bl-3xl`}></div>
+                  
+                  <div className="flex flex-col items-center text-center relative z-10">
+                    {/* Enhanced icon container with animations */}
+                    <div className="relative">
+                      <div className={`absolute inset-0 ${feature.colorBg} rounded-2xl transform rotate-3 group-hover:rotate-6 transition-transform duration-500`}></div>
+                      <div className={`w-20 h-20 rounded-2xl ${feature.colorBg} flex items-center justify-center mb-6 ${feature.colorHover} transition-all duration-300 relative shadow-sm group-hover:shadow-md group-hover:scale-110 transform`}>
+                        <feature.icon className={`h-10 w-10 ${feature.colorText} transition-transform duration-500 group-hover:scale-110`} />
+                        
+                        {/* Pulsing border effect on hover */}
+                        <div className={`absolute inset-0 border-2 ${feature.colorBorder} rounded-2xl opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-500`}></div>
+                      </div>
+                    </div>
+                    
+                    {/* Enhanced title with animated underline */}
+                    <h3 className={`text-2xl font-bold text-gray-900 mb-4 ${feature.colorText} relative inline-block group-hover:translate-y-0 transform transition-all duration-300`}>
+                      {feature.title}
+                      <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${
+                        feature.title === "Save Money" ? "bg-green-500" :
+                        feature.title === "Sustainability" ? "bg-blue-500" :
+                        feature.title === "Quality Guaranteed" ? "bg-yellow-500" :
+                        feature.title === "Community Trust" ? "bg-purple-500" :
+                        feature.title === "Wide Selection" ? "bg-red-500" :
+                        feature.title === "Convenient Delivery" ? "bg-orange-500" :
+                        "bg-green-500"
+                      } group-hover:w-full transition-all duration-500 ease-out`}></span>
+                    </h3>
+                    
+                    {/* Enhanced description */}
+                    <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300 relative z-10">
+                      {feature.description}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </motion.div>
           
+          {/* Enhanced CTA section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-5%" }}
             transition={{ duration: 0.5, delay: 0.9 }}
-            className="text-center mt-16"
+            className="text-center mt-12"
           >
             <Button 
               className="bg-green-600 hover:bg-green-700 transition-all px-8 py-6 text-base shadow-lg shadow-green-600/20 group relative overflow-hidden"
@@ -2216,6 +2281,34 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
               </span>
             </Button>
+            
+            {/* Famous quote */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-5%" }}
+              transition={{ duration: 0.5, delay: 1.1 }}
+              className="w-full mx-auto mt-20 text-center"
+            >
+              <div className="relative px-5 md:px-10 py-3 bg-green-50/40 rounded-lg max-w-4xl mx-auto">
+                <div className="absolute top-0 left-0 w-9 h-9 -mt-3 -ml-1">
+                  <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 20H5C3.89543 20 3 19.1046 3 18V13C3 7.47715 7.47715 3 13 3H14C15.1046 3 16 3.89543 16 5C16 6.10457 15.1046 7 14 7H13C9.68629 7 7 9.68629 7 13V16H12.5C14.9853 16 17 18.0147 17 20.5V27.5C17 29.9853 14.9853 32 12.5 32H5.5C3.01472 32 1 29.9853 1 27.5V20.5C1 18.0147 3.01472 16 5.5 16H12.5V20Z" fill="#22c55e"/>
+                    <path d="M32.5 20H25C23.8954 20 23 19.1046 23 18V13C23 7.47715 27.4772 3 33 3H34C35.1046 3 36 3.89543 36 5C36 6.10457 35.1046 7 34 7H33C29.6863 7 27 9.68629 27 13V16H32.5C34.9853 16 37 18.0147 37 20.5V27.5C37 29.9853 34.9853 32 32.5 32H25.5C23.0147 32 21 29.9853 21 27.5V20.5C21 18.0147 23.0147 16 25.5 16H32.5V20Z" fill="#22c55e"/>
+                  </svg>
+                </div>
+                <p className="text-gray-700 italic text-base md:text-lg max-w-2xl mx-auto">
+                  The tools we use have a profound and devious influence on our thinking habits, and therefore on our thinking abilities. It is not just that we are what we eat; we are what we use.
+                </p>
+                <div className="absolute bottom-0 right-0 w-9 h-9 -mb-3 -mr-1 rotate-180">
+                  <svg width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 20H5C3.89543 20 3 19.1046 3 18V13C3 7.47715 7.47715 3 13 3H14C15.1046 3 16 3.89543 16 5C16 6.10457 15.1046 7 14 7H13C9.68629 7 7 9.68629 7 13V16H12.5C14.9853 16 17 18.0147 17 20.5V27.5C17 29.9853 14.9853 32 12.5 32H5.5C3.01472 32 1 29.9853 1 27.5V20.5C1 18.0147 3.01472 16 5.5 16H12.5V20Z" fill="#22c55e"/>
+                    <path d="M32.5 20H25C23.8954 20 23 19.1046 23 18V13C23 7.47715 27.4772 3 33 3H34C35.1046 3 36 3.89543 36 5C36 6.10457 35.1046 7 34 7H33C29.6863 7 27 9.68629 27 13V16H32.5C34.9853 16 37 18.0147 37 20.5V27.5C37 29.9853 34.9853 32 32.5 32H25.5C23.0147 32 21 29.9853 21 27.5V20.5C21 18.0147 23.0147 16 25.5 16H32.5V20Z" fill="#22c55e"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-gray-900 font-medium mt-3 text-sm">— Marilyn Vos Savant, <span className="text-green-600">Author and Columnist</span></p>
+            </motion.div>
           </motion.div>
         </div>
       </section>
