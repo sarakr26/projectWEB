@@ -7,7 +7,7 @@ import { Inter, Poppins } from "next/font/google"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeProvider } from "@/components/theme-provider"
-import { Menu, X, ArrowRight, Tool } from "lucide-react"
+import { Menu, X, ArrowRight, Tool, Heart } from "lucide-react"
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' })
 const poppins = Poppins({ 
@@ -148,6 +148,18 @@ function Header() {
           </nav>
 
           <div className="flex items-center gap-4">
+            <Link href="/profile/liked-tools">
+              <Button 
+                variant="outline"
+                className="border-green-500/30 text-green-400 hover:text-white hover:bg-green-600 transition-all relative overflow-hidden group font-medium"
+              >
+                <span className="absolute inset-0 w-0 h-full bg-green-600/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                <span className="relative flex items-center">
+                  <Heart className="mr-2 h-4 w-4 group-hover:fill-white/50 transition-all duration-300" />
+                  Liked Tools
+                </span>
+              </Button>
+            </Link>
             <Link href="/auth/signin">
               <Button 
                 className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group font-medium"
@@ -273,6 +285,18 @@ function MobileMenu({ activeSection, setActiveSection }) {
               );
             })}
             <div className="pt-6 border-t border-gray-800">
+              <Link href="/profile/liked-tools" onClick={() => setIsOpen(false)}>
+                <Button 
+                  variant="outline"
+                  className="w-full mb-4 border-green-500/30 text-green-400 hover:text-white hover:bg-green-600 transition-all relative overflow-hidden group"
+                >
+                  <span className="absolute inset-0 w-0 h-full bg-green-600/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                  <span className="relative flex items-center justify-center">
+                    <Heart className="mr-2 h-4 w-4 group-hover:fill-white/50 transition-all duration-300" />
+                    Liked Tools
+                  </span>
+                </Button>
+              </Link>
               <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
                 <Button 
                   className="w-full mb-4 bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group"
