@@ -153,7 +153,7 @@ export default function LandingPage() {
   }
 
   // Simple helper to render the correct icon based on type
-  const renderCategoryIcon = (iconType) => {
+  const renderCategoryIcon = (iconType: string) => {
     switch(iconType) {
       case 'drill':
         return <Drill className="h-8 w-8 text-green-600" />;
@@ -168,13 +168,16 @@ export default function LandingPage() {
     }
   };
   
+  // State to track selected category
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
   // Determine how many categories to show
   const categoriesToShow = showMore ? allCategoryData : allCategoryData.slice(0, 4);
   
   // Animation variants for category grid items
   const gridItemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: (i) => ({
+    visible: (i: number) => ({
       opacity: 1,
       y: 0,
       transition: {
@@ -183,7 +186,7 @@ export default function LandingPage() {
         ease: "easeOut"
       }
     }),
-    exit: (i) => ({
+    exit: (i: number) => ({
       opacity: 0,
       y: -10,
       transition: {
@@ -192,6 +195,27 @@ export default function LandingPage() {
         ease: "easeIn"
       }
     })
+  };
+
+  // Animation for expanding/collapsing the grid
+  const containerVariants = {
+    expanded: { 
+      height: 'auto',
+      transition: { 
+        staggerChildren: 0.05,
+        duration: 0.5,
+        when: "beforeChildren"
+      }
+    },
+    collapsed: {
+      height: 'auto',
+      transition: { 
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+        duration: 0.5,
+        when: "afterChildren"
+      }
+    }
   };
 
   return (
@@ -511,19 +535,42 @@ export default function LandingPage() {
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
-            <div className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4"
+            >
               Browse Categories
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-3xl font-bold text-gray-900 mb-4"
+            >
               Find What You Need
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-xl text-gray-600 max-w-2xl mx-auto"
+            >
               Browse popular categories to find the right tools for your project
-            </p>
+            </motion.p>
           </div>
 
-          {/* Simple grid of categories */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {/* Interactive category grid */}
+          <motion.div 
+            variants={containerVariants}
+            initial="collapsed"
+            animate={showMore ? "expanded" : "collapsed"}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+          >
             {categoriesToShow.map((category, index) => (
               <motion.div
                 key={category.name}
@@ -532,23 +579,91 @@ export default function LandingPage() {
                 animate="visible"
                 exit="exit"
                 variants={gridItemVariants}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 group hover:shadow-xl hover:border-green-200 transition-all duration-300 cursor-pointer"
+                onClick={() => setSelectedCategory(category.name === selectedCategory ? null : category.name)}
+                className={`bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 
+                  ${selectedCategory === category.name ? 'ring-2 ring-green-500 ring-offset-2' : ''}
+                  group hover:shadow-xl hover:border-green-200 transition-all duration-300 cursor-pointer 
+                  transform hover:-translate-y-1 hover:scale-[1.02]`}
               >
-                <div className="p-8 flex flex-col items-center text-center">
-                  <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-6 group-hover:bg-green-200 transition-all duration-300">
+                <div className="p-8 flex flex-col items-center text-center relative overflow-hidden">
+                  {/* Background decorative element */}
+                  <div className="absolute -right-6 -top-6 w-12 h-12 bg-green-100 rounded-full opacity-0 group-hover:opacity-70 transition-all duration-500 blur-md"></div>
+                  
+                  {/* Icon with animation */}
+                  <motion.div 
+                    whileHover={{ 
+                      rotate: [0, -10, 10, -5, 0], 
+                      scale: 1.1,
+                      transition: { duration: 0.5 }
+                    }}
+                    className={`w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-6 
+                      group-hover:bg-green-200 transition-all duration-300 relative 
+                      ${selectedCategory === category.name ? 'bg-green-200' : ''}`}
+                  >
+                    {/* Pulsing effect when selected */}
+                    {selectedCategory === category.name && (
+                      <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ 
+                          scale: [1, 1.2, 1],
+                          opacity: [0.7, 0, 0.7],
+                        }}
+                        transition={{ 
+                          repeat: Infinity,
+                          repeatType: "loop",
+                          duration: 2
+                        }}
+                        className="absolute inset-0 bg-green-300 rounded-full"
+                      />
+                    )}
                     {renderCategoryIcon(category.iconType)}
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{category.name}</h3>
-                  <Badge className="bg-gray-100 text-gray-700 border-0 px-3 py-1">
-                    {category.count} tools
-                  </Badge>
+                  </motion.div>
+                  
+                  {/* Name with underline effect */}
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 relative">
+                    {category.name}
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: selectedCategory === category.name ? '100%' : 0 }}
+                      className="h-0.5 bg-green-500 mt-1 absolute bottom-0 left-0"
+                    />
+                  </h3>
+                  
+                  {/* Badge with animation */}
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Badge className={`
+                      ${selectedCategory === category.name ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'} 
+                      border-0 px-3 py-1 transition-colors duration-300 group-hover:bg-green-100 group-hover:text-green-700`}
+                    >
+                      {category.count} tools
+                    </Badge>
+                  </motion.div>
+                  
+                  {/* Selection indicator */}
+                  {selectedCategory === category.name && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="absolute top-4 right-4"
+                    >
+                      <div className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+                        <CheckCircle className="w-4 h-4" />
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
+                
+                {/* Gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
           
-          {/* Toggle button with animation */}
-          <div className="text-center mt-12">
+          {/* Toggle button with enhanced animation */}
+          <div className="text-center mt-16">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -556,10 +671,17 @@ export default function LandingPage() {
               <Button 
                 variant="outline" 
                 className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group overflow-hidden relative"
-                onClick={() => setShowMore(!showMore)}
+                onClick={() => {
+                  // Add a slight delay when showing less categories to allow for animation
+                  if (showMore) {
+                    setTimeout(() => setShowMore(false), 50);
+                  } else {
+                    setShowMore(true);
+                  }
+                }}
               >
                 <motion.span 
-                  className="absolute inset-0 bg-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  className="absolute inset-0 bg-gradient-to-r from-green-100 to-green-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   initial={false}
                   animate={showMore ? { height: "100%" } : { height: "0%" }}
                   transition={{ duration: 0.3 }}
@@ -567,7 +689,6 @@ export default function LandingPage() {
                 <motion.span 
                   className="relative flex items-center justify-center"
                   initial={false}
-                  animate={showMore ? { y: 0 } : { y: 0 }}
                   transition={{ duration: 0.2 }}
                 >
                   {showMore ? (
@@ -578,8 +699,18 @@ export default function LandingPage() {
                         exit={{ opacity: 0, y: -10 }}
                         className="flex items-center"
                       >
-                        Show Less
-                        <ArrowUp className="ml-2 h-4 w-4 group-hover:translate-y-[-2px] transition-transform duration-300" />
+                        <span className="mr-2">Show Less</span>
+                        <motion.div
+                          animate={{ y: [0, -3, 0] }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            repeatType: "mirror", 
+                            duration: 1,
+                            repeatDelay: 0.5
+                          }}
+                        >
+                          <ArrowUp className="h-4 w-4 group-hover:translate-y-[-2px] transition-transform duration-300" />
+                        </motion.div>
                       </motion.span>
                     </>
                   ) : (
@@ -590,8 +721,18 @@ export default function LandingPage() {
                         exit={{ opacity: 0, y: 10 }}
                         className="flex items-center"
                       >
-                        View All Categories
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                        <span className="mr-2">View All Categories</span>
+                        <motion.div
+                          animate={{ x: [0, 3, 0] }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            repeatType: "mirror", 
+                            duration: 1,
+                            repeatDelay: 0.5
+                          }}
+                        >
+                          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                        </motion.div>
                       </motion.span>
                     </>
                   )}
@@ -600,24 +741,70 @@ export default function LandingPage() {
             </motion.div>
             
             {!showMore && (
-              <motion.p
+              <motion.div
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
-                className="text-sm text-gray-500 mt-3"
+                className="mt-3"
               >
-                Discover {allCategoryData.length - 4} more categories of tools
-              </motion.p>
+                <p className="text-sm text-gray-500">
+                  Discover <span className="font-semibold text-green-600">{allCategoryData.length - 4}</span> more categories of tools
+                </p>
+                <motion.div 
+                  className="flex justify-center gap-1 mt-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4, duration: 0.3 }}
+                >
+                  {allCategoryData.slice(4, 8).map((cat, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.5 + (i * 0.1), duration: 0.3 }}
+                      className="w-2 h-2 rounded-full bg-green-200"
+                    />
+                  ))}
+                  <motion.div className="w-6 h-2 rounded-full bg-green-400" />
+                  {allCategoryData.slice(8).map((cat, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.9 + (i * 0.1), duration: 0.3 }}
+                      className="w-2 h-2 rounded-full bg-green-200"
+                    />
+                  ))}
+                </motion.div>
+              </motion.div>
             )}
             
-            {showMore && (
+            {showMore && selectedCategory && (
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+                className="mt-6"
+              >
+                <Button
+                  size="sm" 
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => scrollToSection(findToolRef)}
+                >
+                  Browse {selectedCategory} Tools
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </motion.div>
+            )}
+            
+            {showMore && !selectedCategory && (
               <motion.p
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
                 className="text-sm text-gray-500 mt-3"
               >
-                Showing all {allCategoryData.length} categories
+                Select a category to browse tools
               </motion.p>
             )}
           </div>
