@@ -653,6 +653,10 @@ video {
   top: 0px;
   bottom: 0px;
 }
+.-inset-x-1 {
+  left: -0.25rem;
+  right: -0.25rem;
+}
 .-bottom-1 {
   bottom: -0.25rem;
 }
@@ -1295,6 +1299,10 @@ video {
 }
 .-translate-x-12 {
   --tw-translate-x: -3rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.translate-x-0 {
+  --tw-translate-x: 0px;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .rotate-45 {
@@ -2974,6 +2982,17 @@ body {
 
 .group:hover .group-hover\:animate-none {
   animation: none;
+}
+
+@keyframes pulse {
+
+  50% {
+    opacity: .5;
+  }
+}
+
+.group:hover .group-hover\:animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .group:hover .group-hover\:border-green-500\/30 {

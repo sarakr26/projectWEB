@@ -7,7 +7,7 @@ import { Inter } from "next/font/google"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeProvider } from "@/components/theme-provider"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ArrowRight } from "lucide-react"
 import { useState } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -89,18 +89,24 @@ function Header() {
           <div className="flex items-center gap-4">
             <Link href="/auth/signin">
               <Button 
-                variant="outline" 
-                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white hover:border-green-500 transition-all duration-300 transform hover:scale-105"
+                className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group"
               >
-                Sign In
+                <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                <span className="relative flex items-center">
+                  Sign In
+                  <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                </span>
               </Button>
             </Link>
             <Link href="/auth/signup" className="hidden sm:block overflow-hidden">
               <Button 
-                className="bg-green-600 hover:bg-green-700 text-white transition-all duration-300 relative group overflow-hidden"
+                className="bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group"
               >
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-green-500 to-green-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                <span className="relative z-10">Sign Up</span>
+                <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                <span className="relative flex items-center">
+                  Sign Up
+                  <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                </span>
               </Button>
             </Link>
             <MobileMenu />
@@ -194,18 +200,24 @@ function MobileMenu() {
             <div className="pt-6 border-t border-gray-800">
               <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
                 <Button 
-                  variant="outline" 
-                  className="w-full mb-4 border-gray-700 text-gray-300 hover:bg-gray-800 hover:border-green-400 transition-all duration-300 transform hover:scale-105"
+                  className="w-full mb-4 bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group"
                 >
-                  Sign In
+                  <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                  <span className="relative flex items-center justify-center">
+                    Sign In
+                    <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                  </span>
                 </Button>
               </Link>
               <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
                 <Button 
-                  className="w-full relative overflow-hidden group"
+                  className="w-full bg-green-600 hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 text-white relative overflow-hidden group"
                 >
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-green-500 to-green-700 group-hover:scale-105 transition-transform duration-300"></span>
-                  <span className="relative z-10">Sign Up</span>
+                  <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                  <span className="relative flex items-center justify-center">
+                    Sign Up
+                    <ArrowRight className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                  </span>
                 </Button>
               </Link>
             </div>
