@@ -170,6 +170,29 @@ export default function LandingPage() {
   
   // Determine how many categories to show
   const categoriesToShow = showMore ? allCategoryData : allCategoryData.slice(0, 4);
+  
+  // Animation variants for category grid items
+  const gridItemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.05,
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }),
+    exit: (i) => ({
+      opacity: 0,
+      y: -10,
+      transition: {
+        delay: i * 0.03,
+        duration: 0.3,
+        ease: "easeIn"
+      }
+    })
+  };
 
   return (
     <>
@@ -502,8 +525,13 @@ export default function LandingPage() {
           {/* Simple grid of categories */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {categoriesToShow.map((category, index) => (
-              <div
+              <motion.div
                 key={category.name}
+                custom={index}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={gridItemVariants}
                 className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 group hover:shadow-xl hover:border-green-200 transition-all duration-300 cursor-pointer"
               >
                 <div className="p-8 flex flex-col items-center text-center">
@@ -515,30 +543,82 @@ export default function LandingPage() {
                     {category.count} tools
                   </Badge>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
           
-          {/* Simple toggle button */}
+          {/* Toggle button with animation */}
           <div className="text-center mt-12">
-            <Button 
-              variant="outline" 
-              className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base"
-              onClick={() => setShowMore(!showMore)}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <span className="flex items-center">
-                {showMore ? "Show Less" : "View All Categories"}
-                {showMore ? 
-                  <ArrowUp className="ml-2 h-4 w-4" /> : 
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                }
-              </span>
-            </Button>
+              <Button 
+                variant="outline" 
+                className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group overflow-hidden relative"
+                onClick={() => setShowMore(!showMore)}
+              >
+                <motion.span 
+                  className="absolute inset-0 bg-green-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  initial={false}
+                  animate={showMore ? { height: "100%" } : { height: "0%" }}
+                  transition={{ duration: 0.3 }}
+                ></motion.span>
+                <motion.span 
+                  className="relative flex items-center justify-center"
+                  initial={false}
+                  animate={showMore ? { y: 0 } : { y: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {showMore ? (
+                    <>
+                      <motion.span
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="flex items-center"
+                      >
+                        Show Less
+                        <ArrowUp className="ml-2 h-4 w-4 group-hover:translate-y-[-2px] transition-transform duration-300" />
+                      </motion.span>
+                    </>
+                  ) : (
+                    <>
+                      <motion.span
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="flex items-center"
+                      >
+                        View All Categories
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </motion.span>
+                    </>
+                  )}
+                </motion.span>
+              </Button>
+            </motion.div>
             
             {!showMore && (
-              <p className="text-sm text-gray-500 mt-3">
-                Discover 12+ more categories of tools
-              </p>
+              <motion.p
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+                className="text-sm text-gray-500 mt-3"
+              >
+                Discover {allCategoryData.length - 4} more categories of tools
+              </motion.p>
+            )}
+            
+            {showMore && (
+              <motion.p
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+                className="text-sm text-gray-500 mt-3"
+              >
+                Showing all {allCategoryData.length} categories
+              </motion.p>
             )}
           </div>
         </div>
