@@ -1486,10 +1486,21 @@ export default function LandingPage() {
                     {/* Enhanced button with animation */}
                     <div className="relative overflow-hidden rounded-xl">
                       <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-500 group-hover:from-green-500 group-hover:to-green-400 transform skew-x-0 group-hover:skew-x-2 transition-all duration-500 ease-out rounded-xl opacity-80 group-hover:opacity-100"></div>
-                      <Button className="w-full bg-transparent hover:bg-transparent relative z-10 text-white shadow-md shadow-green-600/10 group-hover:shadow-lg group-hover:shadow-green-500/20 py-2.5 font-medium transition-all duration-300 border-0">
-                        <span className="mr-1.5">Book Now</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                      </Button>
+                      <Link 
+                        href="/auth/signin" 
+                        className="block w-full group/signin relative" 
+                        title="Sign in to book this tool"
+                      >
+                        {/* Tooltip that appears on hover */}
+                        <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover/signin:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+                          Sign in to book this tool
+                          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 border-t-4 border-l-4 border-r-4 border-transparent border-t-gray-800 w-0 h-0"></div>
+                        </div>
+                        <Button className="w-full bg-transparent hover:bg-transparent relative z-10 text-white shadow-md shadow-green-600/10 group-hover:shadow-lg group-hover:shadow-green-500/20 py-2.5 font-medium transition-all duration-300 border-0">
+                          <span className="mr-1.5">Book Now</span>
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </motion.div>
@@ -1696,10 +1707,21 @@ export default function LandingPage() {
                   {/* Enhanced button with animation */}
                   <div className="relative overflow-hidden rounded-xl">
                     <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-500 group-hover:from-green-500 group-hover:to-green-400 transform skew-x-0 group-hover:skew-x-2 transition-all duration-500 ease-out rounded-xl opacity-80 group-hover:opacity-100"></div>
-                    <Button className="w-full bg-transparent hover:bg-transparent relative z-10 text-white shadow-md shadow-green-600/10 group-hover:shadow-lg group-hover:shadow-green-500/20 py-2.5 font-medium transition-all duration-300 border-0">
-                      <span className="mr-1.5">Book Now</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                    </Button>
+                    <Link 
+                      href="/auth/signin" 
+                      className="block w-full group/signin relative" 
+                      title="Sign in to book this tool"
+                    >
+                      {/* Tooltip that appears on hover */}
+                      <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover/signin:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+                        Sign in to book this tool
+                        <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 border-t-4 border-l-4 border-r-4 border-transparent border-t-gray-800 w-0 h-0"></div>
+                      </div>
+                      <Button className="w-full bg-transparent hover:bg-transparent relative z-10 text-white shadow-md shadow-green-600/10 group-hover:shadow-lg group-hover:shadow-green-500/20 py-2.5 font-medium transition-all duration-300 border-0">
+                        <span className="mr-1.5">Book Now</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </motion.div>
