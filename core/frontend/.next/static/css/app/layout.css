@@ -839,6 +839,9 @@ video {
 .-top-6 {
   top: -1.5rem;
 }
+.isolate {
+  isolation: isolate;
+}
 .z-0 {
   z-index: 0;
 }

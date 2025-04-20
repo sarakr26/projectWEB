@@ -583,7 +583,7 @@ export default function LandingPage() {
                 className={`bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 
                   ${selectedCategory === category.name ? 'ring-2 ring-green-500 ring-offset-2' : ''}
                   group hover:shadow-xl hover:border-green-200 transition-all duration-300 cursor-pointer 
-                  transform hover:-translate-y-1 hover:scale-[1.02]`}
+                  transform hover:-translate-y-1 hover:scale-[1.02] relative isolate`}
               >
                 <div className="p-8 flex flex-col items-center text-center relative overflow-hidden">
                   {/* Background decorative element */}
@@ -657,7 +657,7 @@ export default function LandingPage() {
                 </div>
                 
                 {/* Gradient overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
               </motion.div>
             ))}
           </motion.div>
@@ -667,10 +667,11 @@ export default function LandingPage() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="inline-block"
             >
               <Button 
                 variant="outline" 
-                className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group overflow-hidden relative"
+                className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base overflow-hidden relative"
                 onClick={() => {
                   // Add a slight delay when showing less categories to allow for animation
                   if (showMore) {
@@ -681,7 +682,7 @@ export default function LandingPage() {
                 }}
               >
                 <motion.span 
-                  className="absolute inset-0 bg-gradient-to-r from-green-100 to-green-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  className="absolute inset-0 bg-gradient-to-r from-green-100 to-green-200 opacity-0 hover:opacity-100 transition-opacity duration-300"
                   initial={false}
                   animate={showMore ? { height: "100%" } : { height: "0%" }}
                   transition={{ duration: 0.3 }}
@@ -709,7 +710,7 @@ export default function LandingPage() {
                             repeatDelay: 0.5
                           }}
                         >
-                          <ArrowUp className="h-4 w-4 group-hover:translate-y-[-2px] transition-transform duration-300" />
+                          <ArrowUp className="h-4 w-4 transition-transform duration-300" />
                         </motion.div>
                       </motion.span>
                     </>
@@ -731,7 +732,7 @@ export default function LandingPage() {
                             repeatDelay: 0.5
                           }}
                         >
-                          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                          <ArrowRight className="h-4 w-4 transition-transform duration-300" />
                         </motion.div>
                       </motion.span>
                     </>
