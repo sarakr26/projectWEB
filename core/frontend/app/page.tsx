@@ -24,22 +24,30 @@ import {
   Clock,
   Calendar,
   Quote,
-  ArrowUp
+  ArrowUp,
+  PaintBucket,
+  Axe,
+  Zap,
+  Ruler,
+  HardHat,
+  Car,
+  Warehouse,
+  Leaf
 } from "lucide-react"
 
 // Create a fixed set of categories without complex icons
 const allCategoryData = [
   { name: "Power Tools", count: 245, iconType: "drill" },
   { name: "Hand Tools", count: 189, iconType: "hammer" },
-  { name: "Garden Tools", count: 124, iconType: "scissors" },
-  { name: "Painting", count: 97, iconType: "brush" },
-  { name: "Woodworking", count: 78, iconType: "tool" },
+  { name: "Garden Tools", count: 124, iconType: "leaf" },
+  { name: "Painting", count: 97, iconType: "paintBucket" },
+  { name: "Woodworking", count: 78, iconType: "axe" },
   { name: "Plumbing", count: 112, iconType: "wrench" },
-  { name: "Electrical", count: 93, iconType: "tool" },
-  { name: "Measuring", count: 67, iconType: "tool" },
-  { name: "Safety Equipment", count: 42, iconType: "tool" },
-  { name: "Automotive", count: 55, iconType: "tool" },
-  { name: "Ladders & Scaffolding", count: 36, iconType: "tool" },
+  { name: "Electrical", count: 93, iconType: "zap" },
+  { name: "Measuring", count: 67, iconType: "ruler" },
+  { name: "Safety Equipment", count: 42, iconType: "hardHat" },
+  { name: "Automotive", count: 55, iconType: "car" },
+  { name: "Ladders & Scaffolding", count: 36, iconType: "warehouse" },
   { name: "Lawn & Landscaping", count: 89, iconType: "scissors" }
 ];
 
@@ -163,6 +171,22 @@ export default function LandingPage() {
         return <Scissors className="h-8 w-8 text-green-600" />;
       case 'wrench':
         return <Wrench className="h-8 w-8 text-green-600" />;
+      case 'paintBucket':
+        return <PaintBucket className="h-8 w-8 text-green-600" />;
+      case 'axe':
+        return <Axe className="h-8 w-8 text-green-600" />;
+      case 'zap':
+        return <Zap className="h-8 w-8 text-green-600" />;
+      case 'ruler':
+        return <Ruler className="h-8 w-8 text-green-600" />;
+      case 'hardHat':
+        return <HardHat className="h-8 w-8 text-green-600" />;
+      case 'car':
+        return <Car className="h-8 w-8 text-green-600" />;
+      case 'warehouse':
+        return <Warehouse className="h-8 w-8 text-green-600" />;
+      case 'leaf':
+        return <Leaf className="h-8 w-8 text-green-600" />;
       default:
         return <Wrench className="h-8 w-8 text-green-600" />;
     }
