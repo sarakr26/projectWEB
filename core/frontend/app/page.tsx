@@ -553,7 +553,7 @@ export default function LandingPage() {
   
   // Simple boolean state for showing all categories
   const [showMore, setShowMore] = useState(false)
-  
+
   // Smooth scroll function
   const scrollToSection = (elementRef: React.RefObject<HTMLElement | null>) => {
     if (elementRef.current) {
@@ -779,7 +779,7 @@ export default function LandingPage() {
                 >
                   <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
                   <span className="relative flex items-center">
-                    Find Tools
+                  Find Tools
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </span>
                 </Button>
@@ -920,7 +920,7 @@ export default function LandingPage() {
                   <div className="absolute inset-x-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 z-30 transform origin-top scale-95 group-focus-within:scale-100">
                     <div className="p-3 border-b border-gray-100">
                       <h4 className="font-medium text-sm text-gray-500">Popular Searches</h4>
-                    </div>
+              </div>
                     <ul className="py-2">
                       {['Power Drill', 'Circular Saw', 'Pressure Washer', 'Ladder', 'Paint Sprayer'].map((item, i) => (
                         <li 
@@ -933,7 +933,7 @@ export default function LandingPage() {
                         </li>
                       ))}
                     </ul>
-                  </div>
+              </div>
                 </div>
               </div>
               <div className="relative group">
@@ -970,10 +970,10 @@ export default function LandingPage() {
                 >
                   <div className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-xl"></div>
                   <span className="relative z-10 flex items-center">
-                    Search Tools
+                Search Tools
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </span>
-                </Button>
+              </Button>
               </div>
             </div>
             
@@ -994,7 +994,7 @@ export default function LandingPage() {
                       {category}
                       <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300 ease-in-out"></span>
                     </span>
-                  </Badge>
+              </Badge>
                 </motion.div>
               ))}
             </div>
@@ -1044,7 +1044,7 @@ export default function LandingPage() {
           </div>
 
           {/* Interactive category grid */}
-          <motion.div 
+              <motion.div
             variants={containerVariants}
             initial="collapsed"
             animate={showMore ? "expanded" : "collapsed"}
@@ -1162,7 +1162,7 @@ export default function LandingPage() {
             >
               <Button 
                 variant="outline" 
-                className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base overflow-hidden relative"
+                className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base overflow-hidden relative group"
                 onClick={() => {
                   // Add a slight delay when showing less categories to allow for animation
                   if (showMore) {
@@ -1176,12 +1176,11 @@ export default function LandingPage() {
                   }
                 }}
               >
-                <motion.span 
-                  className="absolute inset-0 bg-gradient-to-r from-green-100 to-green-200 opacity-0 hover:opacity-100 transition-opacity duration-300"
-                  initial={false}
-                  animate={showMore ? { height: "100%" } : { height: "0%" }}
-                  transition={{ duration: 0.3 }}
-                ></motion.span>
+                {showMore ? (
+                  <span className="absolute bottom-0 left-0 right-0 h-0 bg-gradient-to-t from-green-500/20 to-green-400/5 group-hover:h-full transition-all duration-500 ease-out rounded-md"></span>
+                ) : (
+                  <span className="absolute inset-0 w-0 h-full bg-gradient-to-r from-green-400/20 to-green-500/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                )}
                 <motion.span 
                   className="relative flex items-center justify-center"
                   initial={false}
@@ -1204,8 +1203,9 @@ export default function LandingPage() {
                             duration: 1,
                             repeatDelay: 0.5
                           }}
+                          className="group-hover:-translate-y-1 transition-transform duration-300"
                         >
-                          <ArrowUp className="h-4 w-4 transition-transform duration-300" />
+                          <ArrowUp className="h-4 w-4" />
                         </motion.div>
                       </motion.span>
                     </>
@@ -1226,8 +1226,9 @@ export default function LandingPage() {
                             duration: 1,
                             repeatDelay: 0.5
                           }}
+                          className="group-hover:translate-x-1 transition-transform duration-300"
                         >
-                          <ArrowRight className="h-4 w-4 transition-transform duration-300" />
+                          <ArrowRight className="h-4 w-4" />
                         </motion.div>
                       </motion.span>
                     </>
@@ -1284,11 +1285,14 @@ export default function LandingPage() {
               >
                 <Button
                   size="sm" 
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-green-600 hover:bg-green-700 text-white group relative overflow-hidden"
                   onClick={() => handleBrowseCategoryTools(selectedCategory)}
                 >
-                  Browse {selectedCategory} Tools
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <span className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                  <span className="relative flex items-center">
+                    Browse {selectedCategory} Tools
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
                 </Button>
               </motion.div>
             )}
@@ -1314,41 +1318,41 @@ export default function LandingPage() {
           id="category-tools"
           className="py-24 bg-white relative transition-all duration-700">
           <div className="container mx-auto px-4 sm:px-6">
-            <div className="text-center mb-16">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4"
-              >
-                Category Tools
-              </motion.div>
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3"
-              >
-                <span>{selectedCategory}</span>
-                {renderCategoryIcon(allCategoryData.find(cat => cat.name === selectedCategory)?.iconType || 'default')}
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-xl text-gray-600 max-w-2xl mx-auto"
-              >
-                Available {selectedCategory} tools in your area
-              </motion.p>
-            </div>
-
+          <div className="text-center mb-16">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+                className="inline-block px-3 py-1 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4"
+            >
+                Category Tools
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3"
+            >
+                <span>{selectedCategory}</span>
+                {renderCategoryIcon(allCategoryData.find(cat => cat.name === selectedCategory)?.iconType || 'default')}
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-xl text-gray-600 max-w-2xl mx-auto"
+            >
+                Available {selectedCategory} tools in your area
+            </motion.p>
+          </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
               transition={{ duration: 0.7 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
             >
@@ -1384,15 +1388,15 @@ export default function LandingPage() {
                     <Button className="w-full bg-green-600 hover:bg-green-700 transition-all shadow-md shadow-green-600/10 group-hover:shadow-lg group-hover:shadow-green-600/20">
                       Book Now
                     </Button>
-                  </div>
-                </motion.div>
-              ))}
+                </div>
+              </motion.div>
+            ))}
             </motion.div>
 
             <div className="text-center mt-12 space-y-4">
               <Button 
                 variant="outline" 
-                className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group"
+                className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group relative overflow-hidden"
                 onClick={() => {
                   setShowCategoryTools(false);
                   setShowBrowseButton(true); // Keep the browse button visible after closing
@@ -1400,6 +1404,7 @@ export default function LandingPage() {
                   scrollToSection(findWhatYouNeedRef);
                 }}
               >
+                <span className="absolute inset-0 w-0 h-full bg-gradient-to-r from-green-400/20 to-green-500/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
                 <span className="relative flex items-center">
                   Close Category View
                   <ArrowUp className="ml-2 h-4 w-4 group-hover:-translate-y-1 transition-transform duration-300" />
@@ -1409,7 +1414,7 @@ export default function LandingPage() {
               <div>
                 <Button 
                   variant="ghost" 
-                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all text-sm"
+                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all text-sm group relative overflow-hidden"
                   onClick={() => {
                     // Don't close the category tools view
                     // setSelectedCategory(null);
@@ -1420,12 +1425,16 @@ export default function LandingPage() {
                     scrollToSection(findWhatYouNeedRef);
                   }}
                 >
-                  Back to Categories
+                  <span className="absolute inset-0 w-0 h-full bg-gray-200/30 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
+                  <span className="relative flex items-center">
+                    Back to Categories
+                    <ArrowUp className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:-translate-y-1 transition-all duration-300" />
+                  </span>
                 </Button>
               </div>
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
       )}
 
       {/* Popular Tools Section - Redesigned */}
@@ -1544,11 +1553,12 @@ export default function LandingPage() {
           <div className="text-center mt-12">
             <Button 
               variant="outline" 
-              className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group"
+              className="border-green-600 text-green-700 hover:bg-green-50 transition-all px-8 py-6 text-base group relative overflow-hidden"
               onClick={() => scrollToSection(popularToolsRef)}
             >
+              <span className="absolute inset-0 w-0 h-full bg-gradient-to-r from-green-400/20 to-green-500/20 group-hover:w-full transition-all duration-500 ease-out rounded-md"></span>
               <span className="relative flex items-center">
-                View All Tools
+              View All Tools
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
               </span>
             </Button>
@@ -1769,9 +1779,9 @@ export default function LandingPage() {
                 <div className="flex flex-col items-center text-center">
                   <div className={`w-16 h-16 rounded-2xl ${feature.colorBg} flex items-center justify-center mb-6 ${feature.colorHover} transition-colors duration-300`}>
                     <feature.icon className={`h-8 w-8 ${feature.colorText}`} />
-                  </div>
+                </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                <p className="text-gray-600">{feature.description}</p>
                 </div>
               </motion.div>
             ))}
