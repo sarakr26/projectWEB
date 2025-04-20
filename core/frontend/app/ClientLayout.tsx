@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React, { useState, useEffect } from "react"
 
 import "./globals.css"
 import { Inter } from "next/font/google"
@@ -8,7 +8,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Menu, X, ArrowRight } from "lucide-react"
-import { useState } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -33,6 +32,42 @@ export default function ClientLayout({
 }
 
 function Header() {
+  const [activeSection, setActiveSection] = useState("");
+
+  // Function to check which section is in view and update active state
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = [
+        "find-tool",
+        "find-what-you-need",
+        "popular-tools",
+        "how-it-works",
+        "why-choose-us"
+      ];
+      
+      // Find the section that is currently in the viewport
+      const currentSection = sections.find(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // Consider a section "active" if it's top is near the top of the viewport
+          return rect.top <= 120 && rect.bottom >= 120;
+        }
+        return false;
+      });
+      
+      setActiveSection(currentSection || "");
+    };
+    
+    window.addEventListener("scroll", handleScroll);
+    // Initial check when component mounts
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800 shadow-lg">
       <div className="container mx-auto px-4 sm:px-6">
@@ -53,40 +88,45 @@ function Header() {
               { href: "#popular-tools", label: "Popular Tools" },
               { href: "#how-it-works", label: "How It Works" },
               { href: "#why-choose-us", label: "Why Choose Us" }
-            ].map((item, index) => (
-              <a 
-                key={index} 
-                href={item.href} 
-                className="relative text-gray-300 hover:text-white transition-all duration-300 group py-2 px-4 rounded-md overflow-hidden cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const element = document.getElementById(item.href.substring(1));
-                  if (element) {
-                    const yOffset = -80;
-                    const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
-                    
-                    window.scrollTo({
-                      top: y,
-                      behavior: 'smooth'
-                    });
-                    
-                    // Add a highlight animation to the section
-                    element.classList.add('section-highlight');
-                    setTimeout(() => {
-                      element.classList.remove('section-highlight');
-                    }, 1500);
-                  }
-                }}
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-green-600/0 to-green-600/0 group-hover:from-green-600/20 group-hover:to-green-600/5 transition-all duration-300 rounded-md transform scale-95 group-hover:scale-100"></span>
-                <span className="absolute inset-0 border border-transparent group-hover:border-green-500/30 rounded-md transition-all duration-300 scale-95 group-hover:scale-100"></span>
-                <span className="relative z-10 flex items-center">
-                  <span className="block w-0 group-hover:w-3 h-0.5 bg-green-400 mr-0 group-hover:mr-2 transition-all duration-300 opacity-0 group-hover:opacity-100"></span>
-                  {item.label}
-                </span>
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-400 to-green-400/0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
-              </a>
-            ))}
+            ].map((item, index) => {
+              const isActive = activeSection === item.href.substring(1);
+              return (
+                <a 
+                  key={index} 
+                  href={item.href} 
+                  className={`relative text-gray-300 hover:text-white transition-all duration-300 group py-2 px-4 rounded-md overflow-hidden cursor-pointer ${isActive ? 'text-white' : ''}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const sectionId = item.href.substring(1);
+                    setActiveSection(sectionId);
+                    const element = document.getElementById(sectionId);
+                    if (element) {
+                      const yOffset = -80;
+                      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+                      
+                      window.scrollTo({
+                        top: y,
+                        behavior: 'smooth'
+                      });
+                      
+                      // Add a highlight animation to the section
+                      element.classList.add('section-highlight');
+                      setTimeout(() => {
+                        element.classList.remove('section-highlight');
+                      }, 1500);
+                    }
+                  }}
+                >
+                  <span className={`absolute inset-0 bg-gradient-to-r from-green-600/0 to-green-600/0 ${isActive ? 'from-green-600/20 to-green-600/5' : 'group-hover:from-green-600/20 group-hover:to-green-600/5'} transition-all duration-300 rounded-md transform scale-95 ${isActive ? 'scale-100' : 'group-hover:scale-100'}`}></span>
+                  <span className={`absolute inset-0 border border-transparent ${isActive ? 'border-green-500/30' : 'group-hover:border-green-500/30'} rounded-md transition-all duration-300 scale-95 ${isActive ? 'scale-100' : 'group-hover:scale-100'}`}></span>
+                  <span className="relative z-10 flex items-center">
+                    <span className={`block ${isActive ? 'w-3 mr-2' : 'w-0 group-hover:w-3 mr-0 group-hover:mr-2'} h-0.5 bg-green-400 transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}></span>
+                    {item.label}
+                  </span>
+                  <span className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-400 to-green-400/0 transform ${isActive ? 'translate-y-0' : 'translate-y-full group-hover:translate-y-0'} transition-transform duration-300 ease-out`}></span>
+                </a>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-4">
@@ -112,7 +152,7 @@ function Header() {
                 </span>
               </Button>
             </Link>
-            <MobileMenu />
+            <MobileMenu activeSection={activeSection} setActiveSection={setActiveSection} />
           </div>
         </div>
       </div>
@@ -120,14 +160,16 @@ function Header() {
   )
 }
 
-function MobileMenu() {
+function MobileMenu({ activeSection, setActiveSection }) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNavClick = (href: string) => {
     setIsOpen(false);
+    const sectionId = href.substring(1);
+    setActiveSection(sectionId);
     
     setTimeout(() => {
-      const element = document.getElementById(href.substring(1));
+      const element = document.getElementById(sectionId);
       if (element) {
         const yOffset = -80;
         const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
@@ -185,24 +227,27 @@ function MobileMenu() {
               { href: "#popular-tools", label: "Popular Tools" },
               { href: "#how-it-works", label: "How It Works" },
               { href: "#why-choose-us", label: "Why Choose Us" }
-            ].map((item, index) => (
-              <a 
-                key={index}
-                href={item.href} 
-                className="block text-lg text-gray-300 hover:text-green-400 transition-all duration-300 transform hover:translate-x-2 flex items-center p-4 rounded-lg relative group cursor-pointer overflow-hidden" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick(item.href);
-                }}
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-green-600/10 to-transparent group-hover:from-green-600/20 group-hover:to-green-600/5 transition-all duration-300 rounded-lg"></span>
-                <span className="w-0 h-0.5 bg-green-400 mr-0 group-hover:w-6 group-hover:mr-3 transition-all duration-300 relative z-10"></span>
-                <span className="relative z-10">{item.label}</span>
-                <span className="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <ArrowRight className="h-4 w-4 text-green-400" />
-                </span>
-              </a>
-            ))}
+            ].map((item, index) => {
+              const isActive = activeSection === item.href.substring(1);
+              return (
+                <a 
+                  key={index}
+                  href={item.href} 
+                  className={`block text-lg ${isActive ? 'text-green-400 translate-x-2' : 'text-gray-300 hover:text-green-400 hover:translate-x-2'} transition-all duration-300 transform flex items-center p-4 rounded-lg relative group cursor-pointer overflow-hidden`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(item.href);
+                  }}
+                >
+                  <span className={`absolute inset-0 bg-gradient-to-r ${isActive ? 'from-green-600/20 to-green-600/5' : 'from-green-600/10 to-transparent group-hover:from-green-600/20 group-hover:to-green-600/5'} transition-all duration-300 rounded-lg`}></span>
+                  <span className={`${isActive ? 'w-6 mr-3' : 'w-0 mr-0 group-hover:w-6 group-hover:mr-3'} h-0.5 bg-green-400 transition-all duration-300 relative z-10`}></span>
+                  <span className="relative z-10">{item.label}</span>
+                  <span className={`absolute right-4 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity duration-300`}>
+                    <ArrowRight className="h-4 w-4 text-green-400" />
+                  </span>
+                </a>
+              );
+            })}
             <div className="pt-6 border-t border-gray-800">
               <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
                 <Button 
