@@ -1443,12 +1443,14 @@ export default function LandingPage() {
                       
                       {/* Quick action overlay that appears on hover */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                        <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 cursor-pointer hover:bg-white transition-colors duration-200 shadow-lg mx-2" title="Quick view">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                        </div>
+                        <Link href={`/tools/${index + 1}`}>
+                          <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 cursor-pointer hover:bg-white transition-colors duration-200 shadow-lg mx-2" title="Quick view">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </div>
+                        </Link>
                         <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 cursor-pointer hover:bg-white transition-colors duration-200 shadow-lg mx-2" title="Add to favorites">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -1664,12 +1666,12 @@ export default function LandingPage() {
                     
                     {/* Quick action overlay that appears on hover */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                      <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 cursor-pointer hover:bg-white transition-colors duration-200 shadow-lg mx-2" title="Quick view">
+                      <Link href={`/tools/${index + 1}`}><div className="bg-white/90 backdrop-blur-sm rounded-full p-2 cursor-pointer hover:bg-white transition-colors duration-200 shadow-lg mx-2" title="Quick view">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
-                      </div>
+                      </div></Link>
                       <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 cursor-pointer hover:bg-white transition-colors duration-200 shadow-lg mx-2" title="Add to favorites">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
