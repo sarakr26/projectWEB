@@ -1759,8 +1759,8 @@ export default function LandingPage() {
                       <span className="mr-2">Learn more</span>
                       <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </Button>
-                  </div>
-                  
+          </div>
+
                   {/* Connection arrow between cards */}
                   {index < 2 && (
                     <div className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2 z-20 w-12">
@@ -1796,78 +1796,139 @@ export default function LandingPage() {
               className="fixed inset-0 z-50 overflow-y-auto"
               onClick={() => setActiveLearnMoreStep(null)}
             >
-              {/* Backdrop with blur effect */}
-              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm"></div>
+              {/* Backdrop with enhanced blur effect */}
+              <div className="fixed inset-0 bg-black/40 backdrop-blur-md"></div>
               
               <div className="flex items-center justify-center min-h-screen p-4">
-                {/* Modal content */}
+                {/* Modal content with improved styling */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                  transition={{ type: "spring", duration: 0.5 }}
-                  className="relative bg-white/90 backdrop-blur-md rounded-2xl max-w-2xl w-full p-8 shadow-2xl overflow-hidden"
+                  transition={{ type: "spring", damping: 15, stiffness: 300, duration: 0.5 }}
+                  className="relative bg-white/95 backdrop-blur-lg rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-white/50"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {/* Background gradient based on step accent */}
+                  {/* Enhanced background gradient */}
                   <div className={`absolute inset-0 ${
-                    activeLearnMoreStep === 0 ? 'bg-gradient-to-br from-red-50 to-white' : 
-                    activeLearnMoreStep === 1 ? 'bg-gradient-to-br from-orange-50 to-white' : 
-                    'bg-gradient-to-br from-amber-50 to-white'
+                    activeLearnMoreStep === 0 ? 'bg-gradient-to-br from-red-50 via-white to-red-50/20' : 
+                    activeLearnMoreStep === 1 ? 'bg-gradient-to-br from-orange-50 via-white to-orange-50/20' : 
+                    'bg-gradient-to-br from-amber-50 via-white to-amber-50/20'
                   } opacity-90`}></div>
                   
+                  {/* Decorative patterns */}
+                  <div className="absolute inset-0 overflow-hidden opacity-10">
+                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-64 h-64 rounded-full border border-current transform rotate-45" style={{
+                      borderColor: activeLearnMoreStep === 0 ? '#ef4444' : activeLearnMoreStep === 1 ? '#f97316' : '#f59e0b'
+                    }}></div>
+                    <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-64 h-64 rounded-full border border-current transform -rotate-45" style={{
+                      borderColor: activeLearnMoreStep === 0 ? '#ef4444' : activeLearnMoreStep === 1 ? '#f97316' : '#f59e0b'
+                    }}></div>
+                  </div>
+                  
                   {/* Corner decorations */}
-                  <div className={`absolute top-0 right-0 w-40 h-40 ${
-                    activeLearnMoreStep === 0 ? 'bg-gradient-to-bl from-red-100/40 to-transparent' : 
-                    activeLearnMoreStep === 1 ? 'bg-gradient-to-bl from-orange-100/40 to-transparent' : 
-                    'bg-gradient-to-bl from-amber-100/40 to-transparent'
-                  } rounded-bl-full opacity-60`}></div>
+                  <div className={`absolute top-0 right-0 w-32 h-32 ${
+                    activeLearnMoreStep === 0 ? 'bg-gradient-to-bl from-red-200/40 to-transparent' : 
+                    activeLearnMoreStep === 1 ? 'bg-gradient-to-bl from-orange-200/40 to-transparent' : 
+                    'bg-gradient-to-bl from-amber-200/40 to-transparent'
+                  } rounded-bl-full opacity-80`}></div>
                   
-                  <div className={`absolute bottom-0 left-0 w-40 h-40 ${
-                    activeLearnMoreStep === 0 ? 'bg-gradient-to-tr from-red-100/30 to-transparent' : 
-                    activeLearnMoreStep === 1 ? 'bg-gradient-to-tr from-orange-100/30 to-transparent' : 
-                    'bg-gradient-to-tr from-amber-100/30 to-transparent'
-                  } rounded-tr-full opacity-60`}></div>
+                  <div className={`absolute -bottom-8 -left-8 w-32 h-32 ${
+                    activeLearnMoreStep === 0 ? 'bg-gradient-to-tr from-red-200/40 to-transparent' : 
+                    activeLearnMoreStep === 1 ? 'bg-gradient-to-tr from-orange-200/40 to-transparent' : 
+                    'bg-gradient-to-tr from-amber-200/40 to-transparent'
+                  } rounded-tr-full opacity-80`}></div>
                   
-                  {/* Close button */}
+                  {/* Close button with improved style */}
                   <button 
-                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors z-10"
+                    className={`absolute top-6 right-6 ${
+                      activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600 hover:bg-red-200' : 
+                      activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600 hover:bg-orange-200' : 
+                      'bg-amber-100 text-amber-600 hover:bg-amber-200'
+                    } rounded-full p-2 transition-colors z-20 shadow-sm backdrop-blur-sm`}
                     onClick={() => setActiveLearnMoreStep(null)}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                   
-                  {/* Content */}
-                  <div className="relative z-10">
-                    {/* Icon and title header */}
-                    <div className="flex items-center mb-6">
-                      <div className={`w-12 h-12 rounded-full ${
-                        activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600' : 
-                        activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600' : 
-                        'bg-amber-100 text-amber-600'
-                      } flex items-center justify-center mr-4`}>
-                        {activeLearnMoreStep === 0 ? <Search className="w-6 h-6" /> : 
-                         activeLearnMoreStep === 1 ? <Calendar className="w-6 h-6" /> : 
-                         <Hammer className="w-6 h-6" />}
+                  {/* Content container with improved padding */}
+                  <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row gap-8">
+                    {/* New left sidebar with icon and visual elements */}
+                    <div className="md:w-1/4 flex flex-col items-center md:items-start">
+                      <div className={`w-20 h-20 rounded-2xl ${
+                        activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600 shadow-red-200/50' : 
+                        activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600 shadow-orange-200/50' : 
+                        'bg-amber-100 text-amber-600 shadow-amber-200/50'
+                      } flex items-center justify-center mb-6 shadow-lg relative`}>
+                        {/* Pulsing effect behind icon */}
+                        <div className={`absolute inset-0 ${
+                          activeLearnMoreStep === 0 ? 'bg-red-400' : 
+                          activeLearnMoreStep === 1 ? 'bg-orange-400' : 
+                          'bg-amber-400'
+                        } rounded-2xl opacity-20 animate-pulse-slow`}></div>
+                        
+                        {/* Large step icon */}
+                        {activeLearnMoreStep === 0 ? <Search className="w-10 h-10" /> : 
+                         activeLearnMoreStep === 1 ? <Calendar className="w-10 h-10" /> : 
+                         <Hammer className="w-10 h-10" />}
                       </div>
-                      <h3 className={`text-2xl font-bold ${
+                      
+                      {/* Step number indicator */}
+                      <div className={`flex items-center gap-2 mb-6 ${
                         activeLearnMoreStep === 0 ? 'text-red-700' : 
                         activeLearnMoreStep === 1 ? 'text-orange-700' : 
                         'text-amber-700'
-                      }`}>
+                      } font-semibold`}>
+                        <div className={`w-8 h-8 rounded-full ${
+                          activeLearnMoreStep === 0 ? 'bg-red-200 text-red-700' : 
+                          activeLearnMoreStep === 1 ? 'bg-orange-200 text-orange-700' : 
+                          'bg-amber-200 text-amber-700'
+                        } flex items-center justify-center text-sm`}>
+                          {activeLearnMoreStep + 1}
+                        </div>
+                        <span>Step {activeLearnMoreStep + 1}</span>
+                      </div>
+                      
+                      {/* Main step title */}
+                      <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
+                        activeLearnMoreStep === 0 ? 'text-red-700' : 
+                        activeLearnMoreStep === 1 ? 'text-orange-700' : 
+                        'text-amber-700'
+                      } md:leading-tight hidden md:block`}>
                         {[
                           "Find a Tool",
                           "Book & Pay",
                           "Collect & Use"
                         ][activeLearnMoreStep]}
                       </h3>
+                      
+                      {/* Decorative vertical line on desktop */}
+                      <div className="hidden md:block h-32 w-1 mt-4 rounded-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 mx-auto"></div>
                     </div>
                     
-                    {/* Detailed content */}
-                    <div className="mb-6">
-                      <h4 className="text-xl font-semibold text-gray-800 mb-3">
+                    {/* Main content area with improved layout */}
+                    <div className="md:w-3/4">
+                      {/* Mobile-only title */}
+                      <h3 className={`text-2xl font-bold mb-4 ${
+                        activeLearnMoreStep === 0 ? 'text-red-700' : 
+                        activeLearnMoreStep === 1 ? 'text-orange-700' : 
+                        'text-amber-700'
+                      } md:hidden`}>
+                        {[
+                          "Find a Tool",
+                          "Book & Pay",
+                          "Collect & Use"
+                        ][activeLearnMoreStep]}
+                      </h3>
+                      
+                      {/* Subtitle with enhanced styling */}
+                      <h4 className={`text-xl font-semibold text-gray-800 mb-5 pb-3 border-b ${
+                        activeLearnMoreStep === 0 ? 'border-red-200' : 
+                        activeLearnMoreStep === 1 ? 'border-orange-200' : 
+                        'border-amber-200'
+                      }`}>
                         {[
                           "How to Find the Perfect Tool",
                           "Simple Booking & Secure Payment",
@@ -1875,7 +1936,8 @@ export default function LandingPage() {
                         ][activeLearnMoreStep]}
                       </h4>
                       
-                      <div className="space-y-4 mb-6">
+                      {/* Key points with improved styling */}
+                      <div className="space-y-5 mb-8">
                         {[
                           [
                             "Use our powerful search features to find exactly what you need for your project.",
@@ -1899,31 +1961,56 @@ export default function LandingPage() {
                             "Return the tool in the same condition, cleaned and ready for the next user."
                           ]
                         ][activeLearnMoreStep].map((text, i) => (
-                          <div key={i} className="flex items-start">
-                            <div className={`w-6 h-6 rounded-full ${
-                              activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600' : 
-                              activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600' : 
-                              'bg-amber-100 text-amber-600'
-                            } flex items-center justify-center mr-3 flex-shrink-0 mt-0.5`}>
+                          <motion.div 
+                            key={i} 
+                            className="flex items-start"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.3, delay: i * 0.1 }}
+                          >
+                            <div className={`w-8 h-8 rounded-full ${
+                              activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600 border border-red-200' : 
+                              activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600 border border-orange-200' : 
+                              'bg-amber-100 text-amber-600 border border-amber-200'
+                            } flex items-center justify-center mr-4 flex-shrink-0 mt-0.5 shadow-sm`}>
                               <span className="text-sm font-semibold">{i + 1}</span>
                             </div>
-                            <p className="text-gray-700">{text}</p>
-                          </div>
+                            <div>
+                              <p className="text-gray-700 leading-relaxed">{text}</p>
+                            </div>
+                          </motion.div>
                         ))}
                       </div>
                       
-                      {/* Tips section */}
-                      <div className={`p-4 rounded-xl ${
-                        activeLearnMoreStep === 0 ? 'bg-red-50 border border-red-100' : 
-                        activeLearnMoreStep === 1 ? 'bg-orange-50 border border-orange-100' : 
-                        'bg-amber-50 border border-amber-100'
-                      }`}>
-                        <h5 className={`font-medium mb-2 ${
-                          activeLearnMoreStep === 0 ? 'text-red-700' : 
-                          activeLearnMoreStep === 1 ? 'text-orange-700' : 
-                          'text-amber-700'
-                        }`}>Pro Tips</h5>
-                        <ul className="space-y-2">
+                      {/* Tips section with enhanced card style */}
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                        className={`p-6 rounded-2xl ${
+                          activeLearnMoreStep === 0 ? 'bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/50' : 
+                          activeLearnMoreStep === 1 ? 'bg-gradient-to-br from-orange-50 to-orange-100/50 border border-orange-200/50' : 
+                          'bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/50'
+                        } shadow-sm backdrop-blur-sm`}
+                      >
+                        <div className="flex items-center mb-4">
+                          <div className={`w-10 h-10 rounded-full ${
+                            activeLearnMoreStep === 0 ? 'bg-red-200 text-red-600' : 
+                            activeLearnMoreStep === 1 ? 'bg-orange-200 text-orange-600' : 
+                            'bg-amber-200 text-amber-600'
+                          } flex items-center justify-center mr-3`}>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                          </div>
+                          <h5 className={`font-bold text-lg ${
+                            activeLearnMoreStep === 0 ? 'text-red-700' : 
+                            activeLearnMoreStep === 1 ? 'text-orange-700' : 
+                            'text-amber-700'
+                          }`}>Pro Tips</h5>
+                        </div>
+                        
+                        <ul className="space-y-3 ml-2">
                           {[
                             [
                               "Try searching by project type if you're not sure which tool you need",
@@ -1941,34 +2028,44 @@ export default function LandingPage() {
                               "Clean the tool before returning to maintain a good user rating"
                             ]
                           ][activeLearnMoreStep].map((tip, i) => (
-                            <li key={i} className="flex items-start">
+                            <motion.li 
+                              key={i} 
+                              className="flex items-start"
+                              initial={{ opacity: 0, x: 10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ duration: 0.3, delay: 0.7 + (i * 0.1) }}
+                            >
                               <svg className={`w-5 h-5 ${
                                 activeLearnMoreStep === 0 ? 'text-red-500' : 
                                 activeLearnMoreStep === 1 ? 'text-orange-500' : 
                                 'text-amber-500'
-                              } mr-2 flex-shrink-0 mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              } mr-3 flex-shrink-0 mt-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                               </svg>
                               <span className="text-gray-700">{tip}</span>
-                            </li>
+                            </motion.li>
                           ))}
                         </ul>
-                      </div>
+                      </motion.div>
                     </div>
-                    
-                    {/* Footer/Action button */}
-                    <div className="flex justify-center mt-8">
-                      <Button 
-                        className={`${
-                          activeLearnMoreStep === 0 ? 'bg-red-600 hover:bg-red-700' : 
-                          activeLearnMoreStep === 1 ? 'bg-orange-600 hover:bg-orange-700' : 
-                          'bg-amber-600 hover:bg-amber-700'
-                        } text-white shadow-md`}
-                        onClick={() => setActiveLearnMoreStep(null)}
-                      >
-                        Got it
-                      </Button>
-                    </div>
+                  </div>
+                  
+                  {/* Footer with action button */}
+                  <div className={`flex justify-end items-center p-6 border-t ${
+                    activeLearnMoreStep === 0 ? 'border-red-100' : 
+                    activeLearnMoreStep === 1 ? 'border-orange-100' : 
+                    'border-amber-100'
+                  } bg-white/50 backdrop-blur-sm relative z-10`}>
+                    <Button 
+                      className={`${
+                        activeLearnMoreStep === 0 ? 'bg-red-600 hover:bg-red-700 shadow-red-300/30' : 
+                        activeLearnMoreStep === 1 ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-300/30' : 
+                        'bg-amber-600 hover:bg-amber-700 shadow-amber-300/30'
+                      } text-white shadow-lg px-6 py-2 rounded-full transition-all`}
+                      onClick={() => setActiveLearnMoreStep(null)}
+                    >
+                      Got it
+                    </Button>
                   </div>
                 </motion.div>
               </div>
@@ -1978,21 +2075,25 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
+      {/* Why Choose Us Section - with improved spacing and positioning */}
       <section 
         ref={whyChooseRef} 
-        className="py-24 bg-white relative overflow-hidden transition-all duration-700" 
-        id="why-choose-us">
-        <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-gray-50 to-transparent"></div>
-        <div className="absolute -right-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
-        <div className="absolute -left-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
+        className="pt-32 pb-24 bg-white relative overflow-hidden transition-all duration-700 mt-12" 
+        id="why-choose-us"
+      >
+        {/* Section separator - creates visual distinction between sections */}
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-gray-50 to-white -mt-24 z-10"></div>
         
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        {/* Enhanced decorative elements positioned to avoid overlap */}
+        <div className="absolute -right-40 top-1/4 w-80 h-80 bg-green-100 rounded-full opacity-40 blur-3xl"></div>
+        <div className="absolute -left-40 bottom-1/4 w-80 h-80 bg-yellow-100 rounded-full opacity-40 blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-20">
           <div className="text-center mb-16">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.5, delay: 0.1 }}
               className="inline-flex items-center gap-4 justify-center relative"
             >
@@ -2008,7 +2109,7 @@ export default function LandingPage() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-xl text-gray-600 max-w-2xl mx-auto mt-5"
             >
@@ -2019,7 +2120,7 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-5%" }}
             transition={{ duration: 0.7 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
@@ -2083,7 +2184,7 @@ export default function LandingPage() {
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "-5%" }}
                 transition={{ duration: 0.5, delay: feature.delay }}
                 className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 group hover:shadow-xl transition-all duration-300"
               >
@@ -2101,7 +2202,7 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-5%" }}
             transition={{ duration: 0.5, delay: 0.9 }}
             className="text-center mt-16"
           >
