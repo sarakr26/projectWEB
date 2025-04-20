@@ -554,6 +554,9 @@ export default function LandingPage() {
   // Simple boolean state for showing all categories
   const [showMore, setShowMore] = useState(false)
 
+  // State to track which step's "Learn More" is currently displayed
+  const [activeLearnMoreStep, setActiveLearnMoreStep] = useState<number | null>(null)
+
   // Smooth scroll function
   const scrollToSection = (elementRef: React.RefObject<HTMLElement | null>) => {
     if (elementRef.current) {
@@ -872,7 +875,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-white via-green-50/20 to-white pointer-events-none"></div>
         <div className="container mx-auto relative z-10">
           <div className="text-center mb-12">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -881,7 +884,7 @@ export default function LandingPage() {
             >
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 relative inline-block">
                 <span className="bg-gradient-to-r from-gray-900 via-amber-700 to-gray-900 bg-clip-text text-transparent">
-                  Find the Perfect Tool
+              Find the Perfect Tool
                 </span>
                 <span className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent rounded-full"></span>
               </h2>
@@ -1123,7 +1126,7 @@ export default function LandingPage() {
                     >
                       {category.count} tools
                     </Badge>
-                  </motion.div>
+              </motion.div>
                   
                   {/* Selection indicator */}
                   {selectedCategory === category.name && (
@@ -1134,10 +1137,10 @@ export default function LandingPage() {
                     >
                       <div className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
                         <CheckCircle className="w-4 h-4" />
-                      </div>
+          </div>
                     </motion.div>
                   )}
-                </div>
+        </div>
                 
                 {/* Enhanced gradient overlay on hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-green-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
@@ -1201,7 +1204,7 @@ export default function LandingPage() {
                           className="group-hover:-translate-y-1 transition-transform duration-300"
                         >
                           <ArrowUp className="h-4 w-4" />
-                        </motion.div>
+            </motion.div>
                       </motion.span>
                     </>
                   ) : (
@@ -1443,7 +1446,7 @@ export default function LandingPage() {
         className="py-24 bg-white relative transition-all duration-700">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -1452,7 +1455,7 @@ export default function LandingPage() {
             >
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 relative inline-block">
                 <span className="bg-gradient-to-r from-gray-900 via-yellow-800 to-gray-900 bg-clip-text text-transparent">
-                  Popular Tools Near You
+              Popular Tools Near You
                 </span>
                 <span className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent rounded-full"></span>
               </h2>
@@ -1612,7 +1615,22 @@ export default function LandingPage() {
                 description:
                   "Search our extensive database of tools available in your area. Filter by category, price, and availability.",
                 delay: 0.3,
-                accent: "red"
+                accent: "red",
+                learnMoreContent: {
+                  title: "How to Find the Perfect Tool",
+                  description: [
+                    "Use our powerful search features to find exactly what you need for your project.",
+                    "Filter tools by distance, availability dates, price range, and user ratings.",
+                    "Browse through categories to discover tools you might not have thought of.",
+                    "See high-quality photos of the actual tools, not just stock images.",
+                    "Check detailed specifications and condition reports before booking."
+                  ],
+                  tips: [
+                    "Try searching by project type if you're not sure which tool you need",
+                    "Look for the 'Verified' badge for tools that have been quality checked",
+                    "Read previous user reviews to ensure the tool is in good condition"
+                  ]
+                }
               },
               {
                 icon: <Calendar className="w-10 h-10 text-orange-600" />,
@@ -1620,7 +1638,22 @@ export default function LandingPage() {
                 description:
                   "Reserve your tools for the dates you need. Secure payment through our platform protects both parties.",
                 delay: 0.5,
-                accent: "orange"
+                accent: "orange",
+                learnMoreContent: {
+                  title: "Simple Booking & Secure Payment",
+                  description: [
+                    "Select your desired rental dates using our easy calendar interface.",
+                    "Request to book directly through the platform - no need to arrange outside communication.",
+                    "Our secure payment system holds your payment until you confirm receipt of the tool.",
+                    "All bookings include our standard protection plan covering accidental damage.",
+                    "Receive instant confirmation and booking details via email and text message."
+                  ],
+                  tips: [
+                    "Book tools well in advance for weekend and holiday projects",
+                    "Add the optional premium insurance for expensive professional tools",
+                    "You can modify or cancel your booking up to 48 hours before your rental"
+                  ]
+                }
               },
               {
                 icon: <Hammer className="w-10 h-10 text-amber-600" />,
@@ -1628,7 +1661,22 @@ export default function LandingPage() {
                 description:
                   "Pick up the tool from the owner and get to work on your project. Return it when you're done.",
                 delay: 0.7,
-                accent: "amber"
+                accent: "amber",
+                learnMoreContent: {
+                  title: "Tool Collection & Return Process",
+                  description: [
+                    "Arrange a convenient pickup time directly with the tool owner through our messaging system.",
+                    "Inspect the tool together and confirm it matches the description and photos.",
+                    "Sign the digital handover form on the app to start your rental period.",
+                    "Complete your project with the right tools for the job.",
+                    "Return the tool in the same condition, cleaned and ready for the next user."
+                  ],
+                  tips: [
+                    "Ask the owner for a quick demo if you're unfamiliar with the tool",
+                    "Take photos of the tool at pickup for documentation",
+                    "Clean the tool before returning to maintain a good user rating"
+                  ]
+                }
               },
             ].map((step, index) => (
               <motion.div
@@ -1701,9 +1749,13 @@ export default function LandingPage() {
                   
                   {/* Enhanced learn more button that appears on hover */}
                   <div className={`mt-6 transition-all duration-500 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 text-center`}>
-                    <Button variant="ghost" className={`px-4 py-2 ${step.accent === 'red' ? 'text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200' : 
-                                                                  step.accent === 'orange' ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-200' : 
-                                                                  'text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200'} rounded-full border shadow-sm flex items-center mx-auto`}>
+                    <Button 
+                      variant="ghost" 
+                      className={`px-4 py-2 ${step.accent === 'red' ? 'text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200' : 
+                                            step.accent === 'orange' ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-200' : 
+                                            'text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200'} rounded-full border shadow-sm flex items-center mx-auto`}
+                      onClick={() => setActiveLearnMoreStep(index)}
+                    >
                       <span className="mr-2">Learn more</span>
                       <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </Button>
@@ -1729,12 +1781,200 @@ export default function LandingPage() {
                       </div>
                     </div>
                   )}
-                  
-                  {/* Remove the bottom gradient glow effect */}
                 </div>
               </motion.div>
             ))}
           </div>
+          
+          {/* Learn More Modal/Overlay - Shows when a step's "Learn More" is clicked */}
+          {activeLearnMoreStep !== null && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-50 overflow-y-auto"
+              onClick={() => setActiveLearnMoreStep(null)}
+            >
+              {/* Backdrop with blur effect */}
+              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm"></div>
+              
+              <div className="flex items-center justify-center min-h-screen p-4">
+                {/* Modal content */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                  transition={{ type: "spring", duration: 0.5 }}
+                  className="relative bg-white/90 backdrop-blur-md rounded-2xl max-w-2xl w-full p-8 shadow-2xl overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Background gradient based on step accent */}
+                  <div className={`absolute inset-0 ${
+                    activeLearnMoreStep === 0 ? 'bg-gradient-to-br from-red-50 to-white' : 
+                    activeLearnMoreStep === 1 ? 'bg-gradient-to-br from-orange-50 to-white' : 
+                    'bg-gradient-to-br from-amber-50 to-white'
+                  } opacity-90`}></div>
+                  
+                  {/* Corner decorations */}
+                  <div className={`absolute top-0 right-0 w-40 h-40 ${
+                    activeLearnMoreStep === 0 ? 'bg-gradient-to-bl from-red-100/40 to-transparent' : 
+                    activeLearnMoreStep === 1 ? 'bg-gradient-to-bl from-orange-100/40 to-transparent' : 
+                    'bg-gradient-to-bl from-amber-100/40 to-transparent'
+                  } rounded-bl-full opacity-60`}></div>
+                  
+                  <div className={`absolute bottom-0 left-0 w-40 h-40 ${
+                    activeLearnMoreStep === 0 ? 'bg-gradient-to-tr from-red-100/30 to-transparent' : 
+                    activeLearnMoreStep === 1 ? 'bg-gradient-to-tr from-orange-100/30 to-transparent' : 
+                    'bg-gradient-to-tr from-amber-100/30 to-transparent'
+                  } rounded-tr-full opacity-60`}></div>
+                  
+                  {/* Close button */}
+                  <button 
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors z-10"
+                    onClick={() => setActiveLearnMoreStep(null)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    {/* Icon and title header */}
+                    <div className="flex items-center mb-6">
+                      <div className={`w-12 h-12 rounded-full ${
+                        activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600' : 
+                        activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600' : 
+                        'bg-amber-100 text-amber-600'
+                      } flex items-center justify-center mr-4`}>
+                        {activeLearnMoreStep === 0 ? <Search className="w-6 h-6" /> : 
+                         activeLearnMoreStep === 1 ? <Calendar className="w-6 h-6" /> : 
+                         <Hammer className="w-6 h-6" />}
+                      </div>
+                      <h3 className={`text-2xl font-bold ${
+                        activeLearnMoreStep === 0 ? 'text-red-700' : 
+                        activeLearnMoreStep === 1 ? 'text-orange-700' : 
+                        'text-amber-700'
+                      }`}>
+                        {[
+                          "Find a Tool",
+                          "Book & Pay",
+                          "Collect & Use"
+                        ][activeLearnMoreStep]}
+                      </h3>
+                    </div>
+                    
+                    {/* Detailed content */}
+                    <div className="mb-6">
+                      <h4 className="text-xl font-semibold text-gray-800 mb-3">
+                        {[
+                          "How to Find the Perfect Tool",
+                          "Simple Booking & Secure Payment",
+                          "Tool Collection & Return Process"
+                        ][activeLearnMoreStep]}
+                      </h4>
+                      
+                      <div className="space-y-4 mb-6">
+                        {[
+                          [
+                            "Use our powerful search features to find exactly what you need for your project.",
+                            "Filter tools by distance, availability dates, price range, and user ratings.",
+                            "Browse through categories to discover tools you might not have thought of.",
+                            "See high-quality photos of the actual tools, not just stock images.",
+                            "Check detailed specifications and condition reports before booking."
+                          ],
+                          [
+                            "Select your desired rental dates using our easy calendar interface.",
+                            "Request to book directly through the platform - no need to arrange outside communication.",
+                            "Our secure payment system holds your payment until you confirm receipt of the tool.",
+                            "All bookings include our standard protection plan covering accidental damage.",
+                            "Receive instant confirmation and booking details via email and text message."
+                          ],
+                          [
+                            "Arrange a convenient pickup time directly with the tool owner through our messaging system.",
+                            "Inspect the tool together and confirm it matches the description and photos.",
+                            "Sign the digital handover form on the app to start your rental period.",
+                            "Complete your project with the right tools for the job.",
+                            "Return the tool in the same condition, cleaned and ready for the next user."
+                          ]
+                        ][activeLearnMoreStep].map((text, i) => (
+                          <div key={i} className="flex items-start">
+                            <div className={`w-6 h-6 rounded-full ${
+                              activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600' : 
+                              activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600' : 
+                              'bg-amber-100 text-amber-600'
+                            } flex items-center justify-center mr-3 flex-shrink-0 mt-0.5`}>
+                              <span className="text-sm font-semibold">{i + 1}</span>
+                            </div>
+                            <p className="text-gray-700">{text}</p>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Tips section */}
+                      <div className={`p-4 rounded-xl ${
+                        activeLearnMoreStep === 0 ? 'bg-red-50 border border-red-100' : 
+                        activeLearnMoreStep === 1 ? 'bg-orange-50 border border-orange-100' : 
+                        'bg-amber-50 border border-amber-100'
+                      }`}>
+                        <h5 className={`font-medium mb-2 ${
+                          activeLearnMoreStep === 0 ? 'text-red-700' : 
+                          activeLearnMoreStep === 1 ? 'text-orange-700' : 
+                          'text-amber-700'
+                        }`}>Pro Tips</h5>
+                        <ul className="space-y-2">
+                          {[
+                            [
+                              "Try searching by project type if you're not sure which tool you need",
+                              "Look for the 'Verified' badge for tools that have been quality checked",
+                              "Read previous user reviews to ensure the tool is in good condition"
+                            ],
+                            [
+                              "Book tools well in advance for weekend and holiday projects",
+                              "Add the optional premium insurance for expensive professional tools",
+                              "You can modify or cancel your booking up to 48 hours before your rental"
+                            ],
+                            [
+                              "Ask the owner for a quick demo if you're unfamiliar with the tool",
+                              "Take photos of the tool at pickup for documentation",
+                              "Clean the tool before returning to maintain a good user rating"
+                            ]
+                          ][activeLearnMoreStep].map((tip, i) => (
+                            <li key={i} className="flex items-start">
+                              <svg className={`w-5 h-5 ${
+                                activeLearnMoreStep === 0 ? 'text-red-500' : 
+                                activeLearnMoreStep === 1 ? 'text-orange-500' : 
+                                'text-amber-500'
+                              } mr-2 flex-shrink-0 mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                              </svg>
+                              <span className="text-gray-700">{tip}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    
+                    {/* Footer/Action button */}
+                    <div className="flex justify-center mt-8">
+                      <Button 
+                        className={`${
+                          activeLearnMoreStep === 0 ? 'bg-red-600 hover:bg-red-700' : 
+                          activeLearnMoreStep === 1 ? 'bg-orange-600 hover:bg-orange-700' : 
+                          'bg-amber-600 hover:bg-amber-700'
+                        } text-white shadow-md`}
+                        onClick={() => setActiveLearnMoreStep(null)}
+                      >
+                        Got it
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+          
         </div>
       </section>
 
