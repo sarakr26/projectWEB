@@ -107,19 +107,36 @@ export default function ToolDetails() {
   const [tool, setTool] = useState<any>(null)
   const [selectedImage, setSelectedImage] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
+  const [showScrollTop, setShowScrollTop] = useState(false)
   
   useEffect(() => {
-    // In a real app, this would be an API call
-    const id = Array.isArray(params.id) ? params.id[0] : params.id
-    const fetchedTool = getToolData(id)
+    // Simulate data loading
+    const timer = setTimeout(() => {
+      const data = getToolData(params.id as string);
+      setTool(data);
+      setSelectedImage(data.images[0]);
+      setIsLoading(false);
+    }, 1000);
     
-    // Simulate API loading
-    setTimeout(() => {
-      setTool(fetchedTool)
-      setSelectedImage(fetchedTool.images[0])
-      setIsLoading(false)
-    }, 500)
-  }, [params.id])
+    return () => clearTimeout(timer);
+  }, [params.id]);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   if (isLoading) {
     return (
@@ -144,9 +161,10 @@ export default function ToolDetails() {
           <h1 className="text-3xl font-bold text-gray-900">Tool Not Found</h1>
           <p className="text-gray-600">We couldn't find the tool you're looking for. It may have been removed or the URL might be incorrect.</p>
           <Link href="/">
-            <Button className="bg-green-600 hover:bg-green-700">
-              Back to Home
-            </Button>
+            <div className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl shadow-md hover:shadow-lg hover:from-green-500 hover:to-green-400 transition-all duration-300 group">
+              <ArrowLeft className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-medium">Back to Home</span>
+            </div>
           </Link>
         </div>
       </div>
@@ -169,9 +187,12 @@ export default function ToolDetails() {
             <span className="mx-2">›</span>
             <span className="text-gray-900">{tool.name}</span>
             
-            <Link href="/" className="ml-auto flex items-center text-gray-500 hover:text-green-600 transition-colors">
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              <span>Back</span>
+            <Link href="/" className="ml-auto">
+              <div className="flex items-center px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 hover:text-green-600 rounded-full border border-gray-200 hover:border-green-200 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden">
+                <span className="absolute inset-0 w-0 bg-green-50/50 group-hover:w-full transition-all duration-300 rounded-full"></span>
+                <ArrowLeft className="h-4 w-4 mr-1.5 group-hover:-translate-x-0.5 transition-transform relative z-10" />
+                <span className="font-medium relative z-10">Back</span>
+              </div>
             </Link>
           </div>
         </div>
@@ -505,6 +526,44 @@ export default function ToolDetails() {
           </div>
         </div>
       </div>
+      
+      {/* Back to Top Button */}
+      <div className="container mx-auto px-4 py-8 flex justify-center">
+        <button 
+          onClick={scrollToTop}
+          className="group flex items-center space-x-2 bg-white hover:bg-gray-50 text-gray-700 hover:text-green-600 py-2 px-4 rounded-full border border-gray-200 shadow-sm transition-all duration-300"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-5 w-5 group-hover:-translate-y-1 transition-transform" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+          <span className="font-medium">Back to Top</span>
+        </button>
+      </div>
+      
+      {/* Fixed Position Back to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 bg-white hover:bg-gray-50 text-gray-700 hover:text-green-600 p-3 rounded-full shadow-lg border border-gray-200 transition-all duration-300 z-50 group"
+          aria-label="Back to top"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-6 w-6 group-hover:-translate-y-1 transition-transform" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </button>
+      )}
     </main>
   )
 } 
