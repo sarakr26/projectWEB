@@ -355,12 +355,12 @@ export default function LandingPage() {
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl opacity-0 group-hover:opacity-70 blur-md group-hover:blur transition-all duration-300"></div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl opacity-0 group-hover:opacity-50 blur-md transition-all duration-500"></div>
                 <div className="relative bg-white rounded-xl">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-green-500 transition-colors duration-200 animate-pulse-subtle group-hover:animate-none" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-green-500 transition-colors duration-300" />
                   <Input 
                     placeholder="What tool do you need?" 
-                    className="pl-12 py-6 text-base rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 shadow-sm hover:border-green-300 transition-all duration-300 backdrop-blur-sm z-20"
+                    className="pl-12 py-6 text-base rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 shadow-sm hover:border-green-300 hover:shadow-md transition-all duration-300 backdrop-blur-sm z-20"
                   />
                   <div className="absolute inset-x-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 z-30 transform origin-top scale-95 group-focus-within:scale-100">
                     <div className="p-3 border-b border-gray-100">
@@ -382,12 +382,12 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl opacity-0 group-hover:opacity-70 blur-md group-hover:blur transition-all duration-300"></div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl opacity-0 group-hover:opacity-50 blur-md transition-all duration-500"></div>
                 <div className="relative bg-white rounded-xl">
-                  <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-green-500 transition-colors duration-200 animate-pulse-subtle group-hover:animate-none" />
+                  <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-green-500 transition-colors duration-300" />
                   <Input 
                     placeholder="Your location" 
-                    className="pl-12 py-6 text-base rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 shadow-sm hover:border-green-300 transition-all duration-300 backdrop-blur-sm z-20"
+                    className="pl-12 py-6 text-base rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 shadow-sm hover:border-green-300 hover:shadow-md transition-all duration-300 backdrop-blur-sm z-20"
                   />
                   <div className="absolute inset-x-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-300 z-30 transform origin-top scale-95 group-focus-within:scale-100">
                     <div className="p-3 border-b border-gray-100">
@@ -409,15 +409,11 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="relative group h-full flex">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-green-400 to-green-600 rounded-xl opacity-70 blur-sm group-hover:blur-md group-hover:opacity-100 transition-all duration-300 animate-pulse-slow"></div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-green-600 rounded-xl opacity-50 blur-md group-hover:opacity-80 group-hover:blur-lg transition-all duration-500"></div>
                 <Button 
-                  className="bg-green-600 hover:bg-green-700 py-6 rounded-xl text-base font-medium text-white shadow-lg shadow-green-600/20 hover:shadow-green-600/30 transition-all duration-300 relative w-full flex items-center justify-center group-hover:translate-y-0 transform hover:-translate-y-1 group-hover:scale-[1.01] z-10 overflow-hidden"
+                  className="bg-green-600 hover:bg-green-700 py-6 rounded-xl text-base font-medium text-white shadow-lg shadow-green-600/20 hover:shadow-green-600/40 transition-all duration-300 relative w-full flex items-center justify-center transform group-hover:-translate-y-1 z-10 overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <span className="absolute w-0 h-0 rounded-full bg-white/30 transform scale-0 group-hover:scale-100 group-hover:w-32 group-hover:h-32 transition-all duration-500 origin-center opacity-0 group-hover:opacity-100"></span>
-                  </span>
-                  <Search className="absolute h-5 w-5 left-1/2 top-1/2 -translate-x-12 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:left-[40%] transition-all duration-300" />
+                  <div className="absolute inset-0 w-0 h-full bg-white/20 group-hover:w-full transition-all duration-500 ease-out rounded-xl"></div>
                   <span className="relative z-10 flex items-center">
                     Search Tools
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
