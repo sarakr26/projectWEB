@@ -567,6 +567,42 @@ export default function LandingPage() {
   // State to track which step's "Learn More" is currently displayed
   const [activeLearnMoreStep, setActiveLearnMoreStep] = useState<number | null>(null)
 
+  // Effect to handle body scrolling when modal is open
+  useEffect(() => {
+    if (activeLearnMoreStep !== null) {
+      // Find the how it works section
+      const howItWorksSection = howItWorksRef.current;
+      
+      if (howItWorksSection) {
+        // Scroll to position the section properly in view
+        const yOffset = -120; // Add some spacing at the top
+        const y = howItWorksSection.getBoundingClientRect().top + window.scrollY + yOffset;
+        
+        window.scrollTo({
+          top: y,
+          behavior: 'smooth'
+        });
+        
+        // Ensure the "Why Choose ToolNest" section respects the modal z-index
+        if (whyChooseRef.current) {
+          // Add a CSS transition for smooth effect
+          whyChooseRef.current.style.transition = 'opacity 0.3s ease, transform 0.3s ease, z-index 0s';
+          whyChooseRef.current.style.zIndex = '10'; // Lower z-index when modal is open
+          whyChooseRef.current.style.opacity = '0.6'; // Fade out slightly
+          whyChooseRef.current.style.transform = 'translateY(20px)'; // Move down slightly
+        }
+      }
+    } else {
+      // Reset the "Why Choose ToolNest" section z-index
+      if (whyChooseRef.current) {
+        whyChooseRef.current.style.transition = 'opacity 0.3s ease, transform 0.3s ease, z-index 0s';
+        whyChooseRef.current.style.zIndex = '';
+        whyChooseRef.current.style.opacity = ''; // Reset opacity
+        whyChooseRef.current.style.transform = ''; // Reset transform
+      }
+    }
+  }, [activeLearnMoreStep]);
+
   // Smooth scroll function
   const scrollToSection = (elementRef: React.RefObject<HTMLElement | null>) => {
     if (elementRef.current) {
@@ -1580,7 +1616,9 @@ export default function LandingPage() {
       <section 
         ref={howItWorksRef}
         id="how-it-works"
-        className="py-24 bg-gray-50 relative overflow-hidden transition-all duration-700">
+        className="py-24 bg-gray-50 relative overflow-hidden transition-all duration-700 mb-16" // Added margin-bottom for more space
+        style={{ position: 'relative', zIndex: '25' }} // Higher z-index than "Why Choose" section
+      >
         <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-white to-transparent"></div>
         <div className="absolute -left-40 top-40 w-80 h-80 bg-green-100 rounded-full opacity-50 blur-3xl"></div>
         <div className="absolute -right-40 bottom-40 w-80 h-80 bg-yellow-100 rounded-full opacity-50 blur-3xl"></div>
@@ -1803,279 +1841,283 @@ export default function LandingPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-50 overflow-y-auto"
+              className="fixed inset-0 z-50 isolate" // Added isolate to create a stacking context
               onClick={() => setActiveLearnMoreStep(null)}
             >
-              {/* Backdrop with enhanced blur effect */}
-              <div className="fixed inset-0 bg-black/40 backdrop-blur-md"></div>
+              {/* Semi-transparent overlay with improved handling */}
+              <div className="fixed inset-0 bg-black/40 backdrop-blur-md pointer-events-auto"></div>
               
-              <div className="flex items-center justify-center min-h-screen p-4">
+              {/* Modal container with fixed height and scrolling */}
+              <div className="flex items-start justify-center h-screen pt-20 pb-10 px-4 overflow-y-auto relative z-50">
                 {/* Modal content with improved styling */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 20 }}
                   transition={{ type: "spring", damping: 15, stiffness: 300, duration: 0.5 }}
-                  className="relative bg-white/95 backdrop-blur-lg rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-white/50"
+                  className="relative bg-white/95 backdrop-blur-lg rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-white/50 max-h-[80vh] my-auto"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {/* Enhanced background gradient */}
-                  <div className={`absolute inset-0 ${
-                    activeLearnMoreStep === 0 ? 'bg-gradient-to-br from-red-50 via-white to-red-50/20' : 
-                    activeLearnMoreStep === 1 ? 'bg-gradient-to-br from-orange-50 via-white to-orange-50/20' : 
-                    'bg-gradient-to-br from-amber-50 via-white to-amber-50/20'
-                  } opacity-90`}></div>
-                  
-                  {/* Decorative patterns */}
-                  <div className="absolute inset-0 overflow-hidden opacity-10">
-                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-64 h-64 rounded-full border border-current transform rotate-45" style={{
-                      borderColor: activeLearnMoreStep === 0 ? '#ef4444' : activeLearnMoreStep === 1 ? '#f97316' : '#f59e0b'
-                    }}></div>
-                    <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-64 h-64 rounded-full border border-current transform -rotate-45" style={{
-                      borderColor: activeLearnMoreStep === 0 ? '#ef4444' : activeLearnMoreStep === 1 ? '#f97316' : '#f59e0b'
-                    }}></div>
-                  </div>
-                  
-                  {/* Corner decorations */}
-                  <div className={`absolute top-0 right-0 w-32 h-32 ${
-                    activeLearnMoreStep === 0 ? 'bg-gradient-to-bl from-red-200/40 to-transparent' : 
-                    activeLearnMoreStep === 1 ? 'bg-gradient-to-bl from-orange-200/40 to-transparent' : 
-                    'bg-gradient-to-bl from-amber-200/40 to-transparent'
-                  } rounded-bl-full opacity-80`}></div>
-                  
-                  <div className={`absolute -bottom-8 -left-8 w-32 h-32 ${
-                    activeLearnMoreStep === 0 ? 'bg-gradient-to-tr from-red-200/40 to-transparent' : 
-                    activeLearnMoreStep === 1 ? 'bg-gradient-to-tr from-orange-200/40 to-transparent' : 
-                    'bg-gradient-to-tr from-amber-200/40 to-transparent'
-                  } rounded-tr-full opacity-80`}></div>
-                  
-                  {/* Close button with improved style */}
-                  <button 
-                    className={`absolute top-6 right-6 ${
-                      activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600 hover:bg-red-200' : 
-                      activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600 hover:bg-orange-200' : 
-                      'bg-amber-100 text-amber-600 hover:bg-amber-200'
-                    } rounded-full p-2 transition-colors z-20 shadow-sm backdrop-blur-sm`}
-                    onClick={() => setActiveLearnMoreStep(null)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                  
-                  {/* Content container with improved padding */}
-                  <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row gap-8">
-                    {/* New left sidebar with icon and visual elements */}
-                    <div className="md:w-1/4 flex flex-col items-center md:items-start">
-                      <div className={`w-20 h-20 rounded-2xl ${
-                        activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600 shadow-red-200/50' : 
-                        activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600 shadow-orange-200/50' : 
-                        'bg-amber-100 text-amber-600 shadow-amber-200/50'
-                      } flex items-center justify-center mb-6 shadow-lg relative`}>
-                        {/* Pulsing effect behind icon */}
-                        <div className={`absolute inset-0 ${
-                          activeLearnMoreStep === 0 ? 'bg-red-400' : 
-                          activeLearnMoreStep === 1 ? 'bg-orange-400' : 
-                          'bg-amber-400'
-                        } rounded-2xl opacity-20 animate-pulse-slow`}></div>
-                        
-                        {/* Large step icon */}
-                        {activeLearnMoreStep === 0 ? <Search className="w-10 h-10" /> : 
-                         activeLearnMoreStep === 1 ? <Calendar className="w-10 h-10" /> : 
-                         <Hammer className="w-10 h-10" />}
-                      </div>
-                      
-                      {/* Step number indicator */}
-                      <div className={`flex items-center gap-2 mb-6 ${
-                        activeLearnMoreStep === 0 ? 'text-red-700' : 
-                        activeLearnMoreStep === 1 ? 'text-orange-700' : 
-                        'text-amber-700'
-                      } font-semibold`}>
-                        <div className={`w-8 h-8 rounded-full ${
-                          activeLearnMoreStep === 0 ? 'bg-red-200 text-red-700' : 
-                          activeLearnMoreStep === 1 ? 'bg-orange-200 text-orange-700' : 
-                          'bg-amber-200 text-amber-700'
-                        } flex items-center justify-center text-sm`}>
-                          {activeLearnMoreStep + 1}
-                        </div>
-                        <span>Step {activeLearnMoreStep + 1}</span>
-                      </div>
-                      
-                      {/* Main step title */}
-                      <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
-                        activeLearnMoreStep === 0 ? 'text-red-700' : 
-                        activeLearnMoreStep === 1 ? 'text-orange-700' : 
-                        'text-amber-700'
-                      } md:leading-tight hidden md:block`}>
-                        {[
-                          "Find a Tool",
-                          "Book & Pay",
-                          "Collect & Use"
-                        ][activeLearnMoreStep]}
-                      </h3>
-                      
-                      {/* Decorative vertical line on desktop */}
-                      <div className="hidden md:block h-32 w-1 mt-4 rounded-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 mx-auto"></div>
+                  {/* Content scrollable container */}
+                  <div className="max-h-[80vh] overflow-y-auto">
+                    {/* Enhanced background gradient */}
+                    <div className={`absolute inset-0 ${
+                      activeLearnMoreStep === 0 ? 'bg-gradient-to-br from-red-50 via-white to-red-50/20' : 
+                      activeLearnMoreStep === 1 ? 'bg-gradient-to-br from-orange-50 via-white to-orange-50/20' : 
+                      'bg-gradient-to-br from-amber-50 via-white to-amber-50/20'
+                    } opacity-90`}></div>
+                    
+                    {/* Decorative patterns */}
+                    <div className="absolute inset-0 overflow-hidden opacity-10">
+                      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-64 h-64 rounded-full border border-current transform rotate-45" style={{
+                        borderColor: activeLearnMoreStep === 0 ? '#ef4444' : activeLearnMoreStep === 1 ? '#f97316' : '#f59e0b'
+                      }}></div>
+                      <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-64 h-64 rounded-full border border-current transform -rotate-45" style={{
+                        borderColor: activeLearnMoreStep === 0 ? '#ef4444' : activeLearnMoreStep === 1 ? '#f97316' : '#f59e0b'
+                      }}></div>
                     </div>
                     
-                    {/* Main content area with improved layout */}
-                    <div className="md:w-3/4">
-                      {/* Mobile-only title */}
-                      <h3 className={`text-2xl font-bold mb-4 ${
-                        activeLearnMoreStep === 0 ? 'text-red-700' : 
-                        activeLearnMoreStep === 1 ? 'text-orange-700' : 
-                        'text-amber-700'
-                      } md:hidden`}>
-                        {[
-                          "Find a Tool",
-                          "Book & Pay",
-                          "Collect & Use"
-                        ][activeLearnMoreStep]}
-                      </h3>
-                      
-                      {/* Subtitle with enhanced styling */}
-                      <h4 className={`text-xl font-semibold text-gray-800 mb-5 pb-3 border-b ${
-                        activeLearnMoreStep === 0 ? 'border-red-200' : 
-                        activeLearnMoreStep === 1 ? 'border-orange-200' : 
-                        'border-amber-200'
-                      }`}>
-                        {[
-                          "How to Find the Perfect Tool",
-                          "Simple Booking & Secure Payment",
-                          "Tool Collection & Return Process"
-                        ][activeLearnMoreStep]}
-                      </h4>
-                      
-                      {/* Key points with improved styling */}
-                      <div className="space-y-5 mb-8">
-                        {[
-                          [
-                            "Use our powerful search features to find exactly what you need for your project.",
-                            "Filter tools by distance, availability dates, price range, and user ratings.",
-                            "Browse through categories to discover tools you might not have thought of.",
-                            "See high-quality photos of the actual tools, not just stock images.",
-                            "Check detailed specifications and condition reports before booking."
-                          ],
-                          [
-                            "Select your desired rental dates using our easy calendar interface.",
-                            "Request to book directly through the platform - no need to arrange outside communication.",
-                            "Our secure payment system holds your payment until you confirm receipt of the tool.",
-                            "All bookings include our standard protection plan covering accidental damage.",
-                            "Receive instant confirmation and booking details via email and text message."
-                          ],
-                          [
-                            "Arrange a convenient pickup time directly with the tool owner through our messaging system.",
-                            "Inspect the tool together and confirm it matches the description and photos.",
-                            "Sign the digital handover form on the app to start your rental period.",
-                            "Complete your project with the right tools for the job.",
-                            "Return the tool in the same condition, cleaned and ready for the next user."
-                          ]
-                        ][activeLearnMoreStep].map((text, i) => (
-                          <motion.div 
-                            key={i} 
-                            className="flex items-start"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3, delay: i * 0.1 }}
-                          >
-                            <div className={`w-8 h-8 rounded-full ${
-                              activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600 border border-red-200' : 
-                              activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600 border border-orange-200' : 
-                              'bg-amber-100 text-amber-600 border border-amber-200'
-                            } flex items-center justify-center mr-4 flex-shrink-0 mt-0.5 shadow-sm`}>
-                              <span className="text-sm font-semibold">{i + 1}</span>
-                            </div>
-                            <div>
-                              <p className="text-gray-700 leading-relaxed">{text}</p>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                      
-                      {/* Tips section with enhanced card style */}
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.5 }}
-                        className={`p-6 rounded-2xl ${
-                          activeLearnMoreStep === 0 ? 'bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/50' : 
-                          activeLearnMoreStep === 1 ? 'bg-gradient-to-br from-orange-50 to-orange-100/50 border border-orange-200/50' : 
-                          'bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/50'
-                        } shadow-sm backdrop-blur-sm`}
-                      >
-                        <div className="flex items-center mb-4">
-                          <div className={`w-10 h-10 rounded-full ${
-                            activeLearnMoreStep === 0 ? 'bg-red-200 text-red-600' : 
-                            activeLearnMoreStep === 1 ? 'bg-orange-200 text-orange-600' : 
-                            'bg-amber-200 text-amber-600'
-                          } flex items-center justify-center mr-3`}>
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                          </div>
-                          <h5 className={`font-bold text-lg ${
-                            activeLearnMoreStep === 0 ? 'text-red-700' : 
-                            activeLearnMoreStep === 1 ? 'text-orange-700' : 
-                            'text-amber-700'
-                          }`}>Pro Tips</h5>
-                        </div>
-                        
-                        <ul className="space-y-3 ml-2">
-                          {[
-                            [
-                              "Try searching by project type if you're not sure which tool you need",
-                              "Look for the 'Verified' badge for tools that have been quality checked",
-                              "Read previous user reviews to ensure the tool is in good condition"
-                            ],
-                            [
-                              "Book tools well in advance for weekend and holiday projects",
-                              "Add the optional premium insurance for expensive professional tools",
-                              "You can modify or cancel your booking up to 48 hours before your rental"
-                            ],
-                            [
-                              "Ask the owner for a quick demo if you're unfamiliar with the tool",
-                              "Take photos of the tool at pickup for documentation",
-                              "Clean the tool before returning to maintain a good user rating"
-                            ]
-                          ][activeLearnMoreStep].map((tip, i) => (
-                            <motion.li 
-                              key={i} 
-                              className="flex items-start"
-                              initial={{ opacity: 0, x: 10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.3, delay: 0.7 + (i * 0.1) }}
-                            >
-                              <svg className={`w-5 h-5 ${
-                                activeLearnMoreStep === 0 ? 'text-red-500' : 
-                                activeLearnMoreStep === 1 ? 'text-orange-500' : 
-                                'text-amber-500'
-                              } mr-3 flex-shrink-0 mt-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                              </svg>
-                              <span className="text-gray-700">{tip}</span>
-                            </motion.li>
-                          ))}
-                        </ul>
-                      </motion.div>
-                    </div>
-                  </div>
-                  
-                  {/* Footer with action button */}
-                  <div className={`flex justify-end items-center p-6 border-t ${
-                    activeLearnMoreStep === 0 ? 'border-red-100' : 
-                    activeLearnMoreStep === 1 ? 'border-orange-100' : 
-                    'border-amber-100'
-                  } bg-white/50 backdrop-blur-sm relative z-10`}>
-                    <Button 
-                      className={`${
-                        activeLearnMoreStep === 0 ? 'bg-red-600 hover:bg-red-700 shadow-red-300/30' : 
-                        activeLearnMoreStep === 1 ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-300/30' : 
-                        'bg-amber-600 hover:bg-amber-700 shadow-amber-300/30'
-                      } text-white shadow-lg px-6 py-2 rounded-full transition-all`}
+                    {/* Corner decorations */}
+                    <div className={`absolute top-0 right-0 w-32 h-32 ${
+                      activeLearnMoreStep === 0 ? 'bg-gradient-to-bl from-red-200/40 to-transparent' : 
+                      activeLearnMoreStep === 1 ? 'bg-gradient-to-bl from-orange-200/40 to-transparent' : 
+                      'bg-gradient-to-bl from-amber-200/40 to-transparent'
+                    } rounded-bl-full opacity-80`}></div>
+                    
+                    <div className={`absolute -bottom-8 -left-8 w-32 h-32 ${
+                      activeLearnMoreStep === 0 ? 'bg-gradient-to-tr from-red-200/40 to-transparent' : 
+                      activeLearnMoreStep === 1 ? 'bg-gradient-to-tr from-orange-200/40 to-transparent' : 
+                      'bg-gradient-to-tr from-amber-200/40 to-transparent'
+                    } rounded-tr-full opacity-80`}></div>
+                    
+                    {/* Close button with improved style */}
+                    <button 
+                      className={`absolute top-6 right-6 ${
+                        activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600 hover:bg-red-200' : 
+                        activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600 hover:bg-orange-200' : 
+                        'bg-amber-100 text-amber-600 hover:bg-amber-200'
+                      } rounded-full p-2 transition-colors z-20 shadow-sm backdrop-blur-sm`}
                       onClick={() => setActiveLearnMoreStep(null)}
                     >
-                      Got it
-                    </Button>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                    
+                    {/* Content container with improved padding */}
+                    <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row gap-8">
+                      {/* New left sidebar with icon and visual elements */}
+                      <div className="md:w-1/4 flex flex-col items-center md:items-start">
+                        <div className={`w-20 h-20 rounded-2xl ${
+                          activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600 shadow-red-200/50' : 
+                          activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600 shadow-orange-200/50' : 
+                          'bg-amber-100 text-amber-600 shadow-amber-200/50'
+                        } flex items-center justify-center mb-6 shadow-lg relative`}>
+                          {/* Pulsing effect behind icon */}
+                          <div className={`absolute inset-0 ${
+                            activeLearnMoreStep === 0 ? 'bg-red-400' : 
+                            activeLearnMoreStep === 1 ? 'bg-orange-400' : 
+                            'bg-amber-400'
+                          } rounded-2xl opacity-20 animate-pulse-slow`}></div>
+                          
+                          {/* Large step icon */}
+                          {activeLearnMoreStep === 0 ? <Search className="w-10 h-10" /> : 
+                           activeLearnMoreStep === 1 ? <Calendar className="w-10 h-10" /> : 
+                           <Hammer className="w-10 h-10" />}
+                        </div>
+                        
+                        {/* Step number indicator */}
+                        <div className={`flex items-center gap-2 mb-6 ${
+                          activeLearnMoreStep === 0 ? 'text-red-700' : 
+                          activeLearnMoreStep === 1 ? 'text-orange-700' : 
+                          'text-amber-700'
+                        } font-semibold`}>
+                          <div className={`w-8 h-8 rounded-full ${
+                            activeLearnMoreStep === 0 ? 'bg-red-200 text-red-700' : 
+                            activeLearnMoreStep === 1 ? 'bg-orange-200 text-orange-700' : 
+                            'bg-amber-200 text-amber-700'
+                          } flex items-center justify-center text-sm`}>
+                            {activeLearnMoreStep + 1}
+                          </div>
+                          <span>Step {activeLearnMoreStep + 1}</span>
+                        </div>
+                        
+                        {/* Main step title */}
+                        <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
+                          activeLearnMoreStep === 0 ? 'text-red-700' : 
+                          activeLearnMoreStep === 1 ? 'text-orange-700' : 
+                          'text-amber-700'
+                        } md:leading-tight hidden md:block`}>
+                          {[
+                            "Find a Tool",
+                            "Book & Pay",
+                            "Collect & Use"
+                          ][activeLearnMoreStep]}
+                        </h3>
+                        
+                        {/* Decorative vertical line on desktop */}
+                        <div className="hidden md:block h-32 w-1 mt-4 rounded-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 mx-auto"></div>
+                      </div>
+                      
+                      {/* Main content area with improved layout */}
+                      <div className="md:w-3/4">
+                        {/* Mobile-only title */}
+                        <h3 className={`text-2xl font-bold mb-4 ${
+                          activeLearnMoreStep === 0 ? 'text-red-700' : 
+                          activeLearnMoreStep === 1 ? 'text-orange-700' : 
+                          'text-amber-700'
+                        } md:hidden`}>
+                          {[
+                            "Find a Tool",
+                            "Book & Pay",
+                            "Collect & Use"
+                          ][activeLearnMoreStep]}
+                        </h3>
+                        
+                        {/* Subtitle with enhanced styling */}
+                        <h4 className={`text-xl font-semibold text-gray-800 mb-5 pb-3 border-b ${
+                          activeLearnMoreStep === 0 ? 'border-red-200' : 
+                          activeLearnMoreStep === 1 ? 'border-orange-200' : 
+                          'border-amber-200'
+                        }`}>
+                          {[
+                            "How to Find the Perfect Tool",
+                            "Simple Booking & Secure Payment",
+                            "Tool Collection & Return Process"
+                          ][activeLearnMoreStep]}
+                        </h4>
+                        
+                        {/* Key points with improved styling */}
+                        <div className="space-y-5 mb-8">
+                          {[
+                            [
+                              "Use our powerful search features to find exactly what you need for your project.",
+                              "Filter tools by distance, availability dates, price range, and user ratings.",
+                              "Browse through categories to discover tools you might not have thought of.",
+                              "See high-quality photos of the actual tools, not just stock images.",
+                              "Check detailed specifications and condition reports before booking."
+                            ],
+                            [
+                              "Select your desired rental dates using our easy calendar interface.",
+                              "Request to book directly through the platform - no need to arrange outside communication.",
+                              "Our secure payment system holds your payment until you confirm receipt of the tool.",
+                              "All bookings include our standard protection plan covering accidental damage.",
+                              "Receive instant confirmation and booking details via email and text message."
+                            ],
+                            [
+                              "Arrange a convenient pickup time directly with the tool owner through our messaging system.",
+                              "Inspect the tool together and confirm it matches the description and photos.",
+                              "Sign the digital handover form on the app to start your rental period.",
+                              "Complete your project with the right tools for the job.",
+                              "Return the tool in the same condition, cleaned and ready for the next user."
+                            ]
+                          ][activeLearnMoreStep].map((text, i) => (
+                            <motion.div 
+                              key={i} 
+                              className="flex items-start"
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ duration: 0.3, delay: i * 0.1 }}
+                            >
+                              <div className={`w-8 h-8 rounded-full ${
+                                activeLearnMoreStep === 0 ? 'bg-red-100 text-red-600 border border-red-200' : 
+                                activeLearnMoreStep === 1 ? 'bg-orange-100 text-orange-600 border border-orange-200' : 
+                                'bg-amber-100 text-amber-600 border border-amber-200'
+                              } flex items-center justify-center mr-4 flex-shrink-0 mt-0.5 shadow-sm`}>
+                                <span className="text-sm font-semibold">{i + 1}</span>
+                              </div>
+                              <div>
+                                <p className="text-gray-700 leading-relaxed">{text}</p>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                        
+                        {/* Tips section with enhanced card style */}
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: 0.5 }}
+                          className={`p-6 rounded-2xl ${
+                            activeLearnMoreStep === 0 ? 'bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/50' : 
+                            activeLearnMoreStep === 1 ? 'bg-gradient-to-br from-orange-50 to-orange-100/50 border border-orange-200/50' : 
+                            'bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/50'
+                          } shadow-sm backdrop-blur-sm`}
+                        >
+                          <div className="flex items-center mb-4">
+                            <div className={`w-10 h-10 rounded-full ${
+                              activeLearnMoreStep === 0 ? 'bg-red-200 text-red-600' : 
+                              activeLearnMoreStep === 1 ? 'bg-orange-200 text-orange-600' : 
+                              'bg-amber-200 text-amber-600'
+                            } flex items-center justify-center mr-3`}>
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                              </svg>
+                            </div>
+                            <h5 className={`font-bold text-lg ${
+                              activeLearnMoreStep === 0 ? 'text-red-700' : 
+                              activeLearnMoreStep === 1 ? 'text-orange-700' : 
+                              'text-amber-700'
+                            }`}>Pro Tips</h5>
+                          </div>
+                          
+                          <ul className="space-y-3 ml-2">
+                            {[
+                              [
+                                "Try searching by project type if you're not sure which tool you need",
+                                "Look for the 'Verified' badge for tools that have been quality checked",
+                                "Read previous user reviews to ensure the tool is in good condition"
+                              ],
+                              [
+                                "Book tools well in advance for weekend and holiday projects",
+                                "Add the optional premium insurance for expensive professional tools",
+                                "You can modify or cancel your booking up to 48 hours before your rental"
+                              ],
+                              [
+                                "Ask the owner for a quick demo if you're unfamiliar with the tool",
+                                "Take photos of the tool at pickup for documentation",
+                                "Clean the tool before returning to maintain a good user rating"
+                              ]
+                            ][activeLearnMoreStep].map((tip, i) => (
+                              <motion.li 
+                                key={i} 
+                                className="flex items-start"
+                                initial={{ opacity: 0, x: 10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3, delay: 0.7 + (i * 0.1) }}
+                              >
+                                <svg className={`w-5 h-5 ${
+                                  activeLearnMoreStep === 0 ? 'text-red-500' : 
+                                  activeLearnMoreStep === 1 ? 'text-orange-500' : 
+                                  'text-amber-500'
+                                } mr-3 flex-shrink-0 mt-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span className="text-gray-700">{tip}</span>
+                              </motion.li>
+                            ))}
+                          </ul>
+                        </motion.div>
+                      </div>
+                    </div>
+                    
+                    {/* Footer with action button */}
+                    <div className={`flex justify-end items-center p-6 border-t ${
+                      activeLearnMoreStep === 0 ? 'border-red-100' : 
+                      activeLearnMoreStep === 1 ? 'border-orange-100' : 
+                      'border-amber-100'
+                    } bg-white/50 backdrop-blur-sm relative z-10`}>
+                      <Button 
+                        className={`${
+                          activeLearnMoreStep === 0 ? 'bg-red-600 hover:bg-red-700 shadow-red-300/30' : 
+                          activeLearnMoreStep === 1 ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-300/30' : 
+                          'bg-amber-600 hover:bg-amber-700 shadow-amber-300/30'
+                        } text-white shadow-lg px-6 py-2 rounded-full transition-all`}
+                        onClick={() => setActiveLearnMoreStep(null)}
+                      >
+                        Got it
+                      </Button>
+                    </div>
                   </div>
                 </motion.div>
               </div>
@@ -2088,8 +2130,9 @@ export default function LandingPage() {
       {/* Why Choose Us Section - with improved design and visuals */}
       <section 
         ref={whyChooseRef} 
-        className="py-24 bg-white relative overflow-hidden transition-all duration-700" 
+        className="py-24 bg-white relative overflow-hidden transition-all duration-700 mt-16" // Added margin-top for more space 
         id="why-choose-us"
+        style={{ position: 'relative', zIndex: '20' }} // Default z-index, will be altered by useEffect
       >
         {/* Section separator - creates visual distinction between sections */}
         <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-gray-50 to-white -mt-24 z-10"></div>
@@ -2101,7 +2144,7 @@ export default function LandingPage() {
         {/* Decorative pattern - using a class instead of styled-jsx */}
         <div className="absolute inset-0 opacity-5 pointer-events-none bg-grid"></div>
         
-        <div className="container mx-auto px-4 sm:px-6 relative z-20">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
           {/* Improved section header with visually appealing elements */}
           <div className="text-center mb-16">
             <motion.div 
@@ -2236,7 +2279,7 @@ export default function LandingPage() {
                         
                         {/* Pulsing border effect on hover */}
                         <div className={`absolute inset-0 border-2 ${feature.colorBorder} rounded-2xl opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-500`}></div>
-                      </div>
+                </div>
                     </div>
                     
                     {/* Enhanced title with animated underline */}
@@ -2296,7 +2339,7 @@ export default function LandingPage() {
                     <path d="M12.5 20H5C3.89543 20 3 19.1046 3 18V13C3 7.47715 7.47715 3 13 3H14C15.1046 3 16 3.89543 16 5C16 6.10457 15.1046 7 14 7H13C9.68629 7 7 9.68629 7 13V16H12.5C14.9853 16 17 18.0147 17 20.5V27.5C17 29.9853 14.9853 32 12.5 32H5.5C3.01472 32 1 29.9853 1 27.5V20.5C1 18.0147 3.01472 16 5.5 16H12.5V20Z" fill="#22c55e"/>
                     <path d="M32.5 20H25C23.8954 20 23 19.1046 23 18V13C23 7.47715 27.4772 3 33 3H34C35.1046 3 36 3.89543 36 5C36 6.10457 35.1046 7 34 7H33C29.6863 7 27 9.68629 27 13V16H32.5C34.9853 16 37 18.0147 37 20.5V27.5C37 29.9853 34.9853 32 32.5 32H25.5C23.0147 32 21 29.9853 21 27.5V20.5C21 18.0147 23.0147 16 25.5 16H32.5V20Z" fill="#22c55e"/>
                   </svg>
-                </div>
+          </div>
                 <p className="text-gray-700 italic text-base md:text-lg max-w-2xl mx-auto">
                   The tools we use have a profound and devious influence on our thinking habits, and therefore on our thinking abilities. It is not just that we are what we eat; we are what we use.
                 </p>

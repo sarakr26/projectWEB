@@ -1,4 +1,4 @@
-// File: /Users/mbelouar/Desktop/web/core/frontend/app/layout.tsx
+// File: /Users/mbelouar/Desktop/ToolNest/core/frontend/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
