@@ -1,4 +1,4 @@
-// File: /Users/mbelouar/Desktop/ToolNest/core/frontend/app/auth/signin/page.tsx
+// File: C:\wamp64\www\PhpProject\projectWEB\core\frontend\app\auth\signin\page.tsx
 import * as entry from '../../../../../app/auth/signin/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
