@@ -119,4 +119,39 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function becomePartner(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            // Check if user is already a partner
+            if ($user->role === 'partner') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'User is already a partner'
+                ], 400);
+            }
+
+            // Update user role to partner
+            $user->update([
+                'role' => 'partner'
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Role updated to partner successfully',
+                'data' => [
+                    'user' => $user
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update role',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 } 
