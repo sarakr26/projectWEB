@@ -17,4 +17,5 @@ Route::post('/become-partner', [AuthController::class, 'becomePartner'])->middle
 
 // Listing routes
 Route::get('/listings', [ListingController::class, 'index']);
-Route::get('/listings/{id}', [ListingController::class, 'show']); 
+Route::get('/listings/{id}', [ListingController::class, 'show']);
+Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:sanctum'); 

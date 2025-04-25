@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ListingController extends Controller
 {
@@ -50,5 +51,64 @@ class ListingController extends Controller
             'status' => 'success',
             'data' => $listing
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        // Validate that the user is a partner
+        if ($request->user()->role !== 'partner') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Only partners can create listings'
+            ], 403);
+        }
+
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
+            'city_id' => 'required|exists:cities,id',
+            'price_per_day' => 'required|numeric|min:0',
+            'is_premium' => 'boolean',
+            'images' => 'array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Create the listing
+        $listing = Listing::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'city_id' => $request->city_id,
+            'price_per_day' => $request->price_per_day,
+            'is_premium' => $request->is_premium ?? false,
+            'partner_id' => $request->user()->id,
+            'status' => 'active'
+        ]);
+
+        // Handle image uploads if provided
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('listing_images', 'public');
+                $listing->images()->create([
+                    'url' => $path
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Listing created successfully',
+            'data' => $listing->load(['category', 'city', 'partner', 'images'])
+        ], 201);
     }
 } 
