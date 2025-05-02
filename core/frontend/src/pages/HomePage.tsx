@@ -207,14 +207,16 @@ const HomePage = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20">
+      <section className="py-16 bg-white dark:bg-[var(--toolnest-gray-900)]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[var(--toolnest-gray-900)] dark:text-white mb-4 animate-slide-up">
-              Browse by Category
-            </h2>
+            <div className="tn-section-title-container">
+              <h2 className="tn-section-title tn-section-title-bg centered text-3xl font-bold text-[var(--toolnest-gray-900)] dark:text-white mb-4 animate-slide-up">
+                Browse by <span className="tn-section-title-accent">Category</span>
+              </h2>
+            </div>
             <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] max-w-2xl mx-auto animate-slide-up delay-1">
-              Find the perfect tools for your next project, organized by category
+              Find the perfect tools for your next project across our wide range of categories
             </p>
           </div>
           
@@ -243,14 +245,16 @@ const HomePage = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 bg-white dark:bg-[var(--toolnest-gray-900)]">
+      <section className="py-20 bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-800)]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-[var(--toolnest-gray-900)] dark:text-white mb-4 animate-slide-up">
-              How ToolNest Works
-            </h2>
+            <div className="tn-section-title-container">
+              <h2 className="tn-section-title tn-section-title-bg centered text-3xl font-bold text-[var(--toolnest-gray-900)] dark:text-white mb-4 animate-slide-up">
+                How <span className="tn-section-title-accent">ToolNest</span> Works
+              </h2>
+            </div>
             <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] max-w-2xl mx-auto animate-slide-up delay-1">
-              A simple process designed to get you the tools you need quickly and safely
+              Renting tools has never been easier. Follow these simple steps to get started.
             </p>
           </div>
           
@@ -305,25 +309,18 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Featured Tools Section */}
-      <section className="py-20">
+      {/* Featured Tools */}
+      <section className="py-20 bg-white dark:bg-[var(--toolnest-gray-900)]">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
-            <div>
-              <h2 className="text-3xl font-bold text-[var(--toolnest-gray-900)] dark:text-white mb-4 animate-slide-up">
-                Featured Tools
+          <div className="mb-12">
+            <div className="tn-section-title-container">
+              <h2 className="tn-section-title tn-section-title-bg text-3xl font-bold text-[var(--toolnest-gray-900)] dark:text-white mb-4 animate-slide-up">
+                Featured <span className="tn-section-title-accent">Tools</span>
               </h2>
-              <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] max-w-2xl animate-slide-up delay-1">
-                Discover our hand-picked selection of high-quality tools
-              </p>
             </div>
-            <Link 
-              to="/search" 
-              className="hidden md:flex items-center text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)] font-medium group animate-slide-up delay-2 mt-4 md:mt-0"
-            >
-              <span>View all tools</span>
-              <ArrowRight size={18} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] max-w-2xl animate-slide-up delay-1">
+              Discover our most popular and highly-rated tools available for rent
+            </p>
           </div>
           
           {loading ? (

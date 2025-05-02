@@ -4,19 +4,32 @@ export interface Tool {
   description: string;
   category: string;
   price: number;
-  priceUnit: 'hour' | 'day' | 'week';
-  owner: {
-    id: string;
-    name: string;
-    avatar: string;
-    rating: number;
-  };
-  location: string;
-  images: string[];
-  condition: 'new' | 'like-new' | 'good' | 'fair' | 'poor';
+  priceUnit: 'hour' | 'day' | 'week' | 'month';
+  condition: 'New' | 'Like New' | 'Good' | 'Fair' | 'Poor';
   available: boolean;
+  availability?: string;
+  location: string;
+  distance?: string;
+  rating: number;
+  reviewCount: number;
+  ownerId: string;
+  ownerName?: string;
+  ownerAvatar?: string;
+  image: string;
+  images: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ToolSearchParams {
+  query?: string;
+  category?: string[];
+  priceRange?: [number, number];
+  condition?: string[];
+  availability?: string[];
   rating?: number;
-  numReviews?: number;
-  features?: string[];
-  specifications?: {[key: string]: string};
+  distance?: number;
+  sortBy?: 'price_asc' | 'price_desc' | 'rating' | 'newest';
+  page?: number;
+  limit?: number;
 } 
