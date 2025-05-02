@@ -120,11 +120,17 @@ projectWEB/
    DB_PASSWORD=
    ```
 
-6. Run database migrations
+6. Run database migrations and seeders
    ```bash
    cd core/backend
-   php artisan migrate
+   php artisan migrate:fresh --seed
    ```
+   This will:
+   - Create all necessary database tables
+   - Seed the database with initial data including:
+     - Cities
+     - Categories
+     - Admin account (email: admin@gmail.com, password: admin)
 
 ### Running the Application
 
