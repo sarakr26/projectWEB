@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -152,6 +153,42 @@ class AuthController extends Controller
                 'message' => 'Failed to update role',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function adminLogin(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'email' => 'required|string|email',
+                'password' => 'required|string',
+            ]);
+
+            if (!Auth::guard('admin')->attempt($validated)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid admin credentials'
+                ], 401);
+            }
+
+            $admin = Admin::where('email', $validated['email'])->first();
+            $token = $admin->createToken('admin_auth_token')->plainTextToken;
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Admin logged in successfully',
+                'data' => [
+                    'admin' => $admin,
+                    'token' => $token
+                ]
+            ]);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         }
     }
 } 
