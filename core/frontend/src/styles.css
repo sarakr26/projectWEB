@@ -427,6 +427,12 @@
   transition: all var(--toolnest-transition-fast);
 }
 
+/* Add specific style for inputs with icons */
+.tn-input.icon-input,
+.tn-input[class*="pl-"] {
+  padding-left: 2.75rem !important;
+}
+
 .tn-input:focus {
   outline: none;
   border-color: var(--toolnest-primary-500);

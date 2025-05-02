@@ -67,10 +67,10 @@ export default function SignUpPage() {
         <div className="absolute right-1/3 bottom-10 w-60 h-60 bg-[var(--toolnest-accent-400)] rounded-full blur-[80px]"></div>
       </div>
       
-      <div className="max-w-md w-full relative z-10 animate-scale-in">
+      <div className="max-w-md w-full relative z-10">
         <div className="tn-card p-8 border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-800)]">
           {/* Logo */}
-          <div className="flex justify-center mb-6 animate-slide-up">
+          <div className="flex justify-center mb-6">
             <div className="flex items-center group">
               <div className="relative mr-2">
                 <div className="absolute inset-0 bg-gradient-to-r from-[var(--toolnest-primary-500)] to-[var(--toolnest-secondary-500)] opacity-75 blur-sm rounded-full"></div>
@@ -84,23 +84,23 @@ export default function SignUpPage() {
             </div>
           </div>
           
-          <div className="animate-slide-up delay-1">
+          <div className="mb-6">
             <h2 className="text-center text-3xl font-bold text-[var(--toolnest-gray-900)] dark:text-white mb-2">
               Create an account
             </h2>
-            <p className="text-center text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] mb-6">
+            <p className="text-center text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
               Join our community of tool sharers
             </p>
           </div>
 
           {error && (
-            <div className="mb-6 flex items-start p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 animate-slide-up delay-1">
+            <div className="mb-6 flex items-start p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400">
               <AlertCircle size={18} className="mr-3 flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
-          <form className="space-y-5 animate-slide-up delay-2" onSubmit={handleSubmit}>
+          <form className="space-y-5 mb-8" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
@@ -113,12 +113,12 @@ export default function SignUpPage() {
                     type="text"
                     autoComplete="name"
                     required
-                    className="tn-input pl-10 w-full"
+                    className="tn-input icon-input"
                     placeholder="Enter your full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
-                  <User size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                  <User size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
                 </div>
               </div>
               
@@ -133,12 +133,12 @@ export default function SignUpPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="tn-input pl-10 w-full"
+                    className="tn-input pl-14 w-full"
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                  <Mail size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                  <Mail size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
                 </div>
               </div>
               
@@ -153,12 +153,12 @@ export default function SignUpPage() {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="tn-input pl-10 w-full"
+                    className="tn-input pl-14 w-full"
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <Lock size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                  <Lock size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
                 </div>
                 <div className="mt-1 text-xs text-[var(--toolnest-gray-500)] dark:text-[var(--toolnest-gray-500)]">
                   Password must be at least 8 characters long
@@ -176,12 +176,12 @@ export default function SignUpPage() {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="tn-input pl-10 w-full"
+                    className="tn-input pl-14 w-full"
                     placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
-                  <Lock size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                  <Lock size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
                 </div>
               </div>
             </div>
@@ -208,7 +208,7 @@ export default function SignUpPage() {
             </button>
           </form>
 
-          <div className="mt-8 animate-slide-up delay-3">
+          <div className="mb-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)]"></div>
@@ -245,7 +245,7 @@ export default function SignUpPage() {
             </div>
           </div>
 
-          <div className="mt-8 animate-slide-up delay-4">
+          <div>
             <div className="text-center mb-6">
               <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
                 Already have an account?{" "}
