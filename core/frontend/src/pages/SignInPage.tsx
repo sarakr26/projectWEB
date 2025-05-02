@@ -2,10 +2,10 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
-import { Facebook } from "react-feather"
+import { Facebook, Mail, Lock, LogIn, User, AlertCircle, Box, ArrowRight, GitHub } from "react-feather"
 
 export default function SignInPage() {
   const [email, setEmail] = useState("")
@@ -52,127 +52,176 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Or{" "}
-            <Link
-              to="/signup"
-              className="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300"
-            >
-              create a new account
-            </Link>
-          </p>
-        </div>
-
-        {error && (
-          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md p-4 text-sm text-red-600 dark:text-red-400">
-            {error}
-          </div>
-        )}
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white dark:bg-gray-700 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white dark:bg-gray-700 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+    <div className="min-h-screen flex items-center justify-center bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-950)] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 z-0 opacity-40 dark:opacity-20">
+        <div className="absolute -left-10 top-1/3 w-72 h-72 bg-[var(--toolnest-primary-400)] rounded-full blur-[100px]"></div>
+        <div className="absolute right-0 bottom-1/4 w-80 h-80 bg-[var(--toolnest-secondary-400)] rounded-full blur-[120px]"></div>
+      </div>
+      
+      <div className="max-w-md w-full relative z-10 animate-scale-in">
+        <div className="tn-card p-8 border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-800)]">
+          {/* Logo */}
+          <div className="flex justify-center mb-6 animate-slide-up">
+            <div className="flex items-center group">
+              <div className="relative mr-2">
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--toolnest-primary-500)] to-[var(--toolnest-secondary-500)] opacity-75 blur-sm rounded-full"></div>
+                <div className="relative">
+                  <Box className="text-white" size={28} />
+                </div>
+              </div>
+              <span className="text-2xl font-bold gradient-text tracking-tight">
+                ToolNest
+              </span>
             </div>
           </div>
+          
+          <div className="animate-slide-up delay-1">
+            <h2 className="text-center text-3xl font-bold text-[var(--toolnest-gray-900)] dark:text-white mb-2">
+              Welcome back
+            </h2>
+            <p className="text-center text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] mb-6">
+              Sign in to your account to continue
+            </p>
+          </div>
 
-          <div className="flex items-center justify-between">
+          {error && (
+            <div className="mb-6 flex items-start p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 animate-slide-up delay-1">
+              <AlertCircle size={18} className="mr-3 flex-shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form className="space-y-5 animate-slide-up delay-2" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email-address" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
+                  Email address
+                </label>
+                <div className="relative">
+                  <input
+                    id="email-address"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    className="tn-input pl-10 w-full"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <Mail size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label htmlFor="password" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)]">
+                    Password
+                  </label>
+                  <a href="#" className="text-sm font-medium text-[var(--toolnest-primary-600)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-primary-400)] dark:hover:text-[var(--toolnest-primary-300)]">
+                    Forgot password?
+                  </a>
+                </div>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    className="tn-input pl-10 w-full"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <Lock size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                </div>
+              </div>
+            </div>
+
             <div className="flex items-center">
               <input
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 dark:border-gray-700 rounded"
+                className="h-4 w-4 rounded border-[var(--toolnest-gray-300)] text-[var(--toolnest-primary-600)] focus:ring-[var(--toolnest-primary-500)] dark:border-[var(--toolnest-gray-600)] dark:bg-[var(--toolnest-gray-800)]"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)]">
                 Remember me
               </label>
             </div>
 
-            <div className="text-sm">
-              <a
-                href="#"
-                className="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300"
-              >
-                Forgot your password?
-              </a>
-            </div>
-          </div>
-
-          <div>
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="tn-button tn-button-primary w-full py-2.5 flex items-center justify-center group"
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Signing in...
+                </span>
+              ) : (
+                <span className="flex items-center">
+                  Sign in
+                  <LogIn size={18} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
+                </span>
+              )}
             </button>
-          </div>
-        </form>
+          </form>
 
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
+          <div className="mt-8 animate-slide-up delay-3">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)]"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white dark:bg-[var(--toolnest-gray-800)] text-[var(--toolnest-gray-500)]">
+                  Or continue with
+                </span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or continue with</span>
+
+            <div className="mt-6 grid grid-cols-3 gap-3">
+              <button
+                onClick={handleGoogleSignIn}
+                className="flex items-center justify-center py-2.5 px-4 rounded-md border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] bg-white dark:bg-[var(--toolnest-gray-800)] hover:bg-[var(--toolnest-gray-50)] dark:hover:bg-[var(--toolnest-gray-700)] transition-colors group"
+              >
+                <svg className="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+                </svg>
+              </button>
+
+              <button
+                onClick={handleFacebookSignIn}
+                className="flex items-center justify-center py-2.5 px-4 rounded-md border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] bg-white dark:bg-[var(--toolnest-gray-800)] hover:bg-[var(--toolnest-gray-50)] dark:hover:bg-[var(--toolnest-gray-700)] transition-colors group"
+              >
+                <Facebook className="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+              </button>
+              
+              <button
+                className="flex items-center justify-center py-2.5 px-4 rounded-md border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] bg-white dark:bg-[var(--toolnest-gray-800)] hover:bg-[var(--toolnest-gray-50)] dark:hover:bg-[var(--toolnest-gray-700)] transition-colors group"
+              >
+                <GitHub className="w-5 h-5 text-[var(--toolnest-gray-900)] dark:text-white group-hover:scale-110 transition-transform" />
+              </button>
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <button
-              onClick={handleGoogleSignIn}
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600"
-            >
-              <span className="sr-only">Sign in with Google</span>
-              <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
-              </svg>
-            </button>
-
-            <button
-              onClick={handleFacebookSignIn}
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600"
-            >
-              <span className="sr-only">Sign in with Facebook</span>
-              <Facebook className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            </button>
+          <div className="mt-8 text-center animate-slide-up delay-4">
+            <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="font-medium text-[var(--toolnest-primary-600)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-primary-400)] dark:hover:text-[var(--toolnest-primary-300)] inline-flex items-center"
+              >
+                Sign up
+                <ArrowRight size={16} className="ml-1.5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </p>
           </div>
         </div>
       </div>
