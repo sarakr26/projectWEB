@@ -12,6 +12,7 @@ return new class extends Migration
             $table->foreignId('listing_id')->constrained()->onDelete('cascade');
             $table->date('start_date');
             $table->date('end_date');
+            $table->timestamps();
             $table->primary(['listing_id', 'start_date', 'end_date']);
         });
     }

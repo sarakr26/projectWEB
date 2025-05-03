@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
+use App\Models\Availability;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -56,61 +57,62 @@ class ListingController extends Controller
 
     public function store(Request $request)
     {
-        // Validate that the user is a partner
-        if ($request->user()->role !== 'partner') {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Only partners can create listings'
-            ], 403);
-        }
+        try {
+            $validator = Validator::make($request->all(), [
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'price_per_day' => 'required|numeric|min:0',
+                'category_id' => 'required|exists:categories,id',
+                'city_id' => 'required|exists:cities,id',
+                'delivery_option' => 'boolean',
+                'start_date' => 'required|date|after_or_equal:today',
+                'end_date' => 'required|date|after:start_date',
+            ]);
 
-        // Validate the request data
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
-            'city_id' => 'required|exists:cities,id',
-            'price_per_day' => 'required|numeric|min:0',
-            'is_premium' => 'boolean',
-            'images' => 'array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // Create the listing
-        $listing = Listing::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'city_id' => $request->city_id,
-            'price_per_day' => $request->price_per_day,
-            'is_premium' => $request->is_premium ?? false,
-            'partner_id' => $request->user()->id,
-            'status' => 'active'
-        ]);
-
-        // Handle image uploads if provided
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('listing_images', 'public');
-                $listing->images()->create([
-                    'url' => $path
-                ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
             }
-        }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Listing created successfully',
-            'data' => $listing->load(['category', 'city', 'partner', 'images'])
-        ], 201);
+            DB::beginTransaction();
+
+            $listing = Listing::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'price_per_day' => $request->price_per_day,
+                'category_id' => $request->category_id,
+                'city_id' => $request->city_id,
+                'partner_id' => $request->user()->id,
+                'delivery_option' => $request->delivery_option ?? false,
+                'status' => 'active',
+            ]);
+
+            // Create availability record
+            Availability::create([
+                'listing_id' => $listing->id,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Listing created successfully',
+                'data' => $listing->load(['category', 'city', 'partner', 'availabilities'])
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create listing',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function search(Request $request)

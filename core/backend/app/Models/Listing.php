@@ -57,4 +57,9 @@ class Listing extends Model
     {
         return $this->hasMany(ListingImage::class);
     }
+
+    public function availabilities()
+    {
+        return $this->hasMany(Availability::class);
+    }
 } 
