@@ -38,43 +38,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-900)] border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-800)]">
-      {/* Newsletter Section */}
-      <div className="border-b border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-800)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-            <div className="md:w-1/2 animate-slide-up">
-              <h2 className="text-2xl font-bold text-[var(--toolnest-gray-900)] dark:text-white mb-2">
-                Join our newsletter
-              </h2>
-              <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] max-w-md">
-                Stay updated with the latest tools, tips, and community events. No spam, just helpful content.
-              </p>
-            </div>
-            <div className="md:w-1/2 animate-slide-up delay-1">
-              <form className="flex w-full max-w-md">
-                <div className="relative flex-grow">
-                  <input 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    className="tn-input pr-10 rounded-r-none"
-                    required
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <Mail size={16} className="text-[var(--toolnest-gray-400)]" />
-                  </div>
-                </div>
-                <button 
-                  type="submit"
-                  className="tn-button tn-button-primary rounded-l-none group"
-                >
-                  <span>Subscribe</span>
-                  <Send size={16} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+
       
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

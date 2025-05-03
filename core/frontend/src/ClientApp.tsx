@@ -9,4 +9,4 @@ const AppWithNoSSR = dynamic(() => import('./App'), {
 
 export default function ClientApp() {
   return <AppWithNoSSR />
-} 
+}

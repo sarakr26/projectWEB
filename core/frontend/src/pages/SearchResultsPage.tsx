@@ -106,63 +106,6 @@ const SearchResultsPage: React.FC = () => {
   }
   
   // Render functions
-  const renderSearchHeader = () => (
-    <div className="bg-white dark:bg-[var(--toolnest-gray-900)] py-10 pb-12 px-4 md:px-8 animate-fade-in sticky top-[60px] z-10 shadow-sm border-b border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-800)] pt-14 relative overflow-hidden">
-      <div className="container mx-auto relative z-10">
-        <div className="max-w-3xl">
-          <div className="mb-2 text-sm font-medium text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-primary-300)] animate-slide-in-left">
-            <span className="inline-flex items-center">
-              <SearchIcon size={14} className="mr-2" />
-              Browse our collection
-            </span>
-          </div>
-          <div className="tn-section-title-container">
-            <h1 className="tn-section-title tn-section-title-bg text-3xl md:text-4xl text-[var(--toolnest-gray-900)] dark:text-white animate-slide-up">
-              {query 
-                ? <>Search Results for <span className="tn-section-title-accent">"{query}"</span></>
-                : <>Discover Our <span className="tn-section-title-accent">Tool Collection</span></>
-              }
-            </h1>
-          </div>
-          <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-300)] mb-8 max-w-2xl animate-slide-up delay-1">
-            {query 
-              ? "Find the perfect tools that match your needs with our extensive collection of high-quality equipment."
-              : "Browse our entire catalog of well-maintained tools available for rent. From power tools to gardening equipment, we have everything you need for your next project."}
-          </p>
-          
-          <div className="relative animate-slide-up delay-2">
-            <div className="absolute inset-y-0 left-3 flex items-center text-[var(--toolnest-gray-500)]">
-              <SearchIcon size={20} />
-            </div>
-            <input
-              type="text"
-              defaultValue={query}
-              placeholder="Search for tools by name, category, or purpose..."
-              className="tn-input w-full h-14 pl-10 pr-4 text-base rounded-lg shadow-sm focus:ring-2 focus:ring-[var(--toolnest-primary-500)] border border-[var(--toolnest-gray-300)] dark:border-[var(--toolnest-gray-700)]"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  const input = e.target as HTMLInputElement
-                  window.location.href = `/search?q=${encodeURIComponent(input.value)}`
-                }
-              }}
-            />
-            <button 
-              className="absolute inset-y-0 right-0 flex items-center justify-center px-4 font-medium text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-primary-300)] bg-transparent hover:text-[var(--toolnest-primary-900)] dark:hover:text-white transition-colors" 
-              onClick={() => {
-                const input = document.querySelector('input[type="text"]') as HTMLInputElement
-                if (input && input.value.trim()) {
-                  window.location.href = `/search?q=${encodeURIComponent(input.value)}`
-                }
-              }}
-            >
-              Search
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-  
   const renderResultsHeader = () => (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 animate-fade-in">
       <div className="mb-4 sm:mb-0">
@@ -322,7 +265,7 @@ const SearchResultsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-950)] pt-[60px]">
       {/* Search Header */}
-      {renderSearchHeader()}
+      {/* {renderSearchHeader()} */}
       
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 mt-6">
