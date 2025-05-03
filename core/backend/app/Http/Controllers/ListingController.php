@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Listing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ListingController extends Controller
 {
@@ -110,5 +111,57 @@ class ListingController extends Controller
             'message' => 'Listing created successfully',
             'data' => $listing->load(['category', 'city', 'partner', 'images'])
         ], 201);
+    }
+
+    public function search(Request $request)
+    {
+        try {
+            $query = Listing::query()
+                ->with(['category', 'city', 'partner'])
+                ->where('status', 'active');
+
+            // Filter by city
+            if ($request->has('city_id')) {
+                $query->where('city_id', $request->city_id);
+            }
+
+            // Filter by category
+            if ($request->has('category_id')) {
+                $query->where('category_id', $request->category_id);
+            }
+
+            // Filter by minimum rating
+            if ($request->has('min_rating')) {
+                $query->where('avg_rating', '>=', $request->min_rating);
+            }
+
+            // Filter by price range
+            if ($request->has('min_price')) {
+                $query->where('price_per_day', '>=', $request->min_price);
+            }
+            if ($request->has('max_price')) {
+                $query->where('price_per_day', '<=', $request->max_price);
+            }
+
+            // Sort by
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortOrder = $request->get('sort_order', 'desc');
+            $query->orderBy($sortBy, $sortOrder);
+
+            $listings = $query->paginate(10);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Listings retrieved successfully',
+                'data' => $listings
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to search listings',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 } 

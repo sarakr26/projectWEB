@@ -18,5 +18,6 @@ Route::post('/become-partner', [AuthController::class, 'becomePartner'])->middle
 
 // Listing routes
 Route::get('/listings', [ListingController::class, 'index']);
+Route::get('/listings/search', [ListingController::class, 'search']);//use exemple (http://localhost:8000/api/listings/search?city_id=1&category_id=2&min_rating=4&min_price=10&max_price=50&sort_by=price_per_day&sort_order=asc)
 Route::get('/listings/{id}', [ListingController::class, 'show']);
 Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:sanctum'); 
