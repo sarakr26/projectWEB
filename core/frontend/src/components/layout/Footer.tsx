@@ -56,12 +56,12 @@ export default function Footer() {
                 ToolNest
               </span>
             </div>
-            <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] mb-6 max-w-md">
+            <p className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] mb-6 ">
               ToolNest is your smart, unified hub for powerful tools. We connect tool owners with people who need them, creating a community of shared resources and expertise.
             </p>
             
             {/* Three USPs */}
-            <div className="space-y-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[var(--toolnest-primary-100)] dark:bg-[var(--toolnest-primary-900)] flex items-center justify-center text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]">
                   <Shield size={18} />
@@ -116,107 +116,12 @@ export default function Footer() {
           </div>
 
           {/* Quick Links Column */}
-          <div className="animate-slide-up delay-1">
-            <h3 className="text-base font-semibold text-[var(--toolnest-gray-900)] dark:text-white uppercase tracking-wider mb-4">
-              Categories
-            </h3>
-            <ul className="space-y-3">
-              {categoryLinks.map((link, index) => (
-                <li key={link.name} className="animate-slide-up" style={{ animationDelay: `${0.2 + index * 0.05}s` }}>
-                  <Link
-                    to={link.path}
-                    className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] hover:text-[var(--toolnest-primary-600)] dark:hover:text-[var(--toolnest-primary-400)] transition-colors inline-flex items-center group"
-                  >
-                    <ArrowRight size={14} className="mr-2 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" />
-                    <span>{link.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          
 
           {/* Support Column */}
-          <div className="animate-slide-up delay-2">
-            <h3 className="text-base font-semibold text-[var(--toolnest-gray-900)] dark:text-white uppercase tracking-wider mb-4">
-              Support
-            </h3>
-            <ul className="space-y-3">
-              {supportLinks.map((link, index) => (
-                <li key={link.name} className="animate-slide-up" style={{ animationDelay: `${0.3 + index * 0.05}s` }}>
-                  <Link
-                    to={link.path}
-                    className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] hover:text-[var(--toolnest-primary-600)] dark:hover:text-[var(--toolnest-primary-400)] transition-colors inline-flex items-center group"
-                  >
-                    <ArrowRight size={14} className="mr-2 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" />
-                    <span>{link.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            
-            {/* Contact Info */}
-            <div className="mt-8 space-y-3">
-              <div className="flex items-start gap-3">
-                <MapPin size={18} className="flex-shrink-0 mt-0.5 text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
-                <span className="text-sm text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
-                  123 Tool Street, Workshop City
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Mail size={18} className="flex-shrink-0 mt-0.5 text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
-                <span className="text-sm text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
-                  hello@toolnest.com
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Phone size={18} className="flex-shrink-0 mt-0.5 text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
-                <span className="text-sm text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
-                  +1 (555) 123-4567
-                </span>
-              </div>
-            </div>
-          </div>
-
+          
           {/* Legal Column */}
-          <div className="animate-slide-up delay-3">
-            <h3 className="text-base font-semibold text-[var(--toolnest-gray-900)] dark:text-white uppercase tracking-wider mb-4">
-              Legal
-            </h3>
-            <ul className="space-y-3">
-              {legalLinks.map((link, index) => (
-                <li key={link.name} className="animate-slide-up" style={{ animationDelay: `${0.4 + index * 0.05}s` }}>
-                  <Link
-                    to={link.path}
-                    className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] hover:text-[var(--toolnest-primary-600)] dark:hover:text-[var(--toolnest-primary-400)] transition-colors inline-flex items-center group"
-                  >
-                    <ArrowRight size={14} className="mr-2 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" />
-                    <span>{link.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            
-            {/* Payment Methods */}
-            <div className="mt-8">
-              <h4 className="text-sm font-medium text-[var(--toolnest-gray-900)] dark:text-white mb-3">
-                Payment Methods
-              </h4>
-              <div className="flex gap-2 flex-wrap">
-                <div className="w-10 h-6 bg-white dark:bg-[var(--toolnest-gray-800)] rounded border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] flex items-center justify-center">
-                  <CreditCard size={14} className="text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]" />
-                </div>
-                <div className="h-6 px-2 bg-white dark:bg-[var(--toolnest-gray-800)] rounded border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] flex items-center justify-center text-xs font-medium text-[var(--toolnest-gray-800)] dark:text-[var(--toolnest-gray-200)]">
-                  Visa
-                </div>
-                <div className="h-6 px-2 bg-white dark:bg-[var(--toolnest-gray-800)] rounded border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] flex items-center justify-center text-xs font-medium text-[var(--toolnest-gray-800)] dark:text-[var(--toolnest-gray-200)]">
-                  PayPal
-                </div>
-                <div className="h-6 px-2 bg-white dark:bg-[var(--toolnest-gray-800)] rounded border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] flex items-center justify-center text-xs font-medium text-[var(--toolnest-gray-800)] dark:text-[var(--toolnest-gray-200)]">
-                  Apple Pay
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </div>
       </div>
 
