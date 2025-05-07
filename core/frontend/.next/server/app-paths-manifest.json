@@ -1,7 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/profile/liked-tools/page": "app/profile/liked-tools/page.js",
-  "/auth/signup/page": "app/auth/signup/page.js",
-  "/auth/signin/page": "app/auth/signin/page.js",
-  "/tools/[id]/page": "app/tools/[id]/page.js"
-}
