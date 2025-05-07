@@ -315,7 +315,7 @@ export default function ToolDetailsPage() {
         {/* Right column: Booking and owner info */}
         <div className="space-y-8">
           {/* Booking card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 sticky top-20">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center mb-4">
               <div>
                 <span className="text-2xl font-bold text-gray-900 dark:text-white">${tool.price}</span>

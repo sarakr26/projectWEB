@@ -74,48 +74,6 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            <Link 
-              to="/" 
-              className={`px-3 py-2 rounded-md transition-all flex items-center space-x-1 text-[var(--toolnest-gray-700)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-gray-300)] dark:hover:text-[var(--toolnest-primary-400)] ${location.pathname === '/' ? 'bg-[var(--toolnest-primary-50)] dark:bg-[var(--toolnest-primary-950)]' : ''}`}
-            >
-              <Home size={18} />
-              <span>Home</span>
-            </Link>
-            
-            <Link 
-              to="/explore" 
-              className={`px-3 py-2 rounded-md transition-all flex items-center space-x-1 text-[var(--toolnest-gray-700)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-gray-300)] dark:hover:text-[var(--toolnest-primary-400)] ${location.pathname === '/explore' ? 'bg-[var(--toolnest-primary-50)] dark:bg-[var(--toolnest-primary-950)]' : ''}`}
-            >
-              <Compass size={18} />
-              <span>Explore</span>
-            </Link>
-            
-            <div className="relative group">
-              <button className="px-3 py-2 rounded-md transition-all flex items-center space-x-1 text-[var(--toolnest-gray-700)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-gray-300)] dark:hover:text-[var(--toolnest-primary-400)]">
-                <Grid size={18} />
-                <span>Categories</span>
-                <ChevronDown size={16} className="ml-1 transition-transform group-hover:rotate-180" />
-              </button>
-              
-              <div className="absolute left-0 mt-2 w-48 origin-top-left rounded-md shadow-lg bg-white dark:bg-[var(--toolnest-gray-800)] border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] ring-1 ring-black ring-opacity-5 focus:outline-none transition-all opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 z-50">
-                <div className="p-2 space-y-1">
-                  {['Power Tools', 'Hand Tools', 'Garden Tools', 'Measurement', 'Workshop', 'Electrical'].map((category, idx) => (
-                    <Link
-                      key={category}
-                      to={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}
-                      className={`block px-3 py-2 rounded-md text-sm hover:bg-[var(--toolnest-primary-50)] hover:text-[var(--toolnest-primary-700)] transition-colors dark:hover:bg-[var(--toolnest-primary-950)] dark:hover:text-[var(--toolnest-primary-400)] animate-slide-up`}
-                      style={{ animationDelay: `${idx * 0.05}s` }}
-                    >
-                      {category}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </nav>
-
           {/* Search Bar */}
           <div className={`hidden md:block relative transition-all duration-300 ${isSearchFocused ? 'w-1/3' : 'w-1/4'}`}>
             <form onSubmit={handleSearch} className="relative">
