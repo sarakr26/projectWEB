@@ -32,8 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Review routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/reviews', [ReviewController::class, 'store']);
-    Route::get('/reviews', [ReviewController::class, 'index']);
-    Route::get('/reviews/{id}', [ReviewController::class, 'show']);
-    Route::put('/reviews/{id}', [ReviewController::class, 'update']);
+    Route::post('/reviews', [ReviewController::class, 'store']);//create a review for a listing
+    Route::get('/reviews', [ReviewController::class, 'index']);//show all reviews with filters
+    Route::get('/reviews/{id}', [ReviewController::class, 'show']);//show a review by id
+    Route::put('/reviews/{id}', [ReviewController::class, 'update']);//update a review by id
 }); 
