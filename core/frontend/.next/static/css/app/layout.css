@@ -4138,10 +4138,6 @@ body {
     position: absolute;
   }
 
-  .md\:mb-0 {
-    margin-bottom: 0px;
-  }
-
   .md\:block {
     display: block;
   }
