@@ -15,27 +15,36 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
+            \Log::info('Register request data:', $request->all());
             $validated = $request->validate([
-                'username' => 'required|string|max:255|unique:users',
+                'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
+                'username' => 'nullable|string|max:255|unique:users',
                 'phone_number' => 'nullable|string|max:20',
                 'address' => 'nullable|string',
                 'city_id' => 'required|exists:cities,id',
+                'role' => 'required|in:client,partner',
             ]);
-
+    
+            // If username is not provided, use name
+            if (empty($validated['username'])) {
+                $validated['username'] = $validated['name'];
+            }
+    
             $user = User::create([
-                'username' => $validated['username'],
+                'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
-                'phone_number' => $validated['phone_number'] ?? null,
-                'address' => $validated['address'] ?? null,
+                'username' => $validated['username'],
+                'phone_number' => $validated['phone_number'],
+                'address' => $validated['address'],
                 'city_id' => $validated['city_id'],
-                'role' => 'client',
+                'role' => $validated['role'],
             ]);
-
+    
             $token = $user->createToken('auth_token')->plainTextToken;
-
+    
             return response()->json([
                 'status' => 'success',
                 'message' => 'User registered successfully',
@@ -44,14 +53,8 @@ class AuthController extends Controller
                     'token' => $token
                 ]
             ], 201);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
         } catch (\Exception $e) {
+            \Log::error('Registration error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Registration failed',
@@ -162,6 +165,7 @@ class AuthController extends Controller
             $validated = $request->validate([
                 'email' => 'required|string|email',
                 'password' => 'required|string',
+                'role' => 'sometimes|string|in:client,partner',
             ]);
 
             if (!Auth::guard('admin')->attempt($validated)) {

@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { Facebook, Mail, Lock, LogIn, User, AlertCircle, Box, ArrowRight, GitHub } from "react-feather"
 
@@ -12,8 +12,14 @@ export default function SignInPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const { login, loginWithGoogle, loginWithFacebook } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  // Get redirect URL from query params if available
+  const searchParams = new URLSearchParams(location.search)
+  const redirectUrl = searchParams.get('redirect') || '/'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,33 +27,54 @@ export default function SignInPage() {
     setIsLoading(true)
 
     try {
-      await login(email, password)
-      navigate("/")
+      const response: any = await login(email, password, rememberMe)
+      
+      if (response?.status === 'success') {
+        // Navigate to the redirect URL or homepage
+        navigate(redirectUrl)
+      } else {
+        // Handle error from the response
+        setError(response?.message || "Failed to sign in. Please check your credentials.")
+        
+        // If there are validation errors, show them
+        if (response?.errors) {
+          const firstError = Object.values(response.errors)[0]
+          if (Array.isArray(firstError) && firstError.length > 0) {
+            setError(firstError[0])
+          }
+        }
+      }
     } catch (err) {
-      setError("Failed to sign in. Please check your credentials.")
-      console.error(err)
+      setError("Authentication failed. Please check your credentials or try again later.")
+      console.error("Login error:", err)
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleGoogleSignIn = async () => {
+    setIsLoading(true)
     try {
       await loginWithGoogle()
-      navigate("/")
+      navigate(redirectUrl)
     } catch (err) {
       setError("Failed to sign in with Google.")
       console.error(err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const handleFacebookSignIn = async () => {
+    setIsLoading(true)
     try {
       await loginWithFacebook()
-      navigate("/")
+      navigate(redirectUrl)
     } catch (err) {
       setError("Failed to sign in with Facebook.")
       console.error(err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -145,6 +172,8 @@ export default function SignInPage() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 rounded border-[var(--toolnest-gray-300)] text-[var(--toolnest-primary-600)] focus:ring-[var(--toolnest-primary-500)] dark:border-[var(--toolnest-gray-600)] dark:bg-[var(--toolnest-gray-800)]"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)]">
@@ -189,6 +218,7 @@ export default function SignInPage() {
             <div className="mt-6 grid grid-cols-3 gap-3">
               <button
                 onClick={handleGoogleSignIn}
+                disabled={isLoading}
                 className="flex items-center justify-center py-2.5 px-4 rounded-md border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] bg-white dark:bg-[var(--toolnest-gray-800)] hover:bg-[var(--toolnest-gray-50)] dark:hover:bg-[var(--toolnest-gray-700)] transition-colors group tn-button-social"
               >
                 <svg className="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
@@ -198,12 +228,14 @@ export default function SignInPage() {
 
               <button
                 onClick={handleFacebookSignIn}
+                disabled={isLoading}
                 className="flex items-center justify-center py-2.5 px-4 rounded-md border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] bg-white dark:bg-[var(--toolnest-gray-800)] hover:bg-[var(--toolnest-gray-50)] dark:hover:bg-[var(--toolnest-gray-700)] transition-colors group tn-button-social"
               >
                 <Facebook className="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
               </button>
               
               <button
+                disabled={isLoading}
                 className="flex items-center justify-center py-2.5 px-4 rounded-md border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] bg-white dark:bg-[var(--toolnest-gray-800)] hover:bg-[var(--toolnest-gray-50)] dark:hover:bg-[var(--toolnest-gray-700)] transition-colors group tn-button-social"
               >
                 <GitHub className="w-5 h-5 text-[var(--toolnest-gray-900)] dark:text-white group-hover:scale-110 transition-transform" />

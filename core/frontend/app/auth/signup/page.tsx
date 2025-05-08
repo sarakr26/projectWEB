@@ -12,20 +12,43 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { ArrowRight, Loader2, Mail, Lock, User, Github, Twitter, CheckCircle2 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { registerUser } from "@/app/services/auth"
+import { getCities, type City } from "@/app/services/cities"
+import { toast } from "@/components/ui/use-toast"
 
 export default function SignUp() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [cities, setCities] = useState<City[]>([])
   const [formStep, setFormStep] = useState(0)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    username: "",
+    phone_number: "",
+    address: "",
+    city_id: "",
     accountType: "client",
   })
-
+  useEffect(() => {
+    const loadCities = async () => {
+      const citiesData = await getCities()
+      setCities(citiesData)
+    }
+    
+    loadCities()
+  }, [])
   const updateFormData = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
   }
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,12 +59,49 @@ export default function SignUp() {
     }
 
     setIsLoading(true)
+    setError("")
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      // Prepare data for API
+      const userData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        username: formData.username || formData.name, // Use name as username if not provided
+        phone_number: formData.phone_number,
+        address: formData.address,
+        city_id: formData.city_id ? parseInt(formData.city_id) : undefined,
+        role: formData.accountType
+      }
 
-    setIsLoading(false)
-    // Handle sign up logic here
+      const response = await registerUser(userData)
+      
+      if (response.status === 'success') {
+        toast({
+          title: "Success!",
+          description: "Your account has been created successfully.",
+          variant: "default",
+        })
+        
+        // Redirect to home page or dashboard
+        router.push('/')
+      } else {
+        setError(response.message || "Registration failed. Please try again.")
+        
+        // If there are validation errors, show the first one
+        if (response.errors) {
+          const firstError = Object.values(response.errors)[0]
+          if (Array.isArray(firstError) && firstError.length > 0) {
+            setError(firstError[0])
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Registration error:", err)
+      setError("An unexpected error occurred. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const formVariants = {
@@ -273,6 +333,52 @@ export default function SignUp() {
                           As a partner, you can list your tools for rent and earn money.
                         </p>
                       </TabsContent>
+                      // Add after the Account Type section in formStep === 1
+<motion.div variants={formVariants} custom={2} className="space-y-2">
+  <Label htmlFor="city" className="text-gray-300">City</Label>
+  <select
+    id="city"
+    className="w-full px-3 py-2 bg-gray-800/50 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 text-white"
+    value={formData.city_id}
+    onChange={(e) => updateFormData("city_id", e.target.value)}
+    required
+  >
+    <option value="">Select your city</option>
+    {cities.map((city) => (
+      <option key={city.id} value={city.id.toString()}>
+        {city.name}
+      </option>
+    ))}
+  </select>
+</motion.div>
+
+<motion.div variants={formVariants} custom={3} className="space-y-2">
+  <Label htmlFor="phone" className="text-gray-300">Phone Number (optional)</Label>
+  <div className="relative group">
+    <Input
+      id="phone"
+      type="tel"
+      placeholder="+1 (123) 456-7890"
+      className="pl-3 bg-gray-800/50 border-gray-700 focus:border-green-500 text-white"
+      value={formData.phone_number}
+      onChange={(e) => updateFormData("phone_number", e.target.value)}
+    />
+  </div>
+</motion.div>
+
+<motion.div variants={formVariants} custom={4} className="space-y-2">
+  <Label htmlFor="address" className="text-gray-300">Address (optional)</Label>
+  <div className="relative group">
+    <Input
+      id="address"
+      type="text"
+      placeholder="123 Main St, City, State"
+      className="pl-3 bg-gray-800/50 border-gray-700 focus:border-green-500 text-white"
+      value={formData.address}
+      onChange={(e) => updateFormData("address", e.target.value)}
+    />
+  </div>
+</motion.div>
                     </Tabs>
                   </motion.div>
 
