@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReviewController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -27,4 +28,12 @@ Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reservations', [ReservationController::class, 'store']);
     Route::get('/reservations/check-availability', [ReservationController::class, 'checkAvailability']);
+});
+
+// Review routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/reviews', [ReviewController::class, 'store']);
+    Route::get('/reviews', [ReviewController::class, 'index']);
+    Route::get('/reviews/{id}', [ReviewController::class, 'show']);
+    Route::put('/reviews/{id}', [ReviewController::class, 'update']);
 }); 
