@@ -134,7 +134,6 @@ export default function Navbar() {
                       <User size={16} />
                       <span>Dashboard</span>
                     </Link>
-                    
                     <Link
                       to="/saved"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-[var(--toolnest-gray-700)] hover:bg-[var(--toolnest-gray-100)] dark:text-[var(--toolnest-gray-300)] dark:hover:bg-[var(--toolnest-gray-700)]"
@@ -142,13 +141,22 @@ export default function Navbar() {
                       <Heart size={16} />
                       <span>Saved Tools</span>
                     </Link>
-                    
                     <Link
                       to="/settings"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-[var(--toolnest-gray-700)] hover:bg-[var(--toolnest-gray-100)] dark:text-[var(--toolnest-gray-300)] dark:hover:bg-[var(--toolnest-gray-700)]"
                     >
                       <Settings size={16} />
                       <span>Settings</span>
+                    </Link>
+                    <Link
+                      to="/partner-upgrade"
+                      className="flex items-center space-x-2 px-4 py-2 my-2 rounded-md bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 text-white font-bold text-base shadow-lg hover:scale-105 transition-transform duration-200"
+                      style={{ justifyContent: 'center' }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 mr-1">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.09 6.26L21 9.27l-5 4.87L17.18 21 12 17.27 6.82 21 8 14.14l-5-4.87 6.91-1.01L12 3z" />
+                      </svg>
+                      <span>Upgrade to Partner</span>
                     </Link>
                   </div>
                   
@@ -297,6 +305,14 @@ export default function Navbar() {
                   >
                     <Settings size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
                     <span className="text-[var(--toolnest-gray-800)] dark:text-white">Settings</span>
+                  </Link>
+                  
+                  <Link
+                    to="/partner-upgrade"
+                    className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-800)]"
+                  >
+                    <Tool size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
+                    <span className="text-[var(--toolnest-gray-800)] dark:text-white">Upgrade to Partner</span>
                   </Link>
                   
                   <button
