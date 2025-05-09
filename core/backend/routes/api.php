@@ -23,6 +23,8 @@ Route::get('/listings', [ListingController::class, 'index']);
 Route::get('/listings/search', [ListingController::class, 'search']);//use exemple (http://localhost:8000/api/listings/search?city_id=1&category_id=2&min_rating=4&min_price=10&max_price=50&sort_by=price_per_day&sort_order=asc)
 Route::get('/listings/{id}', [ListingController::class, 'show']);
 Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:sanctum');
+Route::put('/listings/{id}', [ListingController::class, 'update'])->middleware('auth:sanctum'); // Update listing
+Route::patch('/listings/{id}/archive', [ListingController::class, 'archive'])->middleware('auth:sanctum'); // Archive listing
 
 // Reservation routes
 Route::middleware('auth:sanctum')->group(function () {
