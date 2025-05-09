@@ -32,8 +32,14 @@ class ListingController extends Controller
             $query->where('price_per_day', '<=', $request->max_price);
         }
 
-        // Sort by premium first, then by creation date
-        $listings = $query->orderBy('is_premium', 'desc')
+        // Update priorities for all listings
+        $listings = $query->get();
+        foreach ($listings as $listing) {
+            $listing->updatePriority();
+        }
+
+        // Sort by priority first, then by creation date
+        $listings = $query->orderBy('priority', 'asc')
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
@@ -67,6 +73,8 @@ class ListingController extends Controller
                 'delivery_option' => 'boolean',
                 'start_date' => 'required|date|after_or_equal:today',
                 'end_date' => 'required|date|after:start_date',
+                'is_premium' => 'boolean',
+                'premium_duration' => 'required_if:is_premium,true|in:1,2,3', // 1 = 1 month, 2 = 2 weeks, 3 = 1 week
             ]);
 
             if ($validator->fails()) {
@@ -88,7 +96,30 @@ class ListingController extends Controller
                 'partner_id' => $request->user()->id,
                 'delivery_option' => $request->delivery_option ?? false,
                 'status' => 'active',
+                'is_premium' => $request->is_premium ?? false,
+                'priority' => 4, // Default priority
             ]);
+
+            if ($request->is_premium) {
+                $listing->premium_start_date = now();
+                
+                switch ($request->premium_duration) {
+                    case 1: // 1 month
+                        $listing->premium_end_date = now()->addMonth();
+                        $listing->priority = 1;
+                        break;
+                    case 2: // 2 weeks
+                        $listing->premium_end_date = now()->addWeeks(2);
+                        $listing->priority = 2;
+                        break;
+                    case 3: // 1 week
+                        $listing->premium_end_date = now()->addWeek();
+                        $listing->priority = 3;
+                        break;
+                }
+                
+                $listing->save();
+            }
 
             // Create availability record
             Availability::create([

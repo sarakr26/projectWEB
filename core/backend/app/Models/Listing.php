@@ -24,7 +24,8 @@ class Listing extends Model
         'delivery_option',
         'category_id',
         'city_id',
-        'partner_id'
+        'partner_id',
+        'priority'
     ];
 
     protected $casts = [
@@ -35,7 +36,8 @@ class Listing extends Model
         'longitude' => 'double',
         'latitude' => 'double',
         'avg_rating' => 'decimal:2',
-        'delivery_option' => 'boolean'
+        'delivery_option' => 'boolean',
+        'priority' => 'integer'
     ];
 
     public function category()
@@ -61,5 +63,34 @@ class Listing extends Model
     public function availabilities()
     {
         return $this->hasMany(Availability::class);
+    }
+
+    public function updatePriority()
+    {
+        if (!$this->is_premium || !$this->premium_end_date) {
+            $this->priority = 4;
+            return;
+        }
+
+        if (now()->gt($this->premium_end_date)) {
+            $this->is_premium = false;
+            $this->priority = 4;
+            $this->save();
+            return;
+        }
+
+        $duration = $this->premium_start_date->diffInDays($this->premium_end_date);
+        
+        if ($duration >= 30) {
+            $this->priority = 1;
+        } elseif ($duration >= 14) {
+            $this->priority = 2;
+        } elseif ($duration >= 7) {
+            $this->priority = 3;
+        } else {
+            $this->priority = 4;
+        }
+        
+        $this->save();
     }
 } 
