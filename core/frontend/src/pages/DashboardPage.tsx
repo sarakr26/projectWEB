@@ -224,9 +224,6 @@ const DashboardPage = () => {
               {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
             </h1>
             <div className="flex gap-4">
-              <Link to="/partner-dashboard" className="tn-button tn-button-secondary">
-                Become a Partner
-              </Link>
               <button className="tn-button tn-button-primary">Find Tools</button>
             </div>
           </div>
