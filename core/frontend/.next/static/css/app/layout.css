@@ -2843,10 +2843,6 @@ body {
   color: hsl(var(--sidebar-accent-foreground));
 }
 
-.hover\:text-primary:hover {
-  color: hsl(var(--primary));
-}
-
 .hover\:underline:hover {
   text-decoration-line: underline;
 }
@@ -4348,12 +4344,6 @@ body {
 
   .lg\:gap-12 {
     gap: 3rem;
-  }
-
-  .lg\:space-x-6 > :not([hidden]) ~ :not([hidden]) {
-    --tw-space-x-reverse: 0;
-    margin-right: calc(1.5rem * var(--tw-space-x-reverse));
-    margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
   }
 
   .lg\:px-8 {
