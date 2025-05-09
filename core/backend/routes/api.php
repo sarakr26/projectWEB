@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reservations', [ReservationController::class, 'store']);
     Route::get('/reservations/check-availability', [ReservationController::class, 'checkAvailability']);
     Route::get('/reservations/pending', [ReservationController::class, 'pendingReservations']); // Get pending reservations for partner
+    Route::get('/reservations/{id}/client-details', [ReservationController::class, 'getClientDetails']); // Get client details for a specific reservation
 });
 
 // Review routes

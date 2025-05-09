@@ -221,4 +221,50 @@ class ReservationController extends Controller
             ], 500);
         }
     }
+
+    public function getClientDetails(Request $request, $id)
+    {
+        try {
+            $reservation = Reservation::with(['client' => function($query) {
+                    $query->select('id', 'username', 'avg_rating_as_client', 'review_count', 'avatar_url');
+                }])
+                ->where('id', $id)
+                ->where('partner_id', $request->user()->id)
+                ->where('status', 'pending')
+                ->first();
+
+            if (!$reservation) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Reservation not found or unauthorized'
+                ], 404);
+            }
+
+            // Format the response
+            $clientDetails = [
+                'username' => $reservation->client->username,
+                'rating' => number_format($reservation->client->avg_rating_as_client, 2),
+                'review_count' => $reservation->client->review_count,
+                'avatar_url' => $reservation->client->avatar_url,
+                'reservation_details' => [
+                    'start_date' => $reservation->start_date,
+                    'end_date' => $reservation->end_date,
+                    'delivery_option' => $reservation->delivery_option,
+                    'created_at' => $reservation->created_at
+                ]
+            ];
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $clientDetails
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch client details',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 } 
