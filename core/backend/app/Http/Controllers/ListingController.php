@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use App\Models\Availability;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 class ListingController extends Controller
 {
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
     public function index(Request $request)
     {
         $query = Listing::with(['category', 'city', 'partner', 'images'])
@@ -75,6 +83,8 @@ class ListingController extends Controller
                 'end_date' => 'required|date|after:start_date',
                 'is_premium' => 'boolean',
                 'premium_duration' => 'required_if:is_premium,true|in:1,2,3', // 1 = 1 month, 2 = 2 weeks, 3 = 1 week
+                'images' => 'required|array|min:1|max:5',
+                'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048', // max 2MB per image
             ]);
 
             if ($validator->fails()) {
@@ -128,12 +138,20 @@ class ListingController extends Controller
                 'end_date' => $request->end_date,
             ]);
 
+            // Handle image uploads
+            foreach ($request->file('images') as $image) {
+                $imageUrl = $this->imageService->uploadImage($image);
+                $listing->images()->create([
+                    'url' => $imageUrl
+                ]);
+            }
+
             DB::commit();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Listing created successfully',
-                'data' => $listing->load(['category', 'city', 'partner', 'availabilities'])
+                'data' => $listing->load(['category', 'city', 'partner', 'availabilities', 'images'])
             ], 201);
 
         } catch (\Exception $e) {
