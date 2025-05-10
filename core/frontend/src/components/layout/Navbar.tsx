@@ -308,7 +308,7 @@ export default function Navbar() {
                   </Link>
                   
                   <Link
-                    to="/partner-upgrade"
+                    to="/partner-dashboard"
                     className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-800)]"
                   >
                     <Tool size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
