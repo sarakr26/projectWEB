@@ -224,7 +224,12 @@ const DashboardPage = () => {
               {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
             </h1>
             <div className="flex gap-4">
-              <button className="tn-button tn-button-primary">Find Tools</button>
+              <button
+                className="tn-button tn-button-primary"
+                onClick={() => navigate('/search')}
+              >
+                Find Tools
+              </button>
             </div>
           </div>
 

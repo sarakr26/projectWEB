@@ -218,7 +218,7 @@ const PartnerDashboardPage = () => {
               {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
             </h1>
             <Link to="/create-listing" className="tn-button tn-button-primary">
-              Create New Listing
+              Créer une Nouvelle Annonce
             </Link>
           </div>
 
