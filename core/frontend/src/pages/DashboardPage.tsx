@@ -3,18 +3,62 @@
 import { useState, useEffect } from 'react'
 import { Route, Routes, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { Calendar, Clock, Tool, AlertCircle, Home, Heart, Bell, Settings, User, Phone, Mail, MapPin, Camera } from 'react-feather'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 
-// Dashboard sub-components
-const MyTools = () => <div className="p-4">My Tools Content</div>
-const Requests = () => <div className="p-4">Requests Content</div>
-const Messages = () => <div className="p-4">Messages Content</div>
-const Settings = () => <div className="p-4">Settings Content</div>
+const menuItems = [
+  { id: 'dashboard', label: 'Dashboard', icon: Home },
+  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'reservations', label: 'Reservations', icon: Calendar },
+  { id: 'favorites', label: 'Favorites', icon: Heart },
+  { id: 'notifications', label: 'Settings', icon: Bell },
+  { id: 'settings', label: 'Account', icon: Settings }
+]
+
+// Mock data for example
+const currentReservations = [
+  {
+    id: 1,
+    toolName: "Bosch Impact Drill",
+    location: "Casablanca, Morocco",
+    startDate: "Apr 20, 2024",
+    endDate: "Apr 25, 2024",
+    status: "active"
+  }
+]
+
+const pastReservations = [
+  {
+    id: 2,
+    toolName: "Makita Circular Saw",
+    location: "Rabat, Morocco",
+    date: "Mar 15, 2024",
+    status: "completed"
+  }
+]
+
+const notifications = [
+  {
+    id: 1,
+    title: "Reservation Confirmed",
+    message: "Your reservation for Bosch Impact Drill has been confirmed",
+    time: "2 hours ago"
+  },
+  {
+    id: 2,
+    title: "Return Reminder",
+    message: "Makita Circular Saw needs to be returned in 2 days",
+    time: "2 days ago"
+  }
+]
 
 const DashboardPage = () => {
   const { user, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
+  const [selectedSection, setSelectedSection] = useState('dashboard')
+  const [selectedTab, setSelectedTab] = useState('current')
+  const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     // Redirect if not logged in
@@ -37,6 +81,276 @@ const DashboardPage = () => {
     loadDashboard()
   }, [isAuthenticated, navigate])
 
+  const handleProfileUpdate = (e: React.FormEvent) => {
+    e.preventDefault()
+    // TODO: Implement API call to update profile
+    setIsEditing(false)
+  }
+
+  const renderReservations = () => (
+    <div className="space-y-4">
+      {selectedTab === 'current' ? (
+        currentReservations.map(reservation => (
+          <div key={reservation.id} className="tn-card p-4">
+            <div className="flex justify-between items-start">
+              <div className="flex space-x-4">
+                <div className="w-20 h-20 bg-gray-200 rounded-lg"></div>
+                <div>
+                  <h3 className="font-semibold">{reservation.toolName}</h3>
+                  <p className="text-sm text-gray-500">{reservation.location}</p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Calendar size={14} className="text-gray-400" />
+                    <span className="text-sm text-gray-600">
+                      {reservation.startDate} - {reservation.endDate}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <span className="tn-tag tn-tag-primary">{reservation.status}</span>
+            </div>
+            <div className="flex justify-end space-x-2 mt-4">
+              <button className="tn-button tn-button-outline">Report Issue</button>
+              <button className="tn-button tn-button-primary">View Details</button>
+            </div>
+          </div>
+        ))
+      ) : (
+        pastReservations.map(reservation => (
+          <div key={reservation.id} className="tn-card p-4">
+            <div className="flex justify-between items-start">
+              <div className="flex space-x-4">
+                <div className="w-20 h-20 bg-gray-200 rounded-lg"></div>
+                <div>
+                  <h3 className="font-semibold">{reservation.toolName}</h3>
+                  <p className="text-sm text-gray-500">{reservation.location}</p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Clock size={14} className="text-gray-400" />
+                    <span className="text-sm text-gray-600">{reservation.date}</span>
+                  </div>
+                </div>
+              </div>
+              <span className="tn-tag tn-tag-gray">{reservation.status}</span>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  )
+
+  const renderContent = () => {
+    switch (selectedSection) {
+      case 'dashboard':
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="flex space-x-4 mb-6">
+                <button
+                  onClick={() => setSelectedTab('current')}
+                  className={`tn-nav-item ${selectedTab === 'current' ? 'active' : ''}`}
+                >
+                  Current Reservations
+                </button>
+                <button
+                  onClick={() => setSelectedTab('past')}
+                  className={`tn-nav-item ${selectedTab === 'past' ? 'active' : ''}`}
+                >
+                  Past Reservations
+                </button>
+              </div>
+              {renderReservations()}
+            </div>
+            <div className="lg:col-span-1">
+              <div className="tn-card p-4">
+                <h2 className="font-semibold mb-4">Notifications</h2>
+                <div className="space-y-4">
+                  {notifications.map(notification => (
+                    <div key={notification.id} className="p-3 bg-gray-50 rounded-lg">
+                      <h3 className="text-sm font-medium">{notification.title}</h3>
+                      <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                      <span className="text-xs text-gray-400 mt-2 block">{notification.time}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 text-center">
+                  <button className="text-sm text-primary-600 hover:underline">
+                    View All Notifications
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      case 'profile':
+        return (
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg shadow p-6 mb-6">
+              {!isEditing ? (
+                <>
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User size={40} className="text-gray-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold">{user?.username || 'testuser'}</h2>
+                      <p className="text-gray-500">{user?.email || 'test@example.com'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <Phone size={16} className="text-gray-400 mr-2" />
+                          <span>{user?.phone_number || "123456789"}</span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <Mail size={16} className="text-gray-400 mr-2" />
+                          <span>{user?.email || "test@example.com"}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <MapPin size={16} className="text-gray-400 mr-2" />
+                          <span>{user?.address || "123 Test Street"}</span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <Home size={16} className="text-gray-400 mr-2" />
+                          <span>City #{user?.city_id || "1"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end">
+                    <button 
+                      className="tn-button tn-button-primary"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      Edit Profile
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <form onSubmit={handleProfileUpdate} className="space-y-6">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center relative group cursor-pointer">
+                      <User size={40} className="text-gray-400" />
+                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera size={20} className="text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        defaultValue={user?.username || 'testuser'}
+                        className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <div className="relative">
+                          <Phone size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <input
+                            type="tel"
+                            defaultValue={user?.phone_number || "123456789"}
+                            className="block w-full pl-10 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <div className="relative">
+                          <Mail size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <input
+                            type="email"
+                            defaultValue={user?.email || "test@example.com"}
+                            className="block w-full pl-10 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <div className="relative">
+                          <MapPin size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <input
+                            type="text"
+                            defaultValue={user?.address || "123 Test Street"}
+                            className="block w-full pl-10 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <div className="relative">
+                          <Home size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <select
+                            defaultValue={user?.city_id || "1"}
+                            className="block w-full pl-10 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                          >
+                            <option value="1">City #1</option>
+                            <option value="2">City #2</option>
+                            <option value="3">City #3</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end space-x-3">
+                    <button 
+                      type="button"
+                      className="tn-button tn-button-outline"
+                      onClick={() => setIsEditing(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit"
+                      className="tn-button tn-button-primary"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        )
+      case 'reservations':
+        return renderReservations()
+      case 'favorites':
+        return <div>Favorites Content</div>
+      case 'notifications':
+        return <div>Notification Center</div>
+      case 'settings':
+        return <div>Account Settings</div>
+      default:
+        return null
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -46,62 +360,50 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-      
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="container mx-auto px-4 py-24">
+      <div className="flex gap-8">
         {/* Sidebar Navigation */}
-        <aside className="w-full md:w-64 mb-6 md:mb-0">
-          <nav className="bg-white rounded-lg shadow-md p-4">
-            <ul className="space-y-2">
-              <li>
-                <Link 
-                  to="/dashboard" 
-                  className="block py-2 px-4 hover:bg-gray-100 rounded-md transition"
+        <div className="w-64 shrink-0">
+          <div className="tn-card p-4">
+            <div className="space-y-2">
+              {menuItems.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelectedSection(item.id)}
+                  className={`w-full flex items-center space-x-2 p-2 rounded-lg transition-colors
+                    ${selectedSection === item.id 
+                      ? 'bg-primary-50 text-primary-600' 
+                      : 'text-gray-600 hover:bg-gray-50'}`}
                 >
-                  My Tools
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/dashboard/requests" 
-                  className="block py-2 px-4 hover:bg-gray-100 rounded-md transition"
-                >
-                  Requests
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/dashboard/messages" 
-                  className="block py-2 px-4 hover:bg-gray-100 rounded-md transition"
-                >
-                  Messages
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/dashboard/settings" 
-                  className="block py-2 px-4 hover:bg-gray-100 rounded-md transition"
-                >
-                  Settings
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </aside>
-        
-        {/* Main Content Area */}
-        <div className="flex-1 bg-white rounded-lg shadow-md">
-          <Routes>
-            <Route index element={<MyTools />} />
-            <Route path="requests" element={<Requests />} />
-            <Route path="messages" element={<Messages />} />
-            <Route path="settings" element={<Settings />} />
-          </Routes>
+                  <item.icon size={18} />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-2xl font-bold">
+              {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
+            </h1>
+            <div className="flex gap-4">
+              <button
+                className="tn-button tn-button-primary"
+                onClick={() => navigate('/search')}
+              >
+                Find Tools
+              </button>
+            </div>
+          </div>
+
+          {renderContent()}
         </div>
       </div>
     </div>
   )
 }
 
-export default DashboardPage 
+export default DashboardPage
