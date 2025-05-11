@@ -3,15 +3,16 @@
 import { useState, useEffect } from 'react'
 import { Route, Routes, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Calendar, Clock, Tool, AlertCircle, Home, Heart, Bell, Settings } from 'react-feather'
+import { Calendar, Clock, Tool, AlertCircle, Home, Heart, Bell, Settings, User, Phone, Mail, MapPin, Camera } from 'react-feather'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
+  { id: 'profile', label: 'Profile', icon: User },
   { id: 'reservations', label: 'Reservations', icon: Calendar },
   { id: 'favorites', label: 'Favorites', icon: Heart },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'settings', label: 'Settings', icon: Settings }
+  { id: 'notifications', label: 'Settings', icon: Bell },
+  { id: 'settings', label: 'Account', icon: Settings }
 ]
 
 // Mock data for example
@@ -57,6 +58,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true)
   const [selectedSection, setSelectedSection] = useState('dashboard')
   const [selectedTab, setSelectedTab] = useState('current')
+  const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     // Redirect if not logged in
@@ -78,6 +80,12 @@ const DashboardPage = () => {
 
     loadDashboard()
   }, [isAuthenticated, navigate])
+
+  const handleProfileUpdate = (e: React.FormEvent) => {
+    e.preventDefault()
+    // TODO: Implement API call to update profile
+    setIsEditing(false)
+  }
 
   const renderReservations = () => (
     <div className="space-y-4">
@@ -169,6 +177,164 @@ const DashboardPage = () => {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        )
+      case 'profile':
+        return (
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg shadow p-6 mb-6">
+              {!isEditing ? (
+                <>
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User size={40} className="text-gray-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold">{user?.username || 'testuser'}</h2>
+                      <p className="text-gray-500">{user?.email || 'test@example.com'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <Phone size={16} className="text-gray-400 mr-2" />
+                          <span>{user?.phone_number || "123456789"}</span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <Mail size={16} className="text-gray-400 mr-2" />
+                          <span>{user?.email || "test@example.com"}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <MapPin size={16} className="text-gray-400 mr-2" />
+                          <span>{user?.address || "123 Test Street"}</span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                          <Home size={16} className="text-gray-400 mr-2" />
+                          <span>City #{user?.city_id || "1"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end">
+                    <button 
+                      className="tn-button tn-button-primary"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      Edit Profile
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <form onSubmit={handleProfileUpdate} className="space-y-6">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center relative group cursor-pointer">
+                      <User size={40} className="text-gray-400" />
+                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera size={20} className="text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        defaultValue={user?.username || 'testuser'}
+                        className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <div className="relative">
+                          <Phone size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <input
+                            type="tel"
+                            defaultValue={user?.phone_number || "123456789"}
+                            className="block w-full pl-10 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <div className="relative">
+                          <Mail size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <input
+                            type="email"
+                            defaultValue={user?.email || "test@example.com"}
+                            className="block w-full pl-10 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <div className="relative">
+                          <MapPin size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <input
+                            type="text"
+                            defaultValue={user?.address || "123 Test Street"}
+                            className="block w-full pl-10 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <div className="relative">
+                          <Home size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <select
+                            defaultValue={user?.city_id || "1"}
+                            className="block w-full pl-10 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                          >
+                            <option value="1">City #1</option>
+                            <option value="2">City #2</option>
+                            <option value="3">City #3</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end space-x-3">
+                    <button 
+                      type="button"
+                      className="tn-button tn-button-outline"
+                      onClick={() => setIsEditing(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit"
+                      className="tn-button tn-button-primary"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         )
