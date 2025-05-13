@@ -9,11 +9,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('availabilities', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('listing_id')->constrained()->onDelete('cascade');
             $table->date('start_date');
             $table->date('end_date');
             $table->timestamps();
-            $table->primary(['listing_id', 'start_date', 'end_date']);
+            $table->unique(['listing_id', 'start_date', 'end_date']);
         });
     }
 
