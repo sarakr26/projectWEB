@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->decimal('amount', 10, 2);
             $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
-            $table->foreignId('partner_id')->constrained('users');
-            $table->foreignId('listing_id')->constrained('listings');
+            $table->foreignId('client_id')->constrained('users');
+            $table->foreignId('reservation_id')->constrained('reservations');
             $table->timestamps();
         });
     }

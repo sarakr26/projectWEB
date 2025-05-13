@@ -20,7 +20,9 @@ return new class extends Migration
             $table->timestamp('join_date')->useCurrent();
             $table->decimal('avg_rating_as_client', 3, 2)->default(0.00);
             $table->decimal('avg_rating_as_partner', 3, 2)->default(0.00);
-            $table->integer('review_count')->default(0);
+            $table->integer('review_count_as_client')->default(0);
+            $table->integer('review_count_as_partner')->default(0);
+            $table->integer('report_count')->default(0);
             $table->double('longitude')->nullable();
             $table->double('latitude')->nullable();
             $table->foreignId('city_id')->nullable()->constrained('cities');
