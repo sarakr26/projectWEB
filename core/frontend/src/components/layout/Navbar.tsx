@@ -74,48 +74,6 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            <Link 
-              to="/" 
-              className={`px-3 py-2 rounded-md transition-all flex items-center space-x-1 text-[var(--toolnest-gray-700)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-gray-300)] dark:hover:text-[var(--toolnest-primary-400)] ${location.pathname === '/' ? 'bg-[var(--toolnest-primary-50)] dark:bg-[var(--toolnest-primary-950)]' : ''}`}
-            >
-              <Home size={18} />
-              <span>Home</span>
-            </Link>
-            
-            <Link 
-              to="/explore" 
-              className={`px-3 py-2 rounded-md transition-all flex items-center space-x-1 text-[var(--toolnest-gray-700)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-gray-300)] dark:hover:text-[var(--toolnest-primary-400)] ${location.pathname === '/explore' ? 'bg-[var(--toolnest-primary-50)] dark:bg-[var(--toolnest-primary-950)]' : ''}`}
-            >
-              <Compass size={18} />
-              <span>Explore</span>
-            </Link>
-            
-            <div className="relative group">
-              <button className="px-3 py-2 rounded-md transition-all flex items-center space-x-1 text-[var(--toolnest-gray-700)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-gray-300)] dark:hover:text-[var(--toolnest-primary-400)]">
-                <Grid size={18} />
-                <span>Categories</span>
-                <ChevronDown size={16} className="ml-1 transition-transform group-hover:rotate-180" />
-              </button>
-              
-              <div className="absolute left-0 mt-2 w-48 origin-top-left rounded-md shadow-lg bg-white dark:bg-[var(--toolnest-gray-800)] border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] ring-1 ring-black ring-opacity-5 focus:outline-none transition-all opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 z-50">
-                <div className="p-2 space-y-1">
-                  {['Power Tools', 'Hand Tools', 'Garden Tools', 'Measurement', 'Workshop', 'Electrical'].map((category, idx) => (
-                    <Link
-                      key={category}
-                      to={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}
-                      className={`block px-3 py-2 rounded-md text-sm hover:bg-[var(--toolnest-primary-50)] hover:text-[var(--toolnest-primary-700)] transition-colors dark:hover:bg-[var(--toolnest-primary-950)] dark:hover:text-[var(--toolnest-primary-400)] animate-slide-up`}
-                      style={{ animationDelay: `${idx * 0.05}s` }}
-                    >
-                      {category}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </nav>
-
           {/* Search Bar */}
           <div className={`hidden md:block relative transition-all duration-300 ${isSearchFocused ? 'w-1/3' : 'w-1/4'}`}>
             <form onSubmit={handleSearch} className="relative">
@@ -176,7 +134,6 @@ export default function Navbar() {
                       <User size={16} />
                       <span>Dashboard</span>
                     </Link>
-                    
                     <Link
                       to="/saved"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-[var(--toolnest-gray-700)] hover:bg-[var(--toolnest-gray-100)] dark:text-[var(--toolnest-gray-300)] dark:hover:bg-[var(--toolnest-gray-700)]"
@@ -184,13 +141,22 @@ export default function Navbar() {
                       <Heart size={16} />
                       <span>Saved Tools</span>
                     </Link>
-                    
                     <Link
                       to="/settings"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-[var(--toolnest-gray-700)] hover:bg-[var(--toolnest-gray-100)] dark:text-[var(--toolnest-gray-300)] dark:hover:bg-[var(--toolnest-gray-700)]"
                     >
                       <Settings size={16} />
                       <span>Settings</span>
+                    </Link>
+                    <Link
+                      to="/partner-upgrade"
+                      className="flex items-center space-x-2 px-4 py-2 my-2 rounded-md bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 text-white font-bold text-base shadow-lg hover:scale-105 transition-transform duration-200"
+                      style={{ justifyContent: 'center' }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 mr-1">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.09 6.26L21 9.27l-5 4.87L17.18 21 12 17.27 6.82 21 8 14.14l-5-4.87 6.91-1.01L12 3z" />
+                      </svg>
+                      <span>Upgrade to Partner</span>
                     </Link>
                   </div>
                   
@@ -339,6 +305,14 @@ export default function Navbar() {
                   >
                     <Settings size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
                     <span className="text-[var(--toolnest-gray-800)] dark:text-white">Settings</span>
+                  </Link>
+                  
+                  <Link
+                    to="/partner-dashboard"
+                    className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-800)]"
+                  >
+                    <Tool size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
+                    <span className="text-[var(--toolnest-gray-800)] dark:text-white">Upgrade to Partner</span>
                   </Link>
                   
                   <button
