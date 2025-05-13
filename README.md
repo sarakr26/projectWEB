@@ -132,6 +132,16 @@ projectWEB/
      - Categories
      - Admin account (email: admin@gmail.com, password: admin)
 
+7. Set up storage for file uploads
+   ```bash
+   cd core/backend
+   php artisan storage:setup
+   ```
+   This will:
+   - Create the storage link for public access to uploaded files
+   - Create necessary directories for image storage
+   - Set up proper permissions for file uploads
+
 ### Running the Application
 
 1. Start the backend server

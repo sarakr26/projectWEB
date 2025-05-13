@@ -17,6 +17,7 @@ return new class extends Migration
             $table->boolean('is_premium')->default(false);
             $table->timestamp('premium_start_date')->nullable();
             $table->timestamp('premium_end_date')->nullable();
+            $table->integer('priority')->default(4);
             $table->double('longitude')->nullable();
             $table->double('latitude')->nullable();
             $table->decimal('avg_rating', 3, 2)->default(0.00);

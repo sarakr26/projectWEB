@@ -17,30 +17,24 @@ class AuthController extends Controller
         try {
             \Log::info('Register request data:', $request->all());
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
                 'username' => 'nullable|string|max:255|unique:users',
                 'phone_number' => 'nullable|string|max:20',
                 'address' => 'nullable|string',
                 'city_id' => 'required|exists:cities,id',
-                'role' => 'required|in:client,partner',
             ]);
     
-            // If username is not provided, use name
-            if (empty($validated['username'])) {
-                $validated['username'] = $validated['name'];
-            }
+            
     
             $user = User::create([
-                'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'username' => $validated['username'],
                 'phone_number' => $validated['phone_number'],
                 'address' => $validated['address'],
                 'city_id' => $validated['city_id'],
-                'role' => $validated['role'],
+                'role' => 'client',
             ]);
     
             $token = $user->createToken('auth_token')->plainTextToken;
