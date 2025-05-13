@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationAccepted;
+use App\Jobs\CancelUnpaidReservation;
 
 class ReservationController extends Controller
 {
@@ -46,9 +49,9 @@ class ReservationController extends Controller
                 ], 400);
             }
 
-            // Check if there are any overlapping reservations
+            // Check if there are any overlapping confirmed reservations
             $hasOverlap = Reservation::where('listing_id', $listing->id)
-                ->where('status', '!=', 'canceled')
+                ->where('status', 'confirmed')
                 ->where(function ($query) use ($request) {
                     $query->whereBetween('start_date', [$request->start_date, $request->end_date])
                         ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
@@ -66,8 +69,6 @@ class ReservationController extends Controller
                 ], 400);
             }
 
-            DB::beginTransaction();
-
             // Create the reservation
             $reservation = Reservation::create([
                 'listing_id' => $listing->id,
@@ -79,47 +80,13 @@ class ReservationController extends Controller
                 'status' => 'pending'
             ]);
 
-            // Handle availability splitting
-            $originalStartDate = Carbon::parse($availability->start_date);
-            $originalEndDate = Carbon::parse($availability->end_date);
-            $reservationStartDate = Carbon::parse($request->start_date);
-            $reservationEndDate = Carbon::parse($request->end_date);
-
-            // Delete the original availability using the composite key
-            Availability::where('listing_id', $listing->id)
-                ->where('start_date', $availability->start_date)
-                ->where('end_date', $availability->end_date)
-                ->delete();
-
-            // Create new availability records for remaining dates
-            if ($originalStartDate->lt($reservationStartDate)) {
-                // Create availability for the period before the reservation
-                Availability::create([
-                    'listing_id' => $listing->id,
-                    'start_date' => $originalStartDate,
-                    'end_date' => $reservationStartDate->subDay(),
-                ]);
-            }
-
-            if ($originalEndDate->gt($reservationEndDate)) {
-                // Create availability for the period after the reservation
-                Availability::create([
-                    'listing_id' => $listing->id,
-                    'start_date' => $reservationEndDate->addDay(),
-                    'end_date' => $originalEndDate,
-                ]);
-            }
-
-            DB::commit();
-
             return response()->json([
                 'status' => 'success',
-                'message' => 'Reservation created successfully',
+                'message' => 'Reservation request created successfully',
                 'data' => $reservation->load(['listing', 'client', 'partner'])
             ], 201);
 
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to create reservation',
@@ -263,6 +230,104 @@ class ReservationController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to fetch client details',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function acceptReservation(Request $request, $id)
+    {
+        try {
+            $reservation = Reservation::with(['client', 'listing'])->findOrFail($id);
+
+            // Check if the user is the partner of the listing
+            if ($reservation->partner_id !== $request->user()->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized to accept this reservation'
+                ], 403);
+            }
+
+            // Check if the reservation is pending
+            if ($reservation->status !== 'pending') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'This reservation cannot be accepted'
+                ], 400);
+            }
+
+            DB::beginTransaction();
+
+            // Update reservation status to confirmed
+            $reservation->update(['status' => 'confirmed']);
+
+            // Handle availability
+            $availability = Availability::where('listing_id', $reservation->listing_id)
+                ->where('start_date', '<=', $reservation->start_date)
+                ->where('end_date', '>=', $reservation->end_date)
+                ->first();
+
+            if ($availability) {
+                $originalStartDate = Carbon::parse($availability->start_date);
+                $originalEndDate = Carbon::parse($availability->end_date);
+                $reservationStartDate = Carbon::parse($reservation->start_date);
+                $reservationEndDate = Carbon::parse($reservation->end_date);
+
+                // Delete the original availability
+                $availability->delete();
+
+                // Create new availability records for remaining dates
+                if ($originalStartDate->lt($reservationStartDate)) {
+                    Availability::create([
+                        'listing_id' => $reservation->listing_id,
+                        'start_date' => $originalStartDate,
+                        'end_date' => $reservationStartDate->subDay(),
+                    ]);
+                }
+
+                if ($originalEndDate->gt($reservationEndDate)) {
+                    Availability::create([
+                        'listing_id' => $reservation->listing_id,
+                        'start_date' => $reservationEndDate->addDay(),
+                        'end_date' => $originalEndDate,
+                    ]);
+                }
+            }
+
+            // Send email to client
+            $client = $reservation->client;
+            $listing = $reservation->listing;
+            
+            // Calculate total amount
+            $startDate = Carbon::parse($reservation->start_date);
+            $endDate = Carbon::parse($reservation->end_date);
+            $days = $startDate->diffInDays($endDate);
+            $totalAmount = $days * $listing->price_per_day;
+
+            // Send email using Laravel's built-in mail system
+            Mail::to($client->email)->send(new ReservationAccepted($reservation, $totalAmount));
+
+            // Schedule automatic cancellation if payment is not made within 24 hours
+            $cancelJob = new CancelUnpaidReservation($reservation);
+            dispatch($cancelJob)->delay(now()->addHours(24));
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Reservation accepted successfully',
+                'data' => [
+                    'reservation' => $reservation,
+                    'payment_deadline' => now()->addHours(24),
+                    'total_amount' => $totalAmount
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to accept reservation',
                 'error' => $e->getMessage()
             ], 500);
         }
