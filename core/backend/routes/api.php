@@ -46,3 +46,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reviews/{id}', [ReviewController::class, 'show']);//show a review by id
     Route::put('/reviews/{id}', [ReviewController::class, 'update']);//update a review by id
 }); 
+
+// Profile routes
+Route::middleware('auth:sanctum')->put('/profile', [AuthController::class, 'updateProfile']);
