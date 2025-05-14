@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\CategoryController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -25,6 +26,8 @@ Route::get('/listings/{id}', [ListingController::class, 'show']);
 Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:sanctum');
 Route::put('/listings/{id}', [ListingController::class, 'update'])->middleware('auth:sanctum'); // Update listing
 Route::patch('/listings/{id}/archive', [ListingController::class, 'archive'])->middleware('auth:sanctum'); // Archive listing
+
+Route::get('/categories', [CategoryController::class, 'index']);
 
 // Reservation routes
 Route::middleware('auth:sanctum')->group(function () {

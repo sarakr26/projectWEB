@@ -2,6 +2,7 @@ import api from './api';
 
 // Define TypeScript interfaces for the Listing data structure
 export interface Listing {
+  features: any;
   id: number;
   title: string;
   description: string;
@@ -27,6 +28,9 @@ export interface Listing {
     name: string;
   };
   partner?: {
+    review_count_as_partner: any;
+    response_rate: any;
+    member_since: any;
     id: number;
     name: string;
     username: string;
