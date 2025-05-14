@@ -1,18 +1,17 @@
-import { authApi } from '@/src/lib/api';
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_URL = 'http://localhost:8000/api';
 
 // Create an axios instance with base URL
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("auth_token");
+  const token = localStorage.getItem('auth_token');
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -48,16 +47,11 @@ export interface LoginResponse {
 
 export async function loginUser(email: string, password: string): Promise<LoginResponse> {
   try {
-    const response = await authApi.login({ 
-      email, 
-      password 
-    });
-    
+    const response = await api.post<LoginResponse>("/login", { email, password });
+    console.log("API RAW RESPONSE", response);
     if (response.data.status === 'success' && response.data.data?.token) {
-      // Use the utility function instead of direct manipulation
       setAuthToken(response.data.data.token);
     }
-    
     return response.data;
   } catch (error) {
     if (error && typeof error === 'object' && 'response' in error) {
@@ -67,7 +61,6 @@ export async function loginUser(email: string, password: string): Promise<LoginR
         errors: (error.response as any)?.data?.errors
       };
     }
-    
     return {
       status: 'error',
       message: 'Authentication failed. Please check your network connection.'
@@ -78,7 +71,7 @@ export async function loginUser(email: string, password: string): Promise<LoginR
 export async function logoutUser(): Promise<void> {
   try {
     // Call the backend logout endpoint if you have one
-    await authApi.logout();
+    await api.post("/logout");
   } catch (error) {
     console.error('Logout error:', error);
   } finally {
