@@ -51,6 +51,14 @@ const SearchResultsPage: React.FC = () => {
     fetchSearchResults()
   }, [query, filters, sortBy, sortOrder, currentPage])
   
+  // Add this useEffect to trigger search on mount if no query/filters are set
+  useEffect(() => {
+    // If there are no search params (fresh visit or after login), load all tools
+    if (!query && !filters.category_id && !filters.city_id && !filters.min_rating && !filters.min_price && !filters.max_price) {
+      fetchSearchResults();
+    }
+  }, []);
+  
   // Find the fetchSearchResults function and modify it:
 
 const fetchSearchResults = async () => {

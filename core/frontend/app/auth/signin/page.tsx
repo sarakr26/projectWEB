@@ -4,28 +4,39 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { ArrowRight, Loader2, Mail, Lock, Github, Twitter, Facebook } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/src/contexts/AuthContext"
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const router = useRouter()
+  const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    setIsLoading(false)
-    // Handle sign in logic here
+    setError("")
+    try {
+      const success = await login(email, password)
+      if (success) {
+        router.push("/search")
+      } else {
+        setError("Failed to sign in. Please check your credentials.")
+      }
+    } catch (err: any) {
+      setError("Failed to sign in. Please check your credentials.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -39,44 +50,26 @@ export default function SignIn() {
         {/* Animated particles */}
         <div className="absolute inset-0">
           {[...Array(6)].map((_, i) => (
-            <motion.div
+            <div
               key={i}
               className="absolute w-2 h-2 bg-green-400/30 rounded-full"
-              initial={{ 
-                x: Math.random() * 100 + "%", 
-                y: Math.random() * 100 + "%",
-                opacity: 0.2 + Math.random() * 0.5
-              }}
-              animate={{ 
-                y: [null, Math.random() * 100 + "%"],
-                opacity: [null, Math.random() * 0.3 + 0.1]
-              }}
-              transition={{ 
-                duration: 5 + Math.random() * 10, 
-                repeat: Infinity, 
-                repeatType: 'reverse' 
-              }}
-            />
+            ></div>
           ))}
         </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+      <div
         className="relative z-10 w-full max-w-md"
       >
         <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
           <div className="p-8">
             <div className="flex justify-center mb-8">
               <Link href="/" className="flex items-center gap-3 group relative">
-                <motion.div 
+                <div 
                   className="transform transition-all duration-500 relative overflow-visible"
-                  whileHover={{ rotate: 12 }}
                 >
                   <AuthLogo />
-                </motion.div>
+                </div>
                 <div className="flex flex-col">
                   <div className="flex items-center">
                     <span className="text-2xl font-bold font-poppins bg-gradient-to-r from-green-400 via-green-300 to-green-400 bg-clip-text text-transparent group-hover:from-white group-hover:via-green-100 group-hover:to-white transition-all duration-300 tracking-tight">
@@ -92,20 +85,19 @@ export default function SignIn() {
               </Link>
             </div>
 
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              transition={{ delay: 0.3 }}
-            >
+            <div>
               <h1 className="text-2xl font-bold text-center mb-2 text-white">Welcome back</h1>
               <p className="text-gray-400 text-center mb-8">Sign in to your account to continue</p>
-            </motion.div>
+            </div>
+
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span className="block sm:inline">{error}</span>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
+              <div
                 className="space-y-2"
               >
                 <Label htmlFor="email" className="text-gray-300">Email</Label>
@@ -122,12 +114,9 @@ export default function SignIn() {
                   />
                   <div className="absolute inset-0 rounded-md border border-green-400/0 group-focus-within:border-green-400/50 pointer-events-none transition-colors duration-300"></div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
+              <div
                 className="space-y-2"
               >
                 <div className="flex items-center justify-between">
@@ -149,12 +138,9 @@ export default function SignIn() {
                   />
                   <div className="absolute inset-0 rounded-md border border-green-400/0 group-focus-within:border-green-400/50 pointer-events-none transition-colors duration-300"></div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 }}
+              <div
                 className="flex items-center space-x-2"
               >
                 <Checkbox id="remember" className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500" />
@@ -164,12 +150,9 @@ export default function SignIn() {
                 >
                   Remember me
                 </label>
-              </motion.div>
+              </div>
 
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                transition={{ delay: 0.7 }}
+              <div
                 className="pt-2"
               >
                 <Button
@@ -192,15 +175,10 @@ export default function SignIn() {
                     )}
                   </span>
                 </Button>
-              </motion.div>
+              </div>
             </form>
 
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              transition={{ delay: 0.8 }} 
-              className="mt-8"
-            >
+            <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <Separator className="w-full bg-gray-700" />
@@ -228,22 +206,19 @@ export default function SignIn() {
                   Facebook
                 </Button>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.9 }}
+            <p
               className="mt-8 text-center text-sm text-gray-400"
             >
               Don't have an account?{" "}
               <Link href="/auth/signup" className="font-medium text-green-400 hover:text-green-300 transition-colors duration-300">
                 Sign up
               </Link>
-            </motion.p>
+            </p>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

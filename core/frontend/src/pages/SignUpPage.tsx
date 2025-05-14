@@ -77,7 +77,7 @@ export default function SignUpPage() {
       }
       
       await signup(userData)
-      navigate("/")
+      navigate("/search")
     } catch (err) {
       setError("Failed to create an account. " + (err instanceof Error ? err.message : ""))
       console.error(err)

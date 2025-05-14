@@ -34,7 +34,7 @@ type AuthContextType = {
   isAuthenticated: boolean
   loading: boolean
   signup: (userData: RegisterData) => Promise<void>
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<boolean>
   logout: () => Promise<void>
   loginWithGoogle: () => Promise<void>
   loginWithFacebook: () => Promise<void>
@@ -93,51 +93,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth()
   }, [])
 
-  const login = async (email: string, password: string, rememberMe: boolean = false) => {
-  setIsLoading(true);
-  try {
-    // Define response type
-    interface LoginResponse {
-      status: string;
-      message?: string;
-      data?: {
-        user: User;
-        token: string;
-      };
+  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      interface LoginResponse {
+        status: string;
+        message?: string;
+        data?: {
+          user: User;
+          token: string;
+        };
+      }
+      const response = await axios.post<LoginResponse>(`${API_URL}/login`, {
+        email,
+        password
+      });
+      if (response.data.status === 'success' && response.data.data) {
+        const newUser = response.data.data.user;
+        const token = response.data.data.token;
+        localStorage.setItem('auth_token', token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        setUser(newUser);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
     }
-
-    // Make login request
-    const response = await axios.post<LoginResponse>(`${API_URL}/login`, {
-      email,
-      password
-    });
-
-    console.log("Login response:", response.data); // Add this for debugging
-
-    // Check if login was successful
-    if (response.data.status === 'success' && response.data.data) {
-      const newUser = response.data.data.user;
-      const token = response.data.data.token;
-      
-      // Store the token with the correct key
-      localStorage.setItem('auth_token', token);
-      
-      // Set the auth header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      // Update the user state
-      setUser(newUser);
-      
-    } else {
-      throw new Error(response.data.message || 'Login failed');
-    }
-  } catch (error) {
-    console.error("Login error:", error);
-    throw error;
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const signup = async (userData: RegisterData) => {
     setIsLoading(true)
@@ -199,6 +186,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
       localStorage.removeItem('auth_token')
       delete axios.defaults.headers.common['Authorization']
+      window.location.href = '/'; // Redirect to home page
     }
   }
 

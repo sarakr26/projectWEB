@@ -33,54 +33,19 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setError("");
   setIsLoading(true);
-
   try {
-    // Add debugging to see response structure
-    console.log("Attempting login with:", { email }); // Don't log password
-
-    const response = await login(email, password, rememberMe) as LoginResponse;
-    console.log("Login response:", response); // See actual response structure
-
-    // Match your auth response structure more flexibly
-    if (response) {
-      // Check different possible response structures
-      if ("token" in response && typeof response.token === "string") {
-        // Direct token in response
-        localStorage.setItem('auth_token', response.token);
-        navigate(redirectUrl);
-      } else if ("data" in response && response.data && typeof response.data.token === "string") {
-        // Token in data property
-        localStorage.setItem('auth_token', response.data.token);
-        navigate(redirectUrl);
-      } else if ("access_token" in response && typeof response.access_token === "string") {
-        // Some APIs use access_token
-        localStorage.setItem('auth_token', response.access_token);
-        navigate(redirectUrl);
-      } else {
-        // No token found
-        setError("Invalid response format. No authentication token received.");
-      }
+    const success = await login(email, password, rememberMe);
+    if (success) {
+      navigate('/search');
     } else {
       setError("Failed to sign in. Please check your credentials.");
     }
-  } catch (err: any) {
-    console.error("Login error:", err);
-
-    // Better error handling
-    if (err.response) {
-      // The request was made and the server responded with a status code outside the 2xx range
-      setError(`Login failed: ${err.response.data?.message || err.response.statusText || 'Server error'}`);
-    } else if (err.request) {
-      // The request was made but no response was received
-      setError("Server not responding. Please try again later.");
-    } else {
-      // Something happened in setting up the request
-      setError(err.message || "Authentication failed. Please try again.");
-    }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  } catch (err) {
+    setError("Failed to sign in. Please check your credentials.");
+  } finally {
+    setIsLoading(false);
+  }
+};
   
     const handleGoogleSignIn = async () => {
       setIsLoading(true)

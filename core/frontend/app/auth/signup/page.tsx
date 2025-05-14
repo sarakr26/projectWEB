@@ -82,9 +82,8 @@ export default function SignUp() {
           description: "Your account has been created successfully.",
           variant: "default",
         })
-        
-        // Redirect to home page or dashboard
-        router.push('/')
+        // Redirect to login page after successful signup
+        window.location.href = '/auth/signin'
       } else {
         setError(response.message || "Registration failed. Please try again.")
         
@@ -333,53 +332,53 @@ export default function SignUp() {
                           As a partner, you can list your tools for rent and earn money.
                         </p>
                       </TabsContent>
-                      // Add after the Account Type section in formStep === 1
-<motion.div variants={formVariants} custom={2} className="space-y-2">
-  <Label htmlFor="city" className="text-gray-300">City</Label>
-  <select
-    id="city"
-    className="w-full px-3 py-2 bg-gray-800/50 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 text-white"
-    value={formData.city_id}
-    onChange={(e) => updateFormData("city_id", e.target.value)}
-    required
-  >
-    <option value="">Select your city</option>
-    {cities.map((city) => (
-      <option key={city.id} value={city.id.toString()}>
-        {city.name}
-      </option>
-    ))}
-  </select>
-</motion.div>
-
-<motion.div variants={formVariants} custom={3} className="space-y-2">
-  <Label htmlFor="phone" className="text-gray-300">Phone Number (optional)</Label>
-  <div className="relative group">
-    <Input
-      id="phone"
-      type="tel"
-      placeholder="+1 (123) 456-7890"
-      className="pl-3 bg-gray-800/50 border-gray-700 focus:border-green-500 text-white"
-      value={formData.phone_number}
-      onChange={(e) => updateFormData("phone_number", e.target.value)}
-    />
-  </div>
-</motion.div>
-
-<motion.div variants={formVariants} custom={4} className="space-y-2">
-  <Label htmlFor="address" className="text-gray-300">Address (optional)</Label>
-  <div className="relative group">
-    <Input
-      id="address"
-      type="text"
-      placeholder="123 Main St, City, State"
-      className="pl-3 bg-gray-800/50 border-gray-700 focus:border-green-500 text-white"
-      value={formData.address}
-      onChange={(e) => updateFormData("address", e.target.value)}
-    />
-  </div>
-</motion.div>
                     </Tabs>
+                  </motion.div>
+
+                  <motion.div variants={formVariants} custom={2} className="space-y-2">
+                    <Label htmlFor="city" className="text-gray-300">City</Label>
+                    <select
+                      id="city"
+                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 text-white"
+                      value={formData.city_id}
+                      onChange={(e) => updateFormData("city_id", e.target.value)}
+                      required
+                    >
+                      <option value="">Select your city</option>
+                      {cities.map((city) => (
+                        <option key={city.id} value={city.id.toString()}>
+                          {city.name}
+                        </option>
+                      ))}
+                    </select>
+                  </motion.div>
+
+                  <motion.div variants={formVariants} custom={3} className="space-y-2">
+                    <Label htmlFor="phone" className="text-gray-300">Phone Number (optional)</Label>
+                    <div className="relative group">
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="+1 (123) 456-7890"
+                        className="pl-3 bg-gray-800/50 border-gray-700 focus:border-green-500 text-white"
+                        value={formData.phone_number}
+                        onChange={(e) => updateFormData("phone_number", e.target.value)}
+                      />
+                    </div>
+                  </motion.div>
+
+                  <motion.div variants={formVariants} custom={4} className="space-y-2">
+                    <Label htmlFor="address" className="text-gray-300">Address (optional)</Label>
+                    <div className="relative group">
+                      <Input
+                        id="address"
+                        type="text"
+                        placeholder="123 Main St, City, State"
+                        className="pl-3 bg-gray-800/50 border-gray-700 focus:border-green-500 text-white"
+                        value={formData.address}
+                        onChange={(e) => updateFormData("address", e.target.value)}
+                      />
+                    </div>
                   </motion.div>
 
                   <motion.div variants={formVariants} custom={2} className="pt-2">
