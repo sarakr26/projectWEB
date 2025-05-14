@@ -37,6 +37,7 @@ interface User {
 }
 
 interface AuthResponse {
+  data: any;
   user: User;
   token: string;
 }

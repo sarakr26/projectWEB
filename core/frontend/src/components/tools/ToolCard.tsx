@@ -2,8 +2,28 @@
 
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Tool } from '../../types/Tool'
 import { Star, MapPin, Calendar, Heart, Clock, Tag, Clipboard, Check } from 'react-feather'
+
+// Define Tool interface if it's not imported from types/Tool
+interface Tool {
+  id: string;
+  name: string;
+  image: string;
+  price: number;
+  rating: number;
+  reviewCount: number;
+  location: string;
+  distance?: string;
+  category?: string;
+  availability?: string;
+  isPremium?: boolean;
+  owner?: {
+    id: string;
+    name: string;
+    avatar: string;
+    rating: number;
+  };
+}
 
 interface ToolCardProps {
   tool: Tool

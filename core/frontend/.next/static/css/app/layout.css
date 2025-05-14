@@ -873,10 +873,6 @@ video {
   margin-left: 0.875rem;
   margin-right: 0.875rem;
 }
-.mx-4 {
-  margin-left: 1rem;
-  margin-right: 1rem;
-}
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -1911,9 +1907,6 @@ video {
 .bg-\[var\(--toolnest-primary-50\)\] {
   background-color: var(--toolnest-primary-50);
 }
-.bg-\[var\(--toolnest-primary-500\)\] {
-  background-color: var(--toolnest-primary-500);
-}
 .bg-\[var\(--toolnest-primary-600\)\] {
   background-color: var(--toolnest-primary-600);
 }
@@ -2417,6 +2410,9 @@ video {
 }
 .pl-10 {
   padding-left: 2.5rem;
+}
+.pl-12 {
+  padding-left: 3rem;
 }
 .pl-14 {
   padding-left: 3.5rem;
@@ -4715,10 +4711,6 @@ body {
   color: var(--toolnest-gray-500);
 }
 
-.dark\:text-\[var\(--toolnest-primary-300\)\]:is(.dark *) {
-  color: var(--toolnest-primary-300);
-}
-
 .dark\:text-\[var\(--toolnest-primary-400\)\]:is(.dark *) {
   color: var(--toolnest-primary-400);
 }
@@ -4945,6 +4937,11 @@ body {
   .sm\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+  }
+
+  .sm\:py-10 {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
   }
 
   .sm\:text-left {
@@ -5180,20 +5177,6 @@ body {
   .lg\:text-6xl {
     font-size: 3.75rem;
     line-height: 1;
-  }
-}
-
-@media (min-width: 1280px) {
-
-  .xl\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1536px) {
-
-  .\32xl\:grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
