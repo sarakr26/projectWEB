@@ -21,64 +21,94 @@ export default function SignInPage() {
   const searchParams = new URLSearchParams(location.search)
   const redirectUrl = searchParams.get('redirect') || '/'
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+// Define a type for the possible response structure
+type LoginResponse =
+  | { token: string }
+  | { data: { token: string } }
+  | { access_token: string }
+  | null
+  | undefined;
 
-    try {
-      const response: any = await login(email, password, rememberMe)
-      
-      if (response?.status === 'success') {
-        // Navigate to the redirect URL or homepage
-        navigate(redirectUrl)
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setIsLoading(true);
+
+  try {
+    // Add debugging to see response structure
+    console.log("Attempting login with:", { email }); // Don't log password
+
+    const response = await login(email, password, rememberMe) as LoginResponse;
+    console.log("Login response:", response); // See actual response structure
+
+    // Match your auth response structure more flexibly
+    if (response) {
+      // Check different possible response structures
+      if ("token" in response && typeof response.token === "string") {
+        // Direct token in response
+        localStorage.setItem('auth_token', response.token);
+        navigate(redirectUrl);
+      } else if ("data" in response && response.data && typeof response.data.token === "string") {
+        // Token in data property
+        localStorage.setItem('auth_token', response.data.token);
+        navigate(redirectUrl);
+      } else if ("access_token" in response && typeof response.access_token === "string") {
+        // Some APIs use access_token
+        localStorage.setItem('auth_token', response.access_token);
+        navigate(redirectUrl);
       } else {
-        // Handle error from the response
-        setError(response?.message || "Failed to sign in. Please check your credentials.")
-        
-        // If there are validation errors, show them
-        if (response?.errors) {
-          const firstError = Object.values(response.errors)[0]
-          if (Array.isArray(firstError) && firstError.length > 0) {
-            setError(firstError[0])
-          }
-        }
+        // No token found
+        setError("Invalid response format. No authentication token received.");
       }
-    } catch (err) {
-      setError("Authentication failed. Please check your credentials or try again later.")
-      console.error("Login error:", err)
-    } finally {
-      setIsLoading(false)
+    } else {
+      setError("Failed to sign in. Please check your credentials.");
     }
-  }
+  } catch (err: any) {
+    console.error("Login error:", err);
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    try {
-      await loginWithGoogle()
-      navigate(redirectUrl)
-    } catch (err) {
-      setError("Failed to sign in with Google.")
-      console.error(err)
-    } finally {
-      setIsLoading(false)
+    // Better error handling
+    if (err.response) {
+      // The request was made and the server responded with a status code outside the 2xx range
+      setError(`Login failed: ${err.response.data?.message || err.response.statusText || 'Server error'}`);
+    } else if (err.request) {
+      // The request was made but no response was received
+      setError("Server not responding. Please try again later.");
+    } else {
+      // Something happened in setting up the request
+      setError(err.message || "Authentication failed. Please try again.");
     }
-  }
-
-  const handleFacebookSignIn = async () => {
-    setIsLoading(true)
-    try {
-      await loginWithFacebook()
-      navigate(redirectUrl)
-    } catch (err) {
-      setError("Failed to sign in with Facebook.")
-      console.error(err)
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
-
-  return (
+  };
+  
+    const handleGoogleSignIn = async () => {
+      setIsLoading(true)
+      try {
+        await loginWithGoogle()
+        navigate(redirectUrl)
+      } catch (err) {
+        setError("Failed to sign in with Google.")
+        console.error(err)
+      } finally {
+        setIsLoading(false)
+      }
+    };
+  
+    const handleFacebookSignIn = async () => {
+      setIsLoading(true)
+      try {
+        await loginWithFacebook()
+        navigate(redirectUrl)
+      } catch (err) {
+        setError("Failed to sign in with Facebook.")
+        console.error(err)
+      } finally {
+        setIsLoading(false)
+      }
+    };
+  
+    return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-950)] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 z-0 opacity-40 dark:opacity-20">

@@ -235,6 +235,34 @@ class ReservationController extends Controller
         }
     }
 
+    public function userReservations(Request $request)
+{
+    try {
+        $query = Reservation::with(['listing', 'partner'])
+            ->where('client_id', $request->user()->id);
+        
+        // Optional filtering
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        // Sort by creation date (newest first)
+        $reservations = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $reservations
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to fetch reservations',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
     public function acceptReservation(Request $request, $id)
     {
         try {

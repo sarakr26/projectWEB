@@ -5,6 +5,7 @@ import { Route, Routes, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { Calendar, Clock, Tool, AlertCircle, Home, Heart, Bell, Settings, User, Phone, Mail, MapPin, Camera } from 'react-feather'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
+import { getUserReservations, Reservation } from '../../app/services/reservationService'
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
@@ -15,28 +16,7 @@ const menuItems = [
   { id: 'settings', label: 'Account', icon: Settings }
 ]
 
-// Mock data for example
-const currentReservations = [
-  {
-    id: 1,
-    toolName: "Bosch Impact Drill",
-    location: "Casablanca, Morocco",
-    startDate: "Apr 20, 2024",
-    endDate: "Apr 25, 2024",
-    status: "active"
-  }
-]
-
-const pastReservations = [
-  {
-    id: 2,
-    toolName: "Makita Circular Saw",
-    location: "Rabat, Morocco",
-    date: "Mar 15, 2024",
-    status: "completed"
-  }
-]
-
+// Notifications - consider replacing with API data in the future
 const notifications = [
   {
     id: 1,
@@ -59,6 +39,12 @@ const DashboardPage = () => {
   const [selectedSection, setSelectedSection] = useState('dashboard')
   const [selectedTab, setSelectedTab] = useState('current')
   const [isEditing, setIsEditing] = useState(false)
+  
+  // Add state for reservations
+  const [currentReservations, setCurrentReservations] = useState<Reservation[]>([])
+  const [pastReservations, setPastReservations] = useState<Reservation[]>([])
+  const [reservationsLoading, setReservationsLoading] = useState(false)
+  const [reservationsError, setReservationsError] = useState<string | null>(null)
 
   useEffect(() => {
     // Redirect if not logged in
@@ -67,10 +53,10 @@ const DashboardPage = () => {
       return
     }
 
-    // Simulate loading dashboard data
+    // Load dashboard data
     const loadDashboard = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 800))
+        await fetchReservations()
       } catch (error) {
         console.error('Error loading dashboard:', error)
       } finally {
@@ -81,61 +67,175 @@ const DashboardPage = () => {
     loadDashboard()
   }, [isAuthenticated, navigate])
 
+  // Function to fetch reservations
+  const fetchReservations = async () => {
+  setReservationsLoading(true);
+  setReservationsError(null);
+  
+  try {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      setReservationsError('Authentication required. Please log in again.');
+      navigate('/signin?redirect=/dashboard');
+      return;
+    }
+    
+    // Fetch active/current reservations (confirmed, pending, ongoing)
+    const activeResponse = await getUserReservations('confirmed');
+    console.log('API Response:', activeResponse);
+    if (activeResponse.status === 'success' && activeResponse.data) {
+      // FIX: Access the data array inside the paginated response
+      if (Array.isArray(activeResponse.data)) {
+        setCurrentReservations(activeResponse.data);
+      } else if (
+        typeof activeResponse.data === 'object' &&
+        activeResponse.data !== null &&
+        'data' in activeResponse.data &&
+        Array.isArray((activeResponse.data as { data: Reservation[] }).data)
+      ) {
+        setCurrentReservations((activeResponse.data as { data: Reservation[] }).data);
+      } else {
+        setCurrentReservations([]);
+      }
+    }
+    
+    // Fetch completed reservations
+    const completedResponse = await getUserReservations('completed');
+    if (completedResponse.status === 'success' && completedResponse.data) {
+      // FIX: Access the data array inside the paginated response
+      if (Array.isArray(completedResponse.data)) {
+        setPastReservations(completedResponse.data);
+      } else if (
+        typeof completedResponse.data === 'object' &&
+        completedResponse.data !== null &&
+        'data' in completedResponse.data &&
+        Array.isArray((completedResponse.data as { data: Reservation[] }).data)
+      ) {
+        setPastReservations((completedResponse.data as { data: Reservation[] }).data);
+      } else {
+        setPastReservations([]);
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch reservations:', err);
+    setReservationsError('Failed to load your reservations. Please try again later.');
+  } finally {
+    setReservationsLoading(false);
+  }
+};
+
   const handleProfileUpdate = (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: Implement API call to update profile
     setIsEditing(false)
   }
 
-  const renderReservations = () => (
-    <div className="space-y-4">
-      {selectedTab === 'current' ? (
-        currentReservations.map(reservation => (
-          <div key={reservation.id} className="tn-card p-4">
-            <div className="flex justify-between items-start">
-              <div className="flex space-x-4">
-                <div className="w-20 h-20 bg-gray-200 rounded-lg"></div>
-                <div>
-                  <h3 className="font-semibold">{reservation.toolName}</h3>
-                  <p className="text-sm text-gray-500">{reservation.location}</p>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Calendar size={14} className="text-gray-400" />
-                    <span className="text-sm text-gray-600">
-                      {reservation.startDate} - {reservation.endDate}
-                    </span>
+  const renderReservations = () => {
+    if (reservationsLoading) {
+      return <div className="flex justify-center py-8"><LoadingSpinner /></div>
+    }
+    
+    if (reservationsError) {
+      return (
+        <div className="p-4 text-red-500 bg-red-50 rounded-lg">
+          {reservationsError}
+        </div>
+      )
+    }
+    
+    const reservations = selectedTab === 'current' ? currentReservations : pastReservations
+    
+    if (reservations.length === 0) {
+      return (
+        <div className="text-center p-8 bg-gray-50 rounded-lg">
+          <p className="text-gray-500">No {selectedTab} reservations found.</p>
+          {selectedTab === 'current' && (
+            <button 
+              onClick={() => navigate('/search')}
+              className="mt-4 tn-button tn-button-outline"
+            >
+              Find Tools to Rent
+            </button>
+          )}
+        </div>
+      )
+    }
+    
+    return (
+      <div className="space-y-4">
+        {selectedTab === 'current' ? (
+          currentReservations.map(reservation => (
+            <div key={reservation.id} className="tn-card p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex space-x-4">
+                  <div className="w-20 h-20 bg-gray-200 rounded-lg">
+                    {reservation.listing?.image_url && (
+                      <img 
+                        src={reservation.listing.image_url} 
+                        alt={reservation.listing?.title || "Tool"} 
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">{reservation.listing?.title || "Tool Reservation"}</h3>
+                    <p className="text-sm text-gray-500">{reservation.listing?.address || "No location available"}</p>
+                    <div className="flex items-center space-x-2 mt-2">
+                      <Calendar size={14} className="text-gray-400" />
+                      <span className="text-sm text-gray-600">
+                        {new Date(reservation.start_date).toLocaleDateString()} - {new Date(reservation.end_date).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
+                <span className={`tn-tag ${reservation.status === 'confirmed' ? 'tn-tag-primary' : 'tn-tag-warning'}`}>
+                  {reservation.status}
+                </span>
               </div>
-              <span className="tn-tag tn-tag-primary">{reservation.status}</span>
+              <div className="flex justify-end space-x-2 mt-4">
+                <button className="tn-button tn-button-outline">Report Issue</button>
+                <button className="tn-button tn-button-primary">View Details</button>
+              </div>
             </div>
-            <div className="flex justify-end space-x-2 mt-4">
-              <button className="tn-button tn-button-outline">Report Issue</button>
-              <button className="tn-button tn-button-primary">View Details</button>
-            </div>
-          </div>
-        ))
-      ) : (
-        pastReservations.map(reservation => (
-          <div key={reservation.id} className="tn-card p-4">
-            <div className="flex justify-between items-start">
-              <div className="flex space-x-4">
-                <div className="w-20 h-20 bg-gray-200 rounded-lg"></div>
-                <div>
-                  <h3 className="font-semibold">{reservation.toolName}</h3>
-                  <p className="text-sm text-gray-500">{reservation.location}</p>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Clock size={14} className="text-gray-400" />
-                    <span className="text-sm text-gray-600">{reservation.date}</span>
+          ))
+        ) : (
+          pastReservations.map(reservation => (
+            <div key={reservation.id} className="tn-card p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex space-x-4">
+                  <div className="w-20 h-20 bg-gray-200 rounded-lg">
+                    {reservation.listing?.image_url && (
+                      <img 
+                        src={reservation.listing.image_url} 
+                        alt={reservation.listing?.title || "Tool"} 
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">{reservation.listing?.title || "Tool Reservation"}</h3>
+                    <p className="text-sm text-gray-500">{reservation.listing?.address || "No location available"}</p>
+                    <div className="flex items-center space-x-2 mt-2">
+                      <Clock size={14} className="text-gray-400" />
+                      <span className="text-sm text-gray-600">
+                        {new Date(reservation.start_date).toLocaleDateString()} - {new Date(reservation.end_date).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
+                <span className="tn-tag tn-tag-gray">{reservation.status}</span>
               </div>
-              <span className="tn-tag tn-tag-gray">{reservation.status}</span>
+              {reservation.status === 'completed' && (
+                <div className="flex justify-end mt-4">
+                  <button className="tn-button tn-button-outline">Write a Review</button>
+                </div>
+              )}
             </div>
-          </div>
-        ))
-      )}
-    </div>
-  )
+          ))
+        )}
+      </div>
+    )
+  }
 
   const renderContent = () => {
     switch (selectedSection) {
