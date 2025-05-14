@@ -332,4 +332,26 @@ class ReservationController extends Controller
             ], 500);
         }
     }
+
+    public function confirmedReservations(Request $request)
+    {
+        try {
+            $reservations = Reservation::with(['listing', 'partner'])
+                ->where('client_id', $request->user()->id)
+                ->where('status', 'confirmed')
+                ->orderBy('start_date', 'asc')
+                ->paginate(10);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $reservations
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch confirmed reservations',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 } 
