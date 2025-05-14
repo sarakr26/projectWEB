@@ -37,7 +37,7 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-900)] border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-800)]">
+    <footer className="bg-[rgb(203,243,239)] dark:bg-[rgb(203,243,239)] border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-800)]">
 
       
       {/* Main Footer Content */}

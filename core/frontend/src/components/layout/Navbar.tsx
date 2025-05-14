@@ -53,8 +53,8 @@ export default function Navbar() {
   const navbarClasses = `
     fixed top-0 left-0 w-full z-40 transition-all duration-300
     ${isScrolled 
-      ? 'py-2 bg-white/90 backdrop-blur-md shadow-md dark:bg-gray-800/90' 
-      : 'py-4 bg-transparent dark:bg-transparent'}
+      ? 'py-2 bg-[rgb(203,243,239)] backdrop-blur-md shadow-md dark:bg-[rgb(203,243,239)]' 
+      : 'py-4 bg-[rgb(203,243,239)] dark:bg-[rgb(203,243,239)]'}
   `
 
   return (
