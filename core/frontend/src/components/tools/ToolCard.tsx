@@ -18,6 +18,7 @@ interface Tool {
   category?: string;
   availability?: string;
   isPremium?: boolean;
+  is_premium?: boolean; 
   owner?: {
     id: string;
     name: string;
@@ -85,6 +86,11 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid', action }) => {
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           </Link>
+          {(tool.isPremium || tool.is_premium) && (
+          <div className="absolute top-3 left-3 px-2 py-1 bg-amber-500 text-white text-xs font-bold rounded-full z-10">
+          PREMIUM
+          </div>
+          )}
           <button 
             className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
               isFavorite 
@@ -171,6 +177,11 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid', action }) => {
       <div className="absolute top-2 right-2 z-10">
         <ListingLikeButton listingId={Number(tool.id)} />
       </div>
+      {tool.isPremium && (
+      <div className="absolute top-3 left-3 px-2 py-1 bg-amber-500 text-white text-xs font-bold rounded-full z-10">
+      PREMIUM
+      </div>
+      )}
       <div className="relative overflow-hidden">
         <Link to={`/tools/${placeholderTool.id}`}>
           <img 

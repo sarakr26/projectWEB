@@ -66,31 +66,23 @@ class Listing extends Model
     }
 
     public function updatePriority()
-    {
-        if (!$this->is_premium || !$this->premium_end_date) {
-            $this->priority = 4;
-            return;
-        }
-
-        if (now()->gt($this->premium_end_date)) {
-            $this->is_premium = false;
-            $this->priority = 4;
-            $this->save();
-            return;
-        }
-
-        $duration = $this->premium_start_date->diffInDays($this->premium_end_date);
-        
-        if ($duration >= 30) {
-            $this->priority = 1;
-        } elseif ($duration >= 14) {
+{
+    // Set priority based on premium status and duration
+    if ($this->is_premium) {
+        // Check premium duration (value 1, 2, or 3)
+        if ($this->premium_duration == '1') { // 1 month
+            $this->priority = 1; // Highest priority
+        } else if ($this->premium_duration == '2') { // 2 weeks
             $this->priority = 2;
-        } elseif ($duration >= 7) {
+        } else if ($this->premium_duration == '3') { // 1 week
             $this->priority = 3;
         } else {
-            $this->priority = 4;
+            $this->priority = 4; // Default if premium but no valid duration
         }
-        
-        $this->save();
+    } else {
+        $this->priority = 4; // Lowest priority for non-premium
     }
+    
+    $this->save();
+}
 } 

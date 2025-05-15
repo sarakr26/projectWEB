@@ -1985,6 +1985,10 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(255 251 235 / var(--tw-bg-opacity, 1));
 }
+.bg-amber-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 158 11 / var(--tw-bg-opacity, 1));
+}
 .bg-background {
   background-color: hsl(var(--background));
 }
@@ -2334,6 +2338,9 @@ video {
 }
 .to-green-600\/5 {
   --tw-gradient-to: rgb(22 163 74 / 0.05) var(--tw-gradient-to-position);
+}
+.to-indigo-50 {
+  --tw-gradient-to: #eef2ff var(--tw-gradient-to-position);
 }
 .to-purple-500 {
   --tw-gradient-to: #a855f7 var(--tw-gradient-to-position);
@@ -4941,6 +4948,16 @@ body {
 
 .dark\:bg-yellow-900\/30:is(.dark *) {
   background-color: rgb(113 63 18 / 0.3);
+}
+
+.dark\:from-blue-900\/20:is(.dark *) {
+  --tw-gradient-from: rgb(30 58 138 / 0.2) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(30 58 138 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.dark\:to-indigo-900\/20:is(.dark *) {
+  --tw-gradient-to: rgb(49 46 129 / 0.2) var(--tw-gradient-to-position);
 }
 
 .dark\:text-\[var\(--toolnest-\$\{item\.color\}-400\)\]:is(.dark *) {

@@ -39,8 +39,8 @@ const SearchResultsPage: React.FC = () => {
   })
   
   // State for sorting and pagination
-  const [sortBy, setSortBy] = useState(searchParams.get('sort_by') || 'created_at')
-  const [sortOrder, setSortOrder] = useState(searchParams.get('sort_order') as 'asc' | 'desc' || 'desc')
+  const [sortBy, setSortBy] = useState(searchParams.get('sort_by') || 'priority')
+  const [sortOrder, setSortOrder] = useState(searchParams.get('sort_order') as 'asc' | 'desc' || 'asc')
   const [currentPage, setCurrentPage] = useState(searchParams.get('page') ? Number(searchParams.get('page')) : 1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalResults, setTotalResults] = useState(0)
@@ -66,36 +66,24 @@ const fetchSearchResults = async () => {
   setError(null)
   
   try {
-    // Prepare search params
+    // Prepare search params - DO NOT override the sort from the backend
     const searchParams: ListingSearchParams = {
       query: query,
       page: currentPage,
-      per_page: 12, // Adjust based on your needs
-      sort_by: sortBy,
-      sort_order: sortOrder,
+      per_page: 12,
+      // Only include these if user explicitly changes sorting
+      ...(sortBy !== 'priority' && { sort_by: sortBy }),
+      ...(sortOrder !== 'asc' && { sort_order: sortOrder }),
       ...filters
     }
     
     // Call the API
     const response = await searchListings(searchParams)
-    console.log("API response:", response); // Add debugging
     
     if (response.status === 'success' && response.data) {
-      // Fix: Handle both direct array and paginated object formats
-      if (Array.isArray(response.data)) {
-        setListings(response.data);
-      } else if (
-        typeof response.data === 'object' &&
-        response.data !== null &&
-        // Type guard: check if 'data' is a property and is an array
-        Object.prototype.hasOwnProperty.call(response.data, 'data') &&
-        Array.isArray((response.data as { data: unknown }).data)
-      ) {
-        // This handles the case where the data is in response.data.data (Laravel pagination)
-        setListings((response.data as { data: Listing[] }).data);
-      } else {
-        setListings([]);
-      }
+      // No additional sorting needed here - respect the backend order
+      setListings(Array.isArray(response.data) ? response.data : 
+                 ('data' in response.data ? response.data.data : []));
       
       setTotalResults(response.meta?.total || 0)
       setTotalPages(response.meta?.last_page || 1)
@@ -187,21 +175,21 @@ const fetchSearchResults = async () => {
         
         
         <div className="relative flex-1 sm:flex-none">
-          <select
-            value={`${sortBy}-${sortOrder}`}
-            onChange={handleSortChange}
-            className="tn-input appearance-none pr-10 py-2 w-full"
-          >
-            <option value="created_at-desc">Newest first</option>
-            <option value="created_at-asc">Oldest first</option>
-            <option value="price_per_day-asc">Price: Low to High</option>
-            <option value="price_per_day-desc">Price: High to Low</option>
-            <option value="avg_rating-desc">Highest Rated</option>
-          </select>
-          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-            <ChevronDown size={16} />
-          </div>
-        </div>
+  <select
+    value={`${sortBy}-${sortOrder}`}
+    onChange={handleSortChange}
+    className="tn-input appearance-none pr-10 py-2 w-full"
+  >
+    <option value="priority-asc">Featured First</option>
+    <option value="price_per_day-asc">Price: Low to High</option>
+    <option value="price_per_day-desc">Price: High to Low</option>
+    <option value="avg_rating-desc">Rating: High to Low</option>
+    <option value="created_at-desc">Newest First</option>
+  </select>
+  <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+    <ChevronDown size={16} />
+  </div>
+</div>
         
         <div className="hidden sm:flex items-center border border-[var(--toolnest-gray-300)] dark:border-[var(--toolnest-gray-700)] rounded-lg overflow-hidden">
           <button

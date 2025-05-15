@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
@@ -118,9 +119,9 @@ class ListingController extends Controller
                 'partner_id' => $request->user()->id,
                 'delivery_option' => $request->delivery_option ?? false,
                 'status' => 'active',
-                'is_premium' => $request->is_premium ?? false,
                 'priority' => 4, // Default priority
             ]);
+            $listing->updatePriority();
 
             if ($request->is_premium) {
                 $listing->premium_start_date = now();
@@ -176,11 +177,12 @@ class ListingController extends Controller
         }
     }
 
+    
     public function search(Request $request)
     {
         try {
             $query = Listing::query()
-                ->with(['category', 'city', 'partner'])
+                ->with(['category', 'city', 'partner', 'images'])
                 ->where('status', 'active');
 
             // Filter by city
@@ -206,12 +208,34 @@ class ListingController extends Controller
                 $query->where('price_per_day', '<=', $request->max_price);
             }
 
-            // Sort by
-            $sortBy = $request->get('sort_by', 'created_at');
-            $sortOrder = $request->get('sort_order', 'desc');
-            $query->orderBy($sortBy, $sortOrder);
+            // Search by query string if provided - FIX: changed $request->query to $request->input('query')
+            if ($request->has('query') && !empty($request->input('query'))) {
+                $searchTerm = '%' . $request->input('query') . '%';
+                $query->where(function($q) use ($searchTerm) {
+                    $q->where('title', 'like', $searchTerm)
+                      ->orWhere('description', 'like', $searchTerm);
+                });
+            }
 
-            $listings = $query->paginate(10);
+            // Update priorities for all listings
+            $allListings = $query->get();
+            foreach ($allListings as $listing) {
+                $listing->updatePriority();
+            }
+
+            // Determine sorting method
+            if ($request->get('sort_by') === 'priority' || !$request->has('sort_by')) {
+                // Priority sorting (default) - premium listings first
+                $query->orderBy('priority', 'asc')
+                      ->orderBy('created_at', 'desc');
+            } else {
+                // Sort by other fields if specified
+                $sortBy = $request->get('sort_by', 'created_at');
+                $sortOrder = $request->get('sort_order', 'desc');
+                $query->orderBy($sortBy, $sortOrder);
+            }
+
+            $listings = $query->paginate(12);
 
             return response()->json([
                 'status' => 'success',

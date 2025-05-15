@@ -254,119 +254,127 @@ const CreateListingPage = () => {
         </div>
       );
     case 1:
-      return (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Price and Delivery section */}
-            <div>
-              <label className="block font-semibold mb-1">Price per day (€)</label>
-              <input
-                type="number"
-                name="price_per_day"
-                value={form.price_per_day}
-                onChange={handleChange}
-                className="tn-input w-full"
-                min="0"
-                step="0.01"
-                required
-              />
-            </div>
-            <div>
-              <label className="block font-semibold mb-1">Delivery Option</label>
-              <div className="flex items-center h-full">
-                <input
-                  type="checkbox"
-                  name="delivery_option"
-                  checked={form.delivery_option}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                <span>Delivery Available</span>
-              </div>
-            </div>
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Price and Delivery section */}
+        <div>
+          <label className="block font-semibold mb-1">Price per day (€)</label>
+          <input
+            type="number"
+            name="price_per_day"
+            value={form.price_per_day}
+            onChange={handleChange}
+            className="tn-input w-full"
+            min="0"
+            step="0.01"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">Delivery Option</label>
+          <div className="flex items-center h-full">
+            <input
+              type="checkbox"
+              name="delivery_option"
+              checked={form.delivery_option}
+              onChange={handleChange}
+              className="mr-2"
+            />
+            <span>Delivery Available</span>
           </div>
+        </div>
+      </div>
 
-          {/* Improved Dates section with better labels */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-semibold mb-1">
-                Available From <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="start_date"
-                value={form.start_date}
-                onChange={handleChange}
-                className="tn-input w-full"
-                min={new Date().toISOString().split('T')[0]} // Can't select dates before today
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                First day this tool will be available for rent
-              </p>
-            </div>
-            <div>
-              <label className="block font-semibold mb-1">
-                Available Until <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="end_date"
-                value={form.end_date}
-                onChange={handleChange}
-                className="tn-input w-full"
-                min={form.start_date || new Date().toISOString().split('T')[0]} // Can't select end date before start date
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Last day this tool will be available for rent
-              </p>
-            </div>
+      {/* Improved Dates section with better labels */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block font-semibold mb-1">
+            Available From <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="date"
+            name="start_date"
+            value={form.start_date}
+            onChange={handleChange}
+            className="tn-input w-full"
+            min={new Date().toISOString().split('T')[0]}
+            required
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            First day this tool will be available for rent
+          </p>
+        </div>
+        <div>
+          <label className="block font-semibold mb-1">
+            Available Until <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="date"
+            name="end_date"
+            value={form.end_date}
+            onChange={handleChange}
+            className="tn-input w-full"
+            min={form.start_date || new Date().toISOString().split('T')[0]}
+            required
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Last day this tool will be available for rent
+          </p>
+        </div>
+      </div>
+
+      {/* Availability visualization */}
+      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <h4 className="text-sm font-medium mb-2">Availability Period</h4>
+        <div className="flex items-center justify-center">
+          <div className="flex items-center">
+            <div className="h-6 w-6 rounded-full bg-green-500"></div>
+            <span className="ml-2 text-sm">Available</span>
           </div>
+          <span className="mx-4 text-gray-400">•</span>
+          <div className="flex items-center">
+            <div className="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+            <span className="ml-2 text-sm">Unavailable</span>
+          </div>
+        </div>
+        <div className="mt-4 text-center text-sm">
+          {form.start_date && form.end_date ? (
+            <p>
+              Your tool will be available for <strong>{
+                Math.ceil((new Date(form.end_date).getTime() - new Date(form.start_date).getTime()) / (1000 * 60 * 60 * 24))
+              } days</strong>, from <strong>{new Date(form.start_date).toLocaleDateString()}</strong> to <strong>{new Date(form.end_date).toLocaleDateString()}</strong>
+            </p>
+          ) : (
+            <p className="text-yellow-500">Please select both start and end dates</p>
+          )}
+        </div>
+      </div>
 
-          {/* Availability visualization */}
-          {/* Availability visualization */}
-<div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-  <h4 className="text-sm font-medium mb-2">Availability Period</h4>
-  <div className="flex items-center justify-center">
-    <div className="flex items-center">
-      <div className="h-6 w-6 rounded-full bg-green-500"></div>
-      <span className="ml-2 text-sm">Available</span>
-    </div>
-    <span className="mx-4 text-gray-400">•</span>
-    <div className="flex items-center">
-      <div className="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600"></div>
-      <span className="ml-2 text-sm">Unavailable</span>
-    </div>
-  </div>
-  <div className="mt-4 text-center text-sm">
-    {form.start_date && form.end_date ? (
-      <p>
-        Your tool will be available for <strong>{
-          Math.ceil((new Date(form.end_date).getTime() - new Date(form.start_date).getTime()) / (1000 * 60 * 60 * 24))
-        } days</strong>, from <strong>{new Date(form.start_date).toLocaleDateString()}</strong> to <strong>{new Date(form.end_date).toLocaleDateString()}</strong>
-      </p>
-    ) : (
-      <p className="text-yellow-500">Please select both start and end dates</p>
-    )}
-  </div>
-</div>
-
-          {/* Premium section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-semibold mb-1">Premium Listing</label>
-              <div className="flex items-center h-full">
-                <input
-                  type="checkbox"
-                  name="is_premium"
-                  checked={form.is_premium}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                <span>Promote this listing</span>
-              </div>
-            </div>
+      {/* Premium section */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Premium Listing Options</h3>
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Premium listings appear at the top of search results, increasing visibility and rental chances.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-semibold mb-1 flex items-center">
+              <input
+                type="checkbox"
+                name="is_premium"
+                checked={form.is_premium}
+                onChange={handleChange}
+                className="mr-2"
+              />
+              <span>Promote this listing</span>
+            </label>
+          </div>
+          
+          {form.is_premium && (
             <div>
               <label className="block font-semibold mb-1">Premium Duration</label>
               <select
@@ -374,16 +382,18 @@ const CreateListingPage = () => {
                 value={form.premium_duration}
                 onChange={handleChange}
                 className="tn-input w-full"
-                required
+                required={form.is_premium}
               >
-                {premiumOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
+                <option value="1">1 month - Best value (Priority 1)</option>
+                <option value="2">2 weeks (Priority 2)</option>
+                <option value="3">1 week (Priority 3)</option>
               </select>
             </div>
-          </div>
+          )}
         </div>
-      );
+      </div>
+    </div>
+  );
     case 2:
       return (
         <div className="space-y-4">
