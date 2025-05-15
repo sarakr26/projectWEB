@@ -23,22 +23,6 @@ const initialState = {
   additional_photos: Array(5).fill(null),
 };
 
-const categories = [
-  { id: 1, name: 'Power Tools' },
-  { id: 2, name: 'Gardening' },
-  // Add more categories as needed
-];
-const cities = [
-  { id: 1, name: 'Paris' },
-  { id: 2, name: 'Lyon' },
-  // Add more cities as needed
-];
-const premiumOptions = [
-  { value: '1', label: '1 month' },
-  { value: '2', label: '2 weeks' },
-  { value: '3', label: '1 week' },
-];
-
 const CreateListingPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [form, setForm] = useState(initialState);

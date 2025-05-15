@@ -110,7 +110,7 @@ class ListingController extends Controller
 
             DB::beginTransaction();
 
-            $listing = Listing::create([
+            $listing = new Listing([
                 'title' => $request->title,
                 'description' => $request->description,
                 'price_per_day' => $request->price_per_day,
@@ -120,6 +120,7 @@ class ListingController extends Controller
                 'delivery_option' => $request->delivery_option ?? false,
                 'status' => 'active',
                 'priority' => 4, // Default priority
+                'is_premium' => $request->boolean('is_premium', false),
             ]);
             $listing->updatePriority();
 

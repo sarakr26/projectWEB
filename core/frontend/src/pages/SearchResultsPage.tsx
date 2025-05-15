@@ -66,25 +66,34 @@ const fetchSearchResults = async () => {
   setError(null)
   
   try {
-    // Prepare search params - DO NOT override the sort from the backend
     const searchParams: ListingSearchParams = {
       query: query,
       page: currentPage,
       per_page: 12,
-      // Only include these if user explicitly changes sorting
-      ...(sortBy !== 'priority' && { sort_by: sortBy }),
-      ...(sortOrder !== 'asc' && { sort_order: sortOrder }),
+      sort_by: 'is_premium',
+      sort_order: 'desc',
+      // Add secondary sort if specified by user
+      ...(sortBy !== 'priority' && { 
+        secondary_sort: sortBy,
+        secondary_order: sortOrder
+      }),
       ...filters
     }
     
-    // Call the API
     const response = await searchListings(searchParams)
     
     if (response.status === 'success' && response.data) {
-      // No additional sorting needed here - respect the backend order
-      setListings(Array.isArray(response.data) ? response.data : 
-                 ('data' in response.data ? response.data.data : []));
-      
+      let listings = Array.isArray(response.data) ? response.data : 
+                    ('data' in response.data ? response.data.data : [])
+
+      // Ensure premium listings appear first
+      listings.sort((a, b) => {
+        if (a.is_premium && !b.is_premium) return -1
+        if (!a.is_premium && b.is_premium) return 1
+        return 0
+      })
+
+      setListings(listings)
       setTotalResults(response.meta?.total || 0)
       setTotalPages(response.meta?.last_page || 1)
     } else {
@@ -93,7 +102,7 @@ const fetchSearchResults = async () => {
     }
   } catch (error) {
     console.error('Error fetching search results:', error)
-    setError('An unexpected error occurred. Please try again later.')
+    setError('An unexpected error occurred')
     setListings([])
   } finally {
     setLoading(false)
