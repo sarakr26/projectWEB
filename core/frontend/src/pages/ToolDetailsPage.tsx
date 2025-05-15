@@ -8,7 +8,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { getListing, Listing } from "@/app/services/listingService"
 import LoadingSpinner from "../components/ui/LoadingSpinner"
 import { createReservation } from "@/app/services/reservationService"
-
+import ListingLikeButton from "./ListingLikedButton";
 
 // Custom hook for fetching tool details
 const useToolDetails = (id: string | undefined) => {
@@ -40,7 +40,6 @@ export default function ToolDetailsPage() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [timeSlot, setTimeSlot] = useState<string>("");
-  const [isSaved, setIsSaved] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
   const [reservationSuccess, setReservationSuccess] = useState(false);
@@ -64,16 +63,6 @@ export default function ToolDetailsPage() {
     }
   }
 
-  const handleSaveToggle = () => {
-    if (!isAuthenticated) {
-      // Redirect to login or show login modal
-      alert("Please login to save this tool");
-      return;
-    }
-
-    setIsSaved(!isSaved);
-    // Here you would call an API to save/unsave the tool
-  }
 
   const handleRentRequest = async () => {
   if (!isAuthenticated) {
@@ -210,14 +199,12 @@ export default function ToolDetailsPage() {
                 </>
               )}
 
+              {/* Like button */}
               <button
-                onClick={handleSaveToggle}
                 className="absolute top-2 right-2 p-2 bg-white dark:bg-gray-900 rounded-full shadow-md"
-                aria-label={isSaved ? "Remove from saved" : "Save tool"}
+                aria-label="Like tool"
               >
-                <Heart
-                  className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-500 dark:text-gray-400"}`}
-                />
+                <ListingLikeButton listingId={listing.id} />
               </button>
             </div>
 

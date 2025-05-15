@@ -49,3 +49,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Profile routes
 Route::middleware('auth:sanctum')->put('/profile', [AuthController::class, 'updateProfile']);
+
+//liked listings
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/listings/{listing}/like', [ListingController::class, 'like']);
+    Route::delete('/listings/{listing}/like', [ListingController::class, 'unlike']);
+    Route::get('/listings/{listing}/liked', [ListingController::class, 'isLiked']);
+});
+// list of liked listings
+Route::middleware('auth:sanctum')->get('/user/liked-listings', [App\Http\Controllers\ListingController::class, 'likedListings']);

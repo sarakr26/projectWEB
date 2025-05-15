@@ -350,4 +350,52 @@ class ListingController extends Controller
             ], 500);
         }
     }
-} 
+
+    public function like($listingId)
+    {
+        $user = auth()->user();
+        DB::table('liked_listings')->updateOrInsert([
+            'user_id' => $user->id,
+            'listing_id' => $listingId,
+        ]);
+        return response()->json(['status' => 'liked']);
+    }
+
+    public function unlike($listingId)
+    {
+        $user = auth()->user();
+        DB::table('liked_listings')
+            ->where('user_id', $user->id)
+            ->where('listing_id', $listingId)
+            ->delete();
+        return response()->json(['status' => 'unliked']);
+    }
+
+    public function isLiked($listingId)
+    {
+        $user = auth()->user();
+        $liked = DB::table('liked_listings')
+            ->where('user_id', $user->id)
+            ->where('listing_id', $listingId)
+            ->exists();
+        return response()->json(['liked' => $liked]);
+    }
+
+    public function likedListings(Request $request)
+    {
+        $user = $request->user();
+
+        $likedListings = \DB::table('liked_listings')
+            ->where('user_id', $user->id)
+            ->pluck('listing_id');
+
+        $listings = \App\Models\Listing::with(['category', 'city', 'partner', 'images'])
+            ->whereIn('id', $likedListings)
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $listings
+        ]);
+    }
+}

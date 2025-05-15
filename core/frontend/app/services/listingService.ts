@@ -102,7 +102,15 @@ export async function searchListings(params: ListingSearchParams): Promise<ApiRe
         'data' in response.data.data
       ) {
         // Extract the nested array and preserve pagination metadata
-        const paginationData = response.data.data;
+        const paginationData = response.data.data as {
+          current_page: number;
+          from: number;
+          last_page: number;
+          per_page: number;
+          to: number;
+          total: number;
+          data: Listing[];
+        };
         response.data.meta = {
           current_page: paginationData.current_page,
           from: paginationData.from,
@@ -165,4 +173,25 @@ export async function getCities(): Promise<ApiResponse<{id: number, name: string
       message: error.response?.data?.message || error.message || 'Failed to fetch cities'
     };
   }
-}  
+}
+
+export const likeListing = (listingId: number) =>
+  api.post(`/listings/${listingId}/like`);
+
+export const unlikeListing = (listingId: number) =>
+  api.delete(`/listings/${listingId}/like`);
+
+export const isListingLiked = (listingId: number) =>
+  api.get(`/listings/${listingId}/liked`);
+
+export async function getUserLikedListings(): Promise<ApiResponse<Listing[]>> {
+  try {
+    const response = await api.get<ApiResponse<Listing[]>>('/user/liked-listings');
+    return response.data;
+  } catch (error: any) {
+    return {
+      status: 'error',
+      message: error.response?.data?.message || error.message || 'Failed to fetch liked listings'
+    };
+  }
+}

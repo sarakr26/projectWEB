@@ -387,8 +387,8 @@ const fetchSearchResults = async () => {
                         rating: listing.avg_rating,
                         reviewCount: listing.review_count,
                         location: listing.city?.name || 'Unknown',
-                        image: listing.images && listing.images.length > 0 
-                          ? listing.images[0].url 
+                        image: listing.images && listing.images.length > 0
+                          ? listing.images[0].url
                           : 'https://images.unsplash.com/photo-1504148455328-c376907d081c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
                         isAvailable: true,
                         isPremium: listing.is_premium,

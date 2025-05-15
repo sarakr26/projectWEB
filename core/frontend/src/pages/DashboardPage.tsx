@@ -7,14 +7,17 @@ import { Calendar, Clock, Tool, AlertCircle, Home, Heart, Bell, Settings, User, 
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import { getUserReservations, Reservation } from '../../app/services/reservationService'
 import EditProfile from './EditProfile'; // Adjust path if needed
+import { getUserLikedListings, Listing } from '../../app/services/listingService';
+import ToolCard from '../components/tools/ToolCard'; // adjust path if needed
+import ListingLikeButton from './ListingLikedButton'; // adjust path if needed
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
   { id: 'profile', label: 'Profile', icon: User },
   { id: 'reservations', label: 'Reservations', icon: Calendar },
   { id: 'favorites', label: 'Favorites', icon: Heart },
-  { id: 'notifications', label: 'Settings', icon: Bell },
-  { id: 'settings', label: 'Account', icon: Settings }
+  { id: 'notifications', label: 'Notification', icon: Bell },
+
 ]
 
 // Notifications - consider replacing with API data in the future
@@ -47,6 +50,10 @@ const DashboardPage = () => {
   const [reservationsLoading, setReservationsLoading] = useState(false)
   const [reservationsError, setReservationsError] = useState<string | null>(null)
 
+  const [likedListings, setLikedListings] = useState<Listing[]>([]);
+  const [likedLoading, setLikedLoading] = useState(false);
+  const [likedError, setLikedError] = useState<string | null>(null);
+
   useEffect(() => {
     // Redirect if not logged in
     if (!isAuthenticated) {
@@ -67,6 +74,22 @@ const DashboardPage = () => {
 
     loadDashboard()
   }, [isAuthenticated, navigate])
+
+  useEffect(() => {
+    if (selectedSection === 'favorites') {
+      setLikedLoading(true);
+      getUserLikedListings()
+        .then(res => {
+          if (res.status === 'success' && res.data) {
+            setLikedListings(res.data);
+          } else {
+            setLikedError(res.message || 'Failed to load favorites');
+          }
+        })
+        .catch(() => setLikedError('Failed to load favorites'))
+        .finally(() => setLikedLoading(false));
+    }
+  }, [selectedSection]);
 
   // Function to fetch reservations
   const fetchReservations = async () => {
@@ -292,7 +315,44 @@ const DashboardPage = () => {
       case 'reservations':
         return renderReservations();
       case 'favorites':
-        return <div>Favorites Content</div>;
+        return (
+          <div>
+            <h2 className="text-xl font-bold mb-4">Your Favorite Listings</h2>
+            {likedLoading ? (
+              <LoadingSpinner />
+            ) : likedError ? (
+              <div className="text-red-500">{likedError}</div>
+            ) : likedListings.length === 0 ? (
+              <div className="text-gray-500">You have no favorite listings yet.</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {likedListings.map(listing => (
+                  <ToolCard
+                    key={listing.id}
+                    tool={{
+                      id: listing.id.toString(),
+                      name: listing.title,
+                      price: listing.price_per_day,
+                      rating: listing.avg_rating,
+                      reviewCount: listing.review_count,
+                      location: listing.city?.name || 'Unknown',
+                      image: listing.images && listing.images.length > 0
+                        ? listing.images[0].url
+                        : 'https://images.unsplash.com/photo-1504148455328-c376907d081c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                      isPremium: listing.is_premium,
+                      owner: {
+                        id: listing.partner?.id.toString() || '0',
+                        name: listing.partner?.name || 'Unknown',
+                        avatar: listing.partner?.avatar_url || '/placeholder.svg',
+                        rating: listing.partner?.avg_rating_as_partner || 0
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        );
       case 'notifications':
         return <div>Notification Center</div>;
       case 'settings':
