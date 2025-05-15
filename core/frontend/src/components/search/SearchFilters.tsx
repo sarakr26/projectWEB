@@ -21,7 +21,7 @@ interface FilterSettings {
   city_id?: number
   min_price?: number
   max_price?: number
-  min_rating?: number
+  min_rating?: number | null
   availability?: string[]
   distance?: number | null
 }

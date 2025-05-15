@@ -360,4 +360,74 @@ class ReservationController extends Controller
             ], 500);
         }
     }
-} 
+
+    public function declineReservation(Request $request, $id)
+{
+    try {
+        $reservation = Reservation::with(['client', 'listing'])->findOrFail($id);
+
+        // Check if the user is the partner of the listing
+        if ($reservation->partner_id !== $request->user()->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized to decline this reservation'
+            ], 403);
+        }
+
+        // Check if the reservation is pending
+        if ($reservation->status !== 'pending') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Only pending reservations can be declined'
+            ], 400);
+        }
+
+        // Update reservation status to canceled
+        $reservation->update(['status' => 'canceled']);
+
+        // Optionally: Send email to client notifying them of the declined reservation
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Reservation declined successfully',
+            'data' => $reservation->fresh(['client', 'listing'])
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to decline reservation',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+    public function partnerReservations(Request $request)
+    {
+        try {
+            $query = Reservation::with(['client', 'listing'])
+                ->where('partner_id', $request->user()->id);
+            
+            // Optional filtering
+            if ($request->has('status')) {
+                $query->where('status', $request->status);
+            }
+            
+            // Sort by creation date (newest first)
+            $reservations = $query->orderBy('created_at', 'desc')
+                ->paginate(10);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $reservations
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch partner reservations',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+}

@@ -23,6 +23,18 @@ class ListingController extends Controller
         $query = Listing::with(['category', 'city', 'partner', 'images'])
             ->where('status', 'active');
 
+            if ($request->has('partner') && $request->partner === 'self') {
+            // Make sure user is authenticated and a partner
+            if (!$request->user() || $request->user()->role !== 'partner') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized or not a partner'
+                ], 401);
+            }
+            
+            $query->where('partner_id', $request->user()->id);
+        }
+
         // Apply filters if provided
         if ($request->has('category_id')) {
             $query->where('category_id', $request->category_id);

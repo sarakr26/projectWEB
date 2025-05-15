@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Route, Routes, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Calendar, Clock, Tool, AlertCircle, Home, Heart, Bell, Settings, User, Phone, Mail, MapPin, Camera } from 'react-feather'
+import { Calendar, Clock, Tool, AlertCircle, Home, Heart, Bell, Settings, User, Phone, Mail, MapPin, Camera, Check, Award } from 'react-feather'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import { getUserReservations, Reservation } from '../../app/services/reservationService'
 import EditProfile from './EditProfile'; // Adjust path if needed
@@ -32,14 +32,25 @@ const notifications = [
     time: "2 days ago"
   }
 ]
+const initialStatistics = {
+  activeAnnounces: 0,
+  totalReservations: 0,
+  averageRating: 0,
+  totalRevenue: "$0"
+}
+
+
 
 const DashboardPage = () => {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, becomePartner } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [selectedSection, setSelectedSection] = useState('dashboard')
   const [selectedTab, setSelectedTab] = useState('current')
   const [isEditing, setIsEditing] = useState(false)
+  const [isUpgrading, setIsUpgrading] = useState(false)
+  const [upgradeSuccess, setUpgradeSuccess] = useState(false)
+  const [statistics, setStatistics] = useState(initialStatistics)
   
   // Add state for reservations
   const [currentReservations, setCurrentReservations] = useState<Reservation[]>([])
@@ -68,58 +79,69 @@ const DashboardPage = () => {
     loadDashboard()
   }, [isAuthenticated, navigate])
 
+  // Function to handle partner upgrade
+  const handlePartnerUpgrade = async () => {
+    if (isUpgrading) return
+    
+    setIsUpgrading(true)
+    try {
+      const success = await becomePartner()
+      if (success) {
+        setUpgradeSuccess(true)
+        setTimeout(() => {
+          // Navigate to partner dashboard after showing success message
+          navigate('/partner-dashboard')
+        }, 2000)
+      } else {
+        alert("Failed to upgrade to partner. Please try again later.")
+      }
+    } catch (error) {
+      console.error("Error upgrading to partner:", error)
+      alert("An unexpected error occurred. Please try again later.")
+    } finally {
+      setIsUpgrading(false)
+    }
+  }
+
   // Function to fetch reservations
   const fetchReservations = async () => {
   setReservationsLoading(true);
-  setReservationsError(null);
-  
   try {
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-      setReservationsError('Authentication required. Please log in again.');
-      navigate('/signin?redirect=/dashboard');
-      return;
-    }
+    // Get the current user ID
+    const userId = user?.id;
     
-    // Fetch active/current reservations (confirmed, pending, ongoing)
-    const activeResponse = await getUserReservations('confirmed');
-    console.log('API Response:', activeResponse);
-    if (activeResponse.status === 'success' && activeResponse.data) {
-      // FIX: Access the data array inside the paginated response
-      if (Array.isArray(activeResponse.data)) {
-        setCurrentReservations(activeResponse.data);
-      } else if (
-        typeof activeResponse.data === 'object' &&
-        activeResponse.data !== null &&
-        'data' in activeResponse.data &&
-        Array.isArray((activeResponse.data as { data: Reservation[] }).data)
-      ) {
-        setCurrentReservations((activeResponse.data as { data: Reservation[] }).data);
-      } else {
-        setCurrentReservations([]);
-      }
-    }
+    // Create custom parameters to filter by partner_id
+    const params = { as_partner: 'true' };
     
-    // Fetch completed reservations
-    const completedResponse = await getUserReservations('completed');
-    if (completedResponse.status === 'success' && completedResponse.data) {
-      // FIX: Access the data array inside the paginated response
-      if (Array.isArray(completedResponse.data)) {
-        setPastReservations(completedResponse.data);
-      } else if (
-        typeof completedResponse.data === 'object' &&
-        completedResponse.data !== null &&
-        'data' in completedResponse.data &&
-        Array.isArray((completedResponse.data as { data: Reservation[] }).data)
-      ) {
-        setPastReservations((completedResponse.data as { data: Reservation[] }).data);
-      } else {
-        setPastReservations([]);
-      }
+    const response = await getUserReservations();
+    if (response.status === 'success' && response.data) {
+      // Handle possible pagination in the response
+      const allReservationData = Array.isArray(response.data) 
+        ? response.data 
+        : (typeof response.data === 'object' && response.data !== null && 'data' in response.data && Array.isArray((response.data as any).data)
+            ? (response.data as { data: Reservation[] }).data
+            : []);
+      
+      // Filter reservations where the current user is the partner (not the client)
+      const partnerReservations = allReservationData.filter(
+        reservation => String(reservation.partner_id) === String(userId)
+      );
+      
+      setPastReservations(partnerReservations);
+      
+      // Update statistics based on filtered data
+      const totalRevenue = partnerReservations
+        .filter((r: Reservation) => r.status === 'completed')
+        .reduce((sum: number, r: Reservation) => sum + (r.total_price || 0), 0);
+        
+      setStatistics(prev => ({
+        ...prev,
+        totalReservations: partnerReservations.length,
+        totalRevenue: `$${totalRevenue.toFixed(2)}`
+      }));
     }
-  } catch (err) {
-    console.error('Failed to fetch reservations:', err);
-    setReservationsError('Failed to load your reservations. Please try again later.');
+  } catch (error) {
+    console.error('Error fetching reservations:', error);
   } finally {
     setReservationsLoading(false);
   }
@@ -261,6 +283,52 @@ const DashboardPage = () => {
               {renderReservations()}
             </div>
             <div className="lg:col-span-1">
+              {/* Partner Upgrade Card - Show only for clients */}
+              {user?.role === 'client' && !upgradeSuccess && (
+                <div className="tn-card p-6 mb-6 bg-gradient-to-br from-blue-50 to-green-50 border border-green-100">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Award size={24} className="text-green-600" />
+                    <h2 className="font-bold text-lg text-gray-800">Become a Partner</h2>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    List your tools and earn money by renting them to others in your community.
+                  </p>
+                  <button
+                    onClick={handlePartnerUpgrade}
+                    disabled={isUpgrading}
+                    className="w-full tn-button tn-button-primary flex items-center justify-center space-x-2"
+                  >
+                    {isUpgrading ? (
+                      <>
+                        <LoadingSpinner size="small" color="white" />
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Tool size={16} />
+                        <span>Upgrade to Partner</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+              
+              {/* Success message after upgrade */}
+              {upgradeSuccess && (
+                <div className="tn-card p-6 mb-6 bg-green-50 border border-green-200">
+                  <div className="flex items-center space-x-2 mb-3 text-green-600">
+                    <Check size={24} className="text-green-600" />
+                    <h2 className="font-bold text-lg">Partner Upgrade Successful!</h2>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    Congratulations! You're now a partner. Redirecting to your partner dashboard...
+                  </p>
+                  <div className="flex justify-center">
+                    <LoadingSpinner size="small" color="primary" />
+                  </div>
+                </div>
+              )}
+              
               <div className="tn-card p-4">
                 <h2 className="font-semibold mb-4">Notifications</h2>
                 <div className="space-y-4">
@@ -341,6 +409,25 @@ const DashboardPage = () => {
               {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
             </h1>
             <div className="flex gap-4">
+              {user?.role === 'partner' ? (
+                <Link 
+                  to="/partner-dashboard"
+                  className="tn-button tn-button-secondary flex items-center gap-2"
+                >
+                  <Tool size={16} className="mr-1" />
+                  Partner Dashboard
+                </Link>
+              ) : !upgradeSuccess ? (
+                <button
+                  onClick={handlePartnerUpgrade}
+                  disabled={isUpgrading}
+                  className="tn-button tn-button-secondary flex items-center gap-2"
+                >
+                  <Tool size={16} className="mr-1" />
+                  {isUpgrading ? 'Processing...' : 'Become a Partner'}
+                </button>
+              ) : null}
+              
               <button
                 className="tn-button tn-button-primary"
                 onClick={() => navigate('/search')}
@@ -358,3 +445,5 @@ const DashboardPage = () => {
 }
 
 export default DashboardPage
+
+

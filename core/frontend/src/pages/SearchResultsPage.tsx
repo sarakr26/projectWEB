@@ -85,13 +85,14 @@ const fetchSearchResults = async () => {
       if (Array.isArray(response.data)) {
         setListings(response.data);
       } else if (
-        typeof response.data === 'object' && 
+        typeof response.data === 'object' &&
         response.data !== null &&
-        'data' in response.data &&
-        Array.isArray(response.data.data)
+        // Type guard: check if 'data' is a property and is an array
+        Object.prototype.hasOwnProperty.call(response.data, 'data') &&
+        Array.isArray((response.data as { data: unknown }).data)
       ) {
         // This handles the case where the data is in response.data.data (Laravel pagination)
-        setListings(response.data.data);
+        setListings((response.data as { data: Listing[] }).data);
       } else {
         setListings([]);
       }
@@ -390,7 +391,6 @@ const fetchSearchResults = async () => {
                         image: listing.images && listing.images.length > 0 
                           ? listing.images[0].url 
                           : 'https://images.unsplash.com/photo-1504148455328-c376907d081c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                        isAvailable: true,
                         isPremium: listing.is_premium,
                         owner: {
                           id: listing.partner?.id.toString() || '0',
@@ -399,7 +399,6 @@ const fetchSearchResults = async () => {
                           rating: listing.partner?.avg_rating_as_partner || 0
                         }
                       }}
-                      variant={viewMode}
                     />
                   ))}
                 </div>

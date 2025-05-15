@@ -1,7 +1,10 @@
+import { ReactNode } from 'react';
 import api from './api';
 
 // Define TypeScript interfaces for the Listing data structure
 export interface Listing {
+  total_rentals: number;
+  security_deposit: any;
   features: any;
   id: number;
   title: string;
@@ -102,7 +105,15 @@ export async function searchListings(params: ListingSearchParams): Promise<ApiRe
         'data' in response.data.data
       ) {
         // Extract the nested array and preserve pagination metadata
-        const paginationData = response.data.data;
+        const paginationData = response.data.data as {
+          current_page: number;
+          from: number;
+          last_page: number;
+          per_page: number;
+          to: number;
+          total: number;
+          data: Listing[];
+        };
         response.data.meta = {
           current_page: paginationData.current_page,
           from: paginationData.from,
@@ -165,4 +176,51 @@ export async function getCities(): Promise<ApiResponse<{id: number, name: string
       message: error.response?.data?.message || error.message || 'Failed to fetch cities'
     };
   }
-}  
+}
+
+export async function getPartnerListings(): Promise<ApiResponse<Listing[]>> {
+  try {
+    const response = await api.get<ApiResponse<Listing[]>>('/listings', {
+      params: { partner: 'self' }
+    });
+    
+    // Normalize the response like in searchListings
+    if (response.data.status === 'success' && response.data.data) {
+      // Check if data is nested (Laravel pagination format)
+      if (
+        !Array.isArray(response.data.data) && 
+        typeof response.data.data === 'object' && 
+        response.data.data !== null &&
+        'data' in response.data.data
+      ) {
+        // Extract the nested array and preserve pagination metadata
+        const paginationData = response.data.data as {
+          current_page: number;
+          from: number;
+          last_page: number;
+          per_page: number;
+          to: number;
+          total: number;
+          data: Listing[];
+        };
+        response.data.meta = {
+          current_page: paginationData.current_page,
+          from: paginationData.from,
+          last_page: paginationData.last_page,
+          per_page: paginationData.per_page,
+          to: paginationData.to,
+          total: paginationData.total
+        };
+        response.data.data = paginationData.data;
+      }
+    }
+    
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching partner listings:', error);
+    return {
+      status: 'error',
+      message: error.response?.data?.message || error.message || 'Failed to fetch your listings'
+    };
+  }
+}

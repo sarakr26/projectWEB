@@ -2,6 +2,8 @@ import api from './api';
 
 // Interfaces for API responses and request data
 export interface Reservation {
+  user: any;
+  total_price: number;
   id: number;
   listing_id: number;
   client_id: number;
@@ -145,6 +147,28 @@ export async function getPendingReservations(
   }
 }
 
+export async function getPartnerReservations(
+  status?: 'pending' | 'confirmed' | 'ongoing' | 'canceled' | 'completed'
+): Promise<ApiResponse<Reservation[]>> {
+  try {
+    const params: Record<string, string> = {};
+    if (status) params.status = status;
+    
+    const response = await api.get<ApiResponse<Reservation[]>>('/reservations/partner', { params });
+    
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching partner reservations:', error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      status: 'error',
+      message: error.message || 'Failed to fetch your partner reservations'
+    };
+  }
+}
+
 // Get client details for a specific reservation
 export async function getClientDetails(
   reservationId: number
@@ -189,6 +213,25 @@ export async function acceptReservation(
     return {
       status: 'error',
       message: error.message || 'Failed to accept reservation'
+    };
+  }
+}
+
+// Add after the acceptReservation function
+export async function declineReservation(
+  reservationId: number
+): Promise<ApiResponse<Reservation>> {
+  try {
+    const response = await api.post<ApiResponse<Reservation>>(`/reservations/${reservationId}/decline`);
+    
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      status: 'error',
+      message: error.message || 'Failed to decline reservation'
     };
   }
 }

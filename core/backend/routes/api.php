@@ -26,7 +26,7 @@ Route::get('/listings/{id}', [ListingController::class, 'show']);
 Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:sanctum');
 Route::put('/listings/{id}', [ListingController::class, 'update'])->middleware('auth:sanctum'); // Update listing
 Route::patch('/listings/{id}/archive', [ListingController::class, 'archive'])->middleware('auth:sanctum'); // Archive listing
-
+Route::middleware('auth:sanctum')->get('/listings', [ListingController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 
 // Reservation routes
@@ -36,7 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reservations/pending', [ReservationController::class, 'pendingReservations']); // Get pending reservations for partner
     Route::get('/reservations/{id}/client-details', [ReservationController::class, 'getClientDetails']); // Get client details for a specific reservation
     Route::post('/reservations/{id}/accept', [ReservationController::class, 'acceptReservation']); // Accept a reservation
+    Route::post('/reservations/{id}/decline', [ReservationController::class, 'declineReservation']);
     Route::get('/reservations/user', [ReservationController::class, 'userReservations']); // Get all reservations for logged-in user
+    Route::get('/reservations/partner', [ReservationController::class, 'partnerReservations']);
 });
 
 // Review routes

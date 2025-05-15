@@ -29,6 +29,13 @@ interface RegisterData {
   role?: string
 }
 
+// Generic API response type
+interface ApiResponse {
+  status: string
+  data?: any
+  message?: string
+}
+
 type AuthContextType = {
   user: User | null
   isAuthenticated: boolean
@@ -38,6 +45,7 @@ type AuthContextType = {
   logout: () => Promise<void>
   loginWithGoogle: () => Promise<void>
   loginWithFacebook: () => Promise<void>
+  becomePartner: () => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -244,6 +252,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const becomePartner = async (): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      // Check if we have a token and user
+      const token = localStorage.getItem('auth_token');
+      if (!token || !user) {
+        console.error("No authentication token or user found");
+        return false;
+      }
+      
+      // Make the API call to upgrade to partner
+      const response = await axios.post<ApiResponse>(`${API_URL}/become-partner`);
+      
+      // Check if the call was successful
+      if (response.data.status === 'success') {
+        // Update the user with the new role
+        setUser({
+          ...user,
+          role: 'partner'
+        });
+        return true;
+      } else {
+        console.error("Failed to upgrade to partner:", response.data.message);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error upgrading to partner:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -255,6 +296,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         loginWithGoogle,
         loginWithFacebook,
+        becomePartner,
       }}
     >
       {children}
