@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getProfile, updateProfile } from '../../app/services/auth';
-import { getCities, City } from '../../app/services/cities'; // Import City type
+import { getCities, City } from '../../app/services/cities';
+import { User, Mail, Phone, MapPin, Home } from 'react-feather';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 const EditProfile = () => {
   const [form, setForm] = useState({
@@ -60,66 +62,185 @@ const EditProfile = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="flex justify-center p-8">
+      <LoadingSpinner />
+    </div>
+  );
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 500, margin: 'auto' }}>
-      <h2>Edit Profile</h2>
+    <div className="max-w-4xl mx-auto">
       {alert.message && (
-        <div style={{ color: alert.type === 'error' ? 'red' : 'green' }}>{alert.message}</div>
+        <div className={`mb-6 p-4 rounded-lg ${
+          alert.type === 'error' 
+            ? 'bg-red-50 text-red-600 border border-red-200' 
+            : 'bg-green-50 text-green-600 border border-green-200'
+        }`}>
+          {alert.message}
+        </div>
       )}
-      <div>
-        <label>Full Name *</label>
-        <input name="name" value={form.name} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Email *</label>
-        <input name="email" type="email" value={form.email} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Username</label>
-        <input name="username" value={form.username || ''} onChange={handleChange} />
-      </div>
-      <div>
-        <label>City *</label>
-        <select name="city_id" value={form.city_id} onChange={handleChange} required>
-          <option value="">Select city</option>
-          {cities.map((c: any) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label>Phone Number</label>
-        <input name="phone_number" value={form.phone_number || ''} onChange={handleChange} />
-      </div>
-      <div>
-        <label>Address</label>
-        <input name="address" value={form.address || ''} onChange={handleChange} />
-      </div>
-      
-      <div>
-        <label>New Password (leave blank to keep current)</label>
-        <input
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          minLength={8}
-        />
-      </div>
-      <div>
-        <label>Confirm New Password</label>
-        <input
-          name="password_confirmation"
-          type="password"
-          value={form.password_confirmation}
-          onChange={handleChange}
-          minLength={8}
-        />
-      </div>
-      <button type="submit">Update Profile</button>
-    </form>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Personal Information */}
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                  <User size={18} />
+                </span>
+                <input
+                  name="name"
+                  type="text"
+                  value={form.name}
+                  onChange={handleChange}
+                  className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                  <Mail size={18} />
+                </span>
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                  <User size={18} />
+                </span>
+                <input
+                  name="username"
+                  value={form.username || ''}
+                  onChange={handleChange}
+                  className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Choose a username"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Information */}
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                  <Phone size={18} />
+                </span>
+                <input
+                  name="phone_number"
+                  type="tel"
+                  value={form.phone_number || ''}
+                  onChange={handleChange}
+                  className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Your phone number"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                  <Home size={18} />
+                </span>
+                <input
+                  name="address"
+                  value={form.address || ''}
+                  onChange={handleChange}
+                  className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Your address"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+                  <MapPin size={18} />
+                </span>
+                <select
+                  name="city_id"
+                  value={form.city_id}
+                  onChange={handleChange}
+                  className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none bg-white"
+                  required
+                >
+                  <option value="">Select your city</option>
+                  {cities.map((city: City) => (
+                    <option key={city.id} value={city.id}>{city.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Password Change Section */}
+        <div className="border-t border-gray-200 pt-6 mt-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+              <input
+                name="password"
+                type="password"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full py-2 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Leave blank to keep current"
+                minLength={8}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+              <input
+                name="password_confirmation"
+                type="password"
+                value={form.password_confirmation}
+                onChange={handleChange}
+                className="w-full py-2 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Confirm new password"
+                minLength={8}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            onClick={() => setForm({ ...form, password: '', password_confirmation: '' })}
+            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          >
+            Reset Changes
+          </button>
+          <button 
+            type="submit" 
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

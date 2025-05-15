@@ -101,45 +101,16 @@ export default function Navbar() {
           </Link>
 
           {/* Search Bar */}
-          <div className={`hidden md:block relative transition-all duration-300 ${isSearchFocused ? 'w-1/3' : 'w-1/4'}`}>
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for tools..."
-                className="w-full py-2 pl-10 pr-4 rounded-full border border-[var(--toolnest-gray-200)] focus:border-[var(--toolnest-primary-500)] transition-all bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-800)] dark:text-white dark:border-[var(--toolnest-gray-700)] focus:ring-2 focus:ring-[var(--toolnest-primary-500)]/20 focus:outline-none"
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-              />
-              <Search 
-                size={18} 
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)] dark:text-[var(--toolnest-gray-500)]" 
-              />
-            </form>
-          </div>
+          
 
           {/* User Menu / Auth Links */}
           <div className="hidden md:flex items-center space-x-3">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-700)] transition-colors text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-300)]"
-              aria-label="Toggle dark mode"
-            >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            
 
             {isAuthenticated ? (
               <div className="relative group">
                 <button className="flex items-center space-x-2 p-1 rounded-full group-hover:bg-[var(--toolnest-gray-100)] dark:group-hover:bg-[var(--toolnest-gray-700)] transition-colors">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-[var(--toolnest-primary-200)] dark:border-[var(--toolnest-primary-800)] animate-pulse-subtle">
-                    <img
-                      src={user?.avatar || 'https://via.placeholder.com/40'}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 ring-2 ring-white dark:ring-[var(--toolnest-gray-800)] ring-opacity-0 group-hover:ring-opacity-100 transition-all duration-300 rounded-full"></div>
-                  </div>
+                  
                   <span className="text-[var(--toolnest-gray-800)] dark:text-white font-medium">
                     {user?.name?.split(' ')[0] || 'User'}
                   </span>
@@ -160,20 +131,7 @@ export default function Navbar() {
                       <User size={16} />
                       <span>Dashboard</span>
                     </Link>
-                    <Link
-                      to="/saved"
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-[var(--toolnest-gray-700)] hover:bg-[var(--toolnest-gray-100)] dark:text-[var(--toolnest-gray-300)] dark:hover:bg-[var(--toolnest-gray-700)]"
-                    >
-                      <Heart size={16} />
-                      <span>Saved Tools</span>
-                    </Link>
-                    <Link
-                      to="/settings"
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-[var(--toolnest-gray-700)] hover:bg-[var(--toolnest-gray-100)] dark:text-[var(--toolnest-gray-300)] dark:hover:bg-[var(--toolnest-gray-700)]"
-                    >
-                      <Settings size={16} />
-                      <span>Settings</span>
-                    </Link>
+                    
                     
                     {user?.role === 'partner' ? (
                       <Link
@@ -330,21 +288,9 @@ export default function Navbar() {
                     <span className="text-[var(--toolnest-gray-800)] dark:text-white">Dashboard</span>
                   </Link>
                   
-                  <Link
-                    to="/saved"
-                    className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-800)]"
-                  >
-                    <Heart size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
-                    <span className="text-[var(--toolnest-gray-800)] dark:text-white">Saved Tools</span>
-                  </Link>
                   
-                  <Link
-                    to="/settings"
-                    className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-800)]"
-                  >
-                    <Settings size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
-                    <span className="text-[var(--toolnest-gray-800)] dark:text-white">Settings</span>
-                  </Link>
+                  
+                  
                   
                   {user?.role === 'partner' ? (
                     <Link
