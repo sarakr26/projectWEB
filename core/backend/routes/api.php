@@ -7,6 +7,8 @@ use App\Http\Controllers\ListingController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UserController;
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -28,6 +30,7 @@ Route::put('/listings/{id}', [ListingController::class, 'update'])->middleware('
 Route::patch('/listings/{id}/archive', [ListingController::class, 'archive'])->middleware('auth:sanctum'); // Archive listing
 Route::middleware('auth:sanctum')->get('/listings', [ListingController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/users/{id}/listings', [UserController::class, 'listings']);
 
 // Reservation routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -60,3 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 // list of liked listings
 Route::middleware('auth:sanctum')->get('/user/liked-listings', [App\Http\Controllers\ListingController::class, 'likedListings']);
+
+// signalee
+Route::middleware('auth:sanctum')->post('/partners/{partner}/signalee', [App\Http\Controllers\PartnerController::class, 'signalee']);
+// view profile
+Route::get('/users/{id}', [UserController::class, 'show']);
