@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Star, MapPin, Calendar, Heart, Clock, Tag, Clipboard, Check } from 'react-feather'
+import ListingLikeButton from '../../pages/ListingLikedButton'
 
 // Define Tool interface if it's not imported from types/Tool
 interface Tool {
@@ -28,9 +29,10 @@ interface Tool {
 interface ToolCardProps {
   tool: Tool
   view?: 'grid' | 'list'
+  action?: React.ReactNode
 }
 
-const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid' }) => {
+const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid', action }) => {
   const [isFavorite, setIsFavorite] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   
@@ -91,7 +93,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid' }) => {
             }`}
             onClick={handleFavoriteClick}
           >
-            <Heart size={16} className={isFavorite ? 'fill-current' : ''} />
+            
           </button>
           <div className={`absolute bottom-3 left-3 text-xs font-semibold text-white py-1 px-2 rounded-full ${getBadgeColor()}`}>
             {placeholderTool.availability}
@@ -162,10 +164,13 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid' }) => {
   
   return (
     <div 
-      className="group tn-card p-0 flex flex-col hover:shadow-md transition-all duration-300 border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] hover:border-[var(--toolnest-primary-300)] dark:hover:border-[var(--toolnest-primary-700)] overflow-hidden h-full"
+      className="group tn-card p-0 flex flex-col hover:shadow-md transition-all duration-300 border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] hover:border-[var(--toolnest-primary-300)] dark:hover:border-[var(--toolnest-primary-700)] overflow-hidden h-full relative bg-white rounded-lg shadow-md"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      <div className="absolute top-2 right-2 z-10">
+        <ListingLikeButton listingId={Number(tool.id)} />
+      </div>
       <div className="relative overflow-hidden">
         <Link to={`/tools/${placeholderTool.id}`}>
           <img 
@@ -178,16 +183,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid' }) => {
           <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/80 backdrop-blur-sm text-[var(--toolnest-gray-700)]">
             {placeholderTool.category}
           </span>
-          <button 
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-              isFavorite 
-                ? 'bg-[var(--toolnest-accent-100)] text-[var(--toolnest-accent-500)]' 
-                : 'bg-white/80 backdrop-blur-sm text-[var(--toolnest-gray-400)] hover:bg-white'
-            }`}
-            onClick={handleFavoriteClick}
-          >
-            <Heart size={16} className={isFavorite ? 'fill-current' : ''} />
-          </button>
+        
         </div>
         <div className={`absolute bottom-3 left-3 text-xs font-semibold text-white py-1 px-2 rounded-full ${getBadgeColor()}`}>
           {placeholderTool.availability}

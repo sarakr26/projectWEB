@@ -1,3 +1,4 @@
+-- Active: 1744145304842@@127.0.0.1@3306@mvc_web2
 -- Cities Table
 CREATE TABLE City (
     id INT PRIMARY KEY AUTO_INCREMENT,

@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import api from './api';
+import { ReactNode } from "react";
+import api from "./api";
 
 // Define TypeScript interfaces for the Listing data structure
 export interface Listing {
@@ -10,7 +10,7 @@ export interface Listing {
   title: string;
   description: string;
   price_per_day: number;
-  status: 'active' | 'archived' | 'inactive';
+  status: "active" | "archived" | "inactive";
   is_premium: boolean;
   premium_start_date?: string;
   premium_end_date?: string;
@@ -54,7 +54,7 @@ export interface ListingSearchParams {
   min_price?: number;
   max_price?: number;
   sort_by?: string;
-  sort_order?: 'asc' | 'desc';
+  sort_order?: "asc" | "desc";
   query?: string;
   page?: number;
   per_page?: number;
@@ -77,32 +77,43 @@ export interface ApiResponse<T> {
 }
 
 // Get all listings with optional filters
-export async function getListings(params?: ListingSearchParams): Promise<ApiResponse<Listing[]>> {
+export async function getListings(
+  params?: ListingSearchParams
+): Promise<ApiResponse<Listing[]>> {
   try {
-    const response = await api.get<ApiResponse<Listing[]>>('/listings', { params });
+    const response = await api.get<ApiResponse<Listing[]>>("/listings", {
+      params,
+    });
     return response.data;
   } catch (error: any) {
-    console.error('Error fetching listings:', error);
+    console.error("Error fetching listings:", error);
     return {
-      status: 'error',
-      message: error.response?.data?.message || error.message || 'Failed to fetch listings'
+      status: "error",
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch listings",
     };
   }
 }
 
 // Search listings with specific search parameters
-export async function searchListings(params: ListingSearchParams): Promise<ApiResponse<Listing[]>> {
+export async function searchListings(
+  params: ListingSearchParams
+): Promise<ApiResponse<Listing[]>> {
   try {
-    const response = await api.get<ApiResponse<Listing[]>>('/listings/search', { params });
-    
+    const response = await api.get<ApiResponse<Listing[]>>("/listings/search", {
+      params,
+    });
+
     // Normalize the response to ensure data is always an array
-    if (response.data.status === 'success' && response.data.data) {
+    if (response.data.status === "success" && response.data.data) {
       // Check if data is nested (Laravel pagination format)
       if (
-        !Array.isArray(response.data.data) && 
-        typeof response.data.data === 'object' && 
+        !Array.isArray(response.data.data) &&
+        typeof response.data.data === "object" &&
         response.data.data !== null &&
-        'data' in response.data.data
+        "data" in response.data.data
       ) {
         // Extract the nested array and preserve pagination metadata
         const paginationData = response.data.data as {
@@ -120,18 +131,21 @@ export async function searchListings(params: ListingSearchParams): Promise<ApiRe
           last_page: paginationData.last_page,
           per_page: paginationData.per_page,
           to: paginationData.to,
-          total: paginationData.total
+          total: paginationData.total,
         };
         response.data.data = paginationData.data;
       }
     }
-    
+
     return response.data;
   } catch (error: any) {
-    console.error('Error searching listings:', error);
+    console.error("Error searching listings:", error);
     return {
-      status: 'error',
-      message: error.response?.data?.message || error.message || 'Failed to search listings'
+      status: "error",
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to search listings",
     };
   }
 }
@@ -144,54 +158,71 @@ export async function getListing(id: number): Promise<ApiResponse<Listing>> {
   } catch (error: any) {
     console.error(`Error fetching listing #${id}:`, error);
     return {
-      status: 'error',
-      message: error.response?.data?.message || error.message || 'Failed to fetch listing'
+      status: "error",
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch listing",
     };
   }
 }
 
 // Get categories for filtering
-export async function getCategories(): Promise<ApiResponse<{id: number, name: string}[]>> {
+export async function getCategories(): Promise<
+  ApiResponse<{ id: number; name: string }[]>
+> {
   try {
-    const response = await api.get<ApiResponse<{id: number, name: string}[]>>('/categories');
+    const response = await api.get<ApiResponse<{ id: number; name: string }[]>>(
+      "/categories"
+    );
     return response.data;
   } catch (error: any) {
-    console.error('Error fetching categories:', error);
+    console.error("Error fetching categories:", error);
     return {
-      status: 'error',
-      message: error.response?.data?.message || error.message || 'Failed to fetch categories'
+      status: "error",
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch categories",
     };
   }
 }
 
 // Get cities for filtering
-export async function getCities(): Promise<ApiResponse<{id: number, name: string}[]>> {
+export async function getCities(): Promise<
+  ApiResponse<{ id: number; name: string }[]>
+> {
   try {
-    const response = await api.get<ApiResponse<{id: number, name: string}[]>>('/cities');
+    const response = await api.get<ApiResponse<{ id: number; name: string }[]>>(
+      "/cities"
+    );
     return response.data;
   } catch (error: any) {
-    console.error('Error fetching cities:', error);
+    console.error("Error fetching cities:", error);
     return {
-      status: 'error',
-      message: error.response?.data?.message || error.message || 'Failed to fetch cities'
+      status: "error",
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch cities",
     };
   }
 }
 
 export async function getPartnerListings(): Promise<ApiResponse<Listing[]>> {
   try {
-    const response = await api.get<ApiResponse<Listing[]>>('/listings', {
-      params: { partner: 'self' }
+    const response = await api.get<ApiResponse<Listing[]>>("/listings", {
+      params: { partner: "self" },
     });
-    
+
     // Normalize the response like in searchListings
-    if (response.data.status === 'success' && response.data.data) {
+    if (response.data.status === "success" && response.data.data) {
       // Check if data is nested (Laravel pagination format)
       if (
-        !Array.isArray(response.data.data) && 
-        typeof response.data.data === 'object' && 
+        !Array.isArray(response.data.data) &&
+        typeof response.data.data === "object" &&
         response.data.data !== null &&
-        'data' in response.data.data
+        "data" in response.data.data
       ) {
         // Extract the nested array and preserve pagination metadata
         const paginationData = response.data.data as {
@@ -209,36 +240,74 @@ export async function getPartnerListings(): Promise<ApiResponse<Listing[]>> {
           last_page: paginationData.last_page,
           per_page: paginationData.per_page,
           to: paginationData.to,
-          total: paginationData.total
+          total: paginationData.total,
         };
         response.data.data = paginationData.data;
       }
     }
-    
+
     return response.data;
   } catch (error: any) {
-    console.error('Error fetching partner listings:', error);
+    console.error("Error fetching partner listings:", error);
     return {
-      status: 'error',
-      message: error.response?.data?.message || error.message || 'Failed to fetch your listings'
+      status: "error",
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch your listings",
     };
   }
 }
 
-export async function createListing(formData: FormData): Promise<ApiResponse<Listing>> {
+export async function createListing(
+  formData: FormData
+): Promise<ApiResponse<Listing>> {
   try {
-    const response = await api.post<ApiResponse<Listing>>('/listings', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+    const response = await api.post<ApiResponse<Listing>>(
+      "/listings",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
-    });
-    
+    );
+
     return response.data;
   } catch (error: any) {
-    console.error('Error creating listing:', error);
+    console.error("Error creating listing:", error);
     return {
-      status: 'error',
-      message: error.response?.data?.message || error.message || 'Failed to create listing'
+      status: "error",
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to create listing",
+    };
+  }
+}
+
+export const likeListing = (listingId: number) =>
+  api.post(`/listings/${listingId}/like`);
+
+export const unlikeListing = (listingId: number) =>
+  api.delete(`/listings/${listingId}/like`);
+
+export const isListingLiked = (listingId: number) =>
+  api.get(`/listings/${listingId}/liked`);
+
+export async function getUserLikedListings(): Promise<ApiResponse<Listing[]>> {
+  try {
+    const response = await api.get<ApiResponse<Listing[]>>(
+      "/user/liked-listings"
+    );
+    return response.data;
+  } catch (error: any) {
+    return {
+      status: "error",
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch liked listings",
     };
   }
 }
