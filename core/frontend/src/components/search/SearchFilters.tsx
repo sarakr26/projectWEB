@@ -269,56 +269,37 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <FilterSection title="Price Range">
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span>${localFilters.min_price || 0}</span>
-                  <span>${localFilters.max_price || priceRangeSettings.max}</span>
+                  <span>${localFilters.min_price}</span>
+                  <span>${localFilters.max_price}</span>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-[var(--toolnest-gray-500)]">Min</span>
-                    <input
-                      type="range"
-                      min={priceRangeSettings.min}
-                      max={priceRangeSettings.max}
-                      step={priceRangeSettings.step}
-                      value={localFilters.min_price || 0}
-                      onChange={(e) => handlePriceRangeChange(e.target.value, true)}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-[var(--toolnest-gray-500)]">Max</span>
-                    <input
-                      type="range"
-                      min={priceRangeSettings.min}
-                      max={priceRangeSettings.max}
-                      step={priceRangeSettings.step}
-                      value={localFilters.max_price || priceRangeSettings.max}
-                      onChange={(e) => handlePriceRangeChange(e.target.value, false)}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
+                
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <span className="absolute inset-y-0 left-3 flex items-center text-[var(--toolnest-gray-500)]">$</span>
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500">$</span>
+                    </div>
                     <input
                       type="number"
-                      value={localFilters.min_price || 0}
+                      value={localFilters.min_price}
                       onChange={(e) => handlePriceRangeChange(e.target.value, true)}
                       min={priceRangeSettings.min}
                       max={(localFilters.max_price || priceRangeSettings.max) - priceRangeSettings.step}
-                      className="pl-8 w-full tn-input text-sm py-1.5"
+                      className="w-full py-2 pl-7 pr-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Min"
                     />
                   </div>
                   <div className="relative flex-1">
-                    <span className="absolute inset-y-0 left-3 flex items-center text-[var(--toolnest-gray-500)]">$</span>
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500">$</span>
+                    </div>
                     <input
                       type="number"
-                      value={localFilters.max_price || priceRangeSettings.max}
+                      value={localFilters.max_price}
                       onChange={(e) => handlePriceRangeChange(e.target.value, false)}
                       min={(localFilters.min_price || priceRangeSettings.min) + priceRangeSettings.step}
                       max={priceRangeSettings.max}
-                      className="pl-8 w-full tn-input text-sm py-1.5"
+                      className="w-full py-2 pl-7 pr-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Max"
                     />
                   </div>
                 </div>
@@ -497,56 +478,37 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <FilterSection title="Price Range">
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span>${localFilters.min_price || 0}</span>
-                  <span>${localFilters.max_price || priceRangeSettings.max}</span>
+                  <span>${localFilters.min_price}</span>
+                  <span>${localFilters.max_price}</span>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-[var(--toolnest-gray-500)]">Min</span>
-                    <input
-                      type="range"
-                      min={priceRangeSettings.min}
-                      max={priceRangeSettings.max}
-                      step={priceRangeSettings.step}
-                      value={localFilters.min_price || 0}
-                      onChange={(e) => handlePriceRangeChange(e.target.value, true)}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-[var(--toolnest-gray-500)]">Max</span>
-                    <input
-                      type="range"
-                      min={priceRangeSettings.min}
-                      max={priceRangeSettings.max}
-                      step={priceRangeSettings.step}
-                      value={localFilters.max_price || priceRangeSettings.max}
-                      onChange={(e) => handlePriceRangeChange(e.target.value, false)}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
+                
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <span className="absolute inset-y-0 left-3 flex items-center text-[var(--toolnest-gray-500)]">$</span>
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500">$</span>
+                    </div>
                     <input
                       type="number"
-                      value={localFilters.min_price || 0}
+                      value={localFilters.min_price}
                       onChange={(e) => handlePriceRangeChange(e.target.value, true)}
                       min={priceRangeSettings.min}
                       max={(localFilters.max_price || priceRangeSettings.max) - priceRangeSettings.step}
-                      className="pl-8 w-full tn-input text-sm py-1.5"
+                      className="w-full py-2 pl-7 pr-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Min"
                     />
                   </div>
                   <div className="relative flex-1">
-                    <span className="absolute inset-y-0 left-3 flex items-center text-[var(--toolnest-gray-500)]">$</span>
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500">$</span>
+                    </div>
                     <input
                       type="number"
-                      value={localFilters.max_price || priceRangeSettings.max}
+                      value={localFilters.max_price}
                       onChange={(e) => handlePriceRangeChange(e.target.value, false)}
                       min={(localFilters.min_price || priceRangeSettings.min) + priceRangeSettings.step}
                       max={priceRangeSettings.max}
-                      className="pl-8 w-full tn-input text-sm py-1.5"
+                      className="w-full py-2 pl-7 pr-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Max"
                     />
                   </div>
                 </div>
@@ -599,32 +561,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             </FilterSection>
 
             {/* Distance Filter */}
-            <FilterSection title="Maximum Distance">
-              <div className="space-y-2">
-                <label className="flex items-center cursor-pointer">
-                  <input 
-                    type="radio"
-                    className="form-radio text-[var(--toolnest-primary-500)]"
-                    checked={localFilters.distance === null}
-                    onChange={() => handleDistanceChange(null)}
-                    name="distance-desktop"
-                  />
-                  <span className="ml-2 text-sm">Any Distance</span>
-                </label>
-                {[5, 10, 20, 50].map(distance => (
-                  <label key={distance} className="flex items-center cursor-pointer">
-                    <input 
-                      type="radio"
-                      className="form-radio text-[var(--toolnest-primary-500)]"
-                      checked={localFilters.distance === distance}
-                      onChange={() => handleDistanceChange(distance)}
-                      name="distance-desktop"
-                    />
-                    <span className="ml-2 text-sm">{distance} miles</span>
-                  </label>
-                ))}
-              </div>
-            </FilterSection>
+            
             
             <button 
               onClick={applyFilters}

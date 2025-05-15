@@ -183,13 +183,7 @@ const fetchSearchResults = async () => {
       </div>
       
       <div className="flex items-center gap-3 w-full sm:w-auto">
-        <button
-          className="tn-button tn-button-outline sm:hidden flex-1"
-          onClick={() => setIsFilterVisible(true)}
-        >
-          <Sliders size={16} className="mr-2" />
-          Filters
-        </button>
+        
         
         <div className="relative flex-1 sm:flex-none">
           <select
