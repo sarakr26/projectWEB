@@ -9,6 +9,7 @@ use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ListingController extends Controller
 {
@@ -85,7 +86,7 @@ class ListingController extends Controller
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
                 'price_per_day' => 'required|numeric|min:0',
@@ -97,20 +98,13 @@ class ListingController extends Controller
                 'is_premium' => 'boolean',
                 'premium_duration' => 'required_if:is_premium,true|in:1,2,3', // 1 = 1 month, 2 = 2 weeks, 3 = 1 week
                 'images' => 'required|array|min:1|max:5',
-                'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048', // max 2MB per image
+                'images.*' => 'image|mimes:jpeg,png,jpg|max:2048'
             ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
             DB::beginTransaction();
-
-            $listing = new Listing([
+            
+            // Create listing
+            $listing = Listing::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'price_per_day' => $request->price_per_day,
@@ -153,28 +147,35 @@ class ListingController extends Controller
             ]);
 
             // Handle image uploads
-            foreach ($request->file('images') as $image) {
-                $imageUrl = $this->imageService->uploadImage($image);
-                $listing->images()->create([
-                    'url' => $imageUrl
-                ]);
+            if ($request->hasFile('images')) {
+                // Create directory if it doesn't exist
+                $uploadPath = 'public/tool-images';
+                if (!Storage::exists($uploadPath)) {
+                    Storage::makeDirectory($uploadPath);
+                }
+
+                foreach ($request->file('images') as $index => $imageFile) {
+                    // Generate unique filename
+                    $fileName = time() . '_' . uniqid() . '.' . $imageFile->extension();
+                    
+                    // Store image in tool-images directory
+                    $path = $imageFile->storeAs($uploadPath, $fileName);
+                    
+                    // Create image record with correct URL path
+                    $listing->images()->create([
+                        'url' => '/storage/tool-images/' . $fileName, // Store the public URL path
+                        'filename' => $fileName,
+                        'order' => $index
+                    ]);
+                }
             }
 
             DB::commit();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Listing created successfully',
-                'data' => $listing->load(['category', 'city', 'partner', 'availabilities', 'images'])
-            ], 201);
+            return response()->json(['status' => 'success', 'data' => $listing->load('images')]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to create listing',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
 

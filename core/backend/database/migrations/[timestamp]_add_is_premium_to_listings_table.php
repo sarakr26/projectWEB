@@ -9,14 +9,18 @@ return new class extends Migration
     public function up()
     {
         Schema::table('listings', function (Blueprint $table) {
-            $table->boolean('is_premium')->default(false);
+            if (!Schema::hasColumn('listings', 'is_premium')) {
+                $table->boolean('is_premium')->default(false);
+            }
         });
     }
 
     public function down()
     {
         Schema::table('listings', function (Blueprint $table) {
-            $table->dropColumn('is_premium');
+            if (Schema::hasColumn('listings', 'is_premium')) {
+                $table->dropColumn('is_premium');
+            }
         });
     }
 };

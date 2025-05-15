@@ -43,6 +43,7 @@ export default function ToolDetailsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
   const [reservationSuccess, setReservationSuccess] = useState(false);
+  const [tool, setTool] = useState<Listing | null>(null);
 
   const { data: listing, isLoading, error } = useToolDetails(id);
 
@@ -50,6 +51,22 @@ export default function ToolDetailsPage() {
   useEffect(() => {
     setCurrentImageIndex(0);
   }, [listing?.id]);
+
+  // Fetch tool details
+  useEffect(() => {
+    const fetchTool = async () => {
+      try {
+        const response = await getListing(id);
+        if (response.status === 'success' && response.data) {
+          setTool(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching tool:', error);
+      }
+    };
+    
+    fetchTool();
+  }, [id]);
 
   const handlePrevImage = () => {
     if (listing?.images && listing.images.length > 0) {
@@ -174,8 +191,8 @@ export default function ToolDetailsPage() {
           <div className="relative rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
             <div className="aspect-w-4 aspect-h-3 relative">
               <img
-                src={getCurrentImage()}
-                alt={listing.title}
+                src={`http://localhost:8000${tool?.images?.[0]?.url}`}
+                alt={tool?.title}
                 className="w-full h-full object-cover"
               />
 
@@ -219,7 +236,7 @@ export default function ToolDetailsPage() {
                     }`}
                   >
                     <img
-                      src={image.url || getDefaultImage()}
+                      src={`http://localhost:8000${image.url}`}
                       alt={`Thumbnail ${index + 1}`}
                       className="w-full h-full object-cover"
                     />

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -172,7 +171,7 @@ export default function ToolDetails() {
   }
 
   return (
-    <main className="bg-gradient-to-b from-gray-50 to-white min-h-screen">
+    <div className="animate-fade-in">
       {/* Breadcrumb and navigation */}
       <div className="bg-white shadow-sm border-b border-gray-100">
         <div className="container mx-auto px-4 py-4">
@@ -203,12 +202,7 @@ export default function ToolDetails() {
           {/* Left Column - Images */}
           <div className="w-full lg:w-3/5 space-y-6">
             {/* Main Image */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden"
-            >
+            <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
               <div className="relative aspect-video overflow-hidden">
                 <img 
                   src={selectedImage} 
@@ -238,15 +232,10 @@ export default function ToolDetails() {
                   </Button>
                 </div>
               </div>
-            </motion.div>
+            </div>
             
             {/* Thumbnail Images */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-3 gap-4"
-            >
+            <div className="grid grid-cols-3 gap-4">
               {tool.images.map((img: string, index: number) => (
                 <div 
                   key={index}
@@ -259,15 +248,10 @@ export default function ToolDetails() {
                   <img src={img} alt={`${tool.name} ${index + 1}`} className="w-full h-full object-cover" />
                 </div>
               ))}
-            </motion.div>
+            </div>
             
             {/* Detailed Information */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden mt-10"
-            >
+            <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden mt-10">
               <Tabs defaultValue="details">
                 <TabsList className="w-full border-b border-gray-200 bg-gray-50 p-0 h-auto">
                   <TabsTrigger 
@@ -383,18 +367,13 @@ export default function ToolDetails() {
                   </div>
                 </TabsContent>
               </Tabs>
-            </motion.div>
+            </div>
           </div>
           
           {/* Right Column - Booking and Owner Info */}
           <div className="w-full lg:w-2/5 space-y-6">
             {/* Booking Card */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sticky top-24"
-            >
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sticky top-24">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-bold text-gray-900">{tool.name}</h1>
                 <div className="flex items-center text-yellow-500">
@@ -482,15 +461,10 @@ export default function ToolDetails() {
                   </Button>
                 </div>
               </div>
-            </motion.div>
+            </div>
             
             {/* Similar Tools Preview */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl shadow-md border border-gray-100 p-6"
-            >
+            <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Similar Tools Nearby</h3>
                 <Button variant="link" className="text-green-600 p-0 h-auto">View All</Button>
@@ -522,7 +496,7 @@ export default function ToolDetails() {
                   </Link>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -564,6 +538,6 @@ export default function ToolDetails() {
           </svg>
         </button>
       )}
-    </main>
+    </div>
   )
-} 
+}

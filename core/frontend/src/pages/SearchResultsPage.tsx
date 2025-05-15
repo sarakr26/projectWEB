@@ -368,29 +368,34 @@ const fetchSearchResults = async () => {
                   viewMode === 'grid' 
                     ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
                     : 'grid-cols-1'
-                } animate-fade-in`}>
+                } transition-all duration-300 ease-in-out`}>
                   {listings.map((listing) => (
-                    <ToolCard 
+                    <div
                       key={listing.id}
-                      tool={{
-                        id: listing.id.toString(),
-                        name: listing.title,
-                        price: listing.price_per_day,
-                        rating: listing.avg_rating,
-                        reviewCount: listing.review_count,
-                        location: listing.city?.name || 'Unknown',
-                        image: listing.images && listing.images.length > 0
-                          ? listing.images[0].url
-                          : 'https://images.unsplash.com/photo-1504148455328-c376907d081c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                        isPremium: listing.is_premium,
-                        owner: {
-                          id: listing.partner?.id.toString() || '0',
-                          name: listing.partner?.name || 'Unknown',
-                          avatar: listing.partner?.avatar_url || '/placeholder.svg',
-                          rating: listing.partner?.avg_rating_as_partner || 0
-                        }
-                      }}
-                    />
+                      className="transform transition duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg"
+                    >
+                      <ToolCard 
+                        tool={{
+                          id: listing.id.toString(),
+                          name: listing.title,
+                          price: listing.price_per_day,
+                          rating: listing.avg_rating,
+                          reviewCount: listing.review_count,
+                          location: listing.city?.name || 'Unknown',
+                          // Use the first image URL from the database
+                          image: listing.images && listing.images.length > 0
+                            ? `http://localhost:8000${listing.images[0].url}`  // Add backend URL prefix
+                            : '/placeholder.jpg',  // Fallback image
+                          isPremium: listing.is_premium,
+                          owner: {
+                            id: listing.partner?.id.toString() || '0',
+                            name: listing.partner?.name || 'Unknown',
+                            avatar: listing.partner?.avatar_url || '/placeholder.svg',
+                            rating: listing.partner?.avg_rating_as_partner || 0
+                          }
+                        }}
+                      />
+                    </div>
                   ))}
                 </div>
                 
