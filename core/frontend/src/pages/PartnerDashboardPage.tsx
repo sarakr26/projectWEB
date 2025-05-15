@@ -12,7 +12,7 @@ import EditProfile from './EditProfile'
 // @ts-ignore
 import { getListing, Listing, getPartnerListings } from '@/app/services/listingService'
 import { getUserReservations, Reservation, getPartnerReservations } from '@/app/services/reservationService'
-
+import PartnerReviewSection from '../components/reviews/PartnerReviewSection';
 import { 
   acceptReservation, 
   declineReservation
@@ -814,6 +814,12 @@ const PartnerDashboardPage = () => {
                         </div>
                       </div>
                     </div>
+                    {reservation.status === 'completed' && (
+      <PartnerReviewSection 
+        reservation={reservation} 
+        onReviewSubmitted={() => fetchReservations()} 
+      />
+    )}
                   </div>
                 ))}
               </div>

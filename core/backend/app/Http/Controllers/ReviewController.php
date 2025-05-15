@@ -1,15 +1,22 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Models\Review;
+use App\Models\User;
 use App\Models\Listing;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ReviewController extends Controller
 {
+    /**
+     * List reviews with optional filters
+     */
     public function index(Request $request)
     {
         try {
@@ -36,6 +43,11 @@ class ReviewController extends Controller
                 $query->where('rating', $request->rating);
             }
 
+            // Filter by reservation if provided
+            if ($request->has('reservation_id')) {
+                $query->where('reservation_id', $request->reservation_id);
+            }
+
             // Sort by created_at in descending order
             $reviews = $query->orderBy('created_at', 'desc')
                 ->paginate(10);
@@ -54,6 +66,9 @@ class ReviewController extends Controller
         }
     }
 
+    /**
+     * Show a specific review
+     */
     public function show($id)
     {
         try {
@@ -82,6 +97,9 @@ class ReviewController extends Controller
         }
     }
 
+    /**
+     * Update an existing review
+     */
     public function update(Request $request, $id)
     {
         try {
@@ -113,16 +131,12 @@ class ReviewController extends Controller
             // Update the review
             $review->update($request->only(['rating', 'comment']));
 
-            // Update listing's average rating and review count
-            $listing = $review->listing;
-            $listing->update([
-                'avg_rating' => Review::where('listing_id', $listing->id)
-                    ->where('is_visible', true)
-                    ->avg('rating') ?? 0,
-                'review_count' => Review::where('listing_id', $listing->id)
-                    ->where('is_visible', true)
-                    ->count()
-            ]);
+            // Update appropriate ratings based on review type
+            if ($review->type === 'forObject' && $review->listing) {
+                $this->updateListingRatings($review->listing);
+            } elseif (($review->type === 'forPartner' || $review->type === 'forClient') && $review->reviewee) {
+                $this->updateUserRatings($review->reviewee, $review->type);
+            }
 
             DB::commit();
 
@@ -142,65 +156,235 @@ class ReviewController extends Controller
         }
     }
 
+    /**
+     * Store a newly created review
+     */
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'listing_id' => 'required|exists:listings,id',
-                'rating' => 'required|integer|between:1,5',
+            $validated = $request->validate([
+                'rating' => 'required|integer|min:1|max:5',
                 'comment' => 'nullable|string|max:1000',
+                'reservation_id' => 'required|exists:reservations,id',
+                'type' => 'required|in:forObject,forClient,forPartner',
+                'listing_id' => 'required_if:type,forObject|exists:listings,id',
+                'reviewee_id' => 'required_if:type,forClient,forPartner|exists:users,id',
             ]);
-
-            if ($validator->fails()) {
+            
+            $user = auth()->user();
+            $reservation = Reservation::findOrFail($validated['reservation_id']);
+            
+            // Validate that reservation is completed
+            if ($reservation->status !== 'completed') {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()
-                ], 422);
+                    'message' => 'Cannot review an incomplete reservation'
+                ], 400);
             }
-
-            // Get the listing
-            $listing = Listing::findOrFail($request->listing_id);
-
+            
+            // Validate that the user is part of this reservation
+            if ($user->id !== $reservation->client_id && $user->id !== $reservation->partner_id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You are not authorized to review this reservation'
+                ], 403);
+            }
+            
+            // Validate review type against user role in reservation
+            if ($validated['type'] === 'forClient' && $user->id !== $reservation->partner_id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Only the partner can review the client'
+                ], 403);
+            }
+            
+            if (($validated['type'] === 'forPartner' || $validated['type'] === 'forObject') && $user->id !== $reservation->client_id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Only the client can review the partner or the listing'
+                ], 403);
+            }
+            
+            // Check for existing review of the same type by this user
+            $existingReview = Review::where('reservation_id', $validated['reservation_id'])
+                ->where('reviewer_id', $user->id)
+                ->where('type', $validated['type'])
+                ->first();
+                
+            if ($existingReview) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You have already submitted this type of review for this reservation'
+                ], 400);
+            }
+            
             DB::beginTransaction();
-
+            
             // Create the review
-            $review = Review::create([
-                'rating' => $request->rating,
-                'comment' => $request->comment,
-                'is_visible' => false, // Set to false by default as requested
-                'type' => 'forObject',
-                'reviewer_id' => $request->user()->id,
-                'reviewee_id' => $listing->partner_id,
-                'listing_id' => $listing->id,
-                'reservation_id' => null
-            ]);
-
-            // Update listing's average rating and review count
-            $listing->update([
-                'avg_rating' => Review::where('listing_id', $listing->id)
-                    ->where('is_visible', true)
-                    ->avg('rating') ?? 0,
-                'review_count' => Review::where('listing_id', $listing->id)
-                    ->where('is_visible', true)
-                    ->count()
-            ]);
-
+            $review = new Review();
+            $review->rating = $validated['rating'];
+            $review->comment = $validated['comment'];
+            $review->reservation_id = $validated['reservation_id'];
+            $review->type = $validated['type'];
+            $review->is_visible = true;
+            $review->reviewer_id = $user->id;
+            
+            if ($validated['type'] === 'forObject') {
+                $review->listing_id = $validated['listing_id'];
+                
+                // Update listing average rating
+                $listing = Listing::findOrFail($validated['listing_id']);
+                $review->save();
+                $this->updateListingRatings($listing);
+                
+            } elseif ($validated['type'] === 'forClient' || $validated['type'] === 'forPartner') {
+                $review->reviewee_id = $validated['reviewee_id'];
+                
+                // Update user average rating
+                $reviewee = User::findOrFail($validated['reviewee_id']);
+                $review->save();
+                $this->updateUserRatings($reviewee, $validated['type']);
+            }
+            
             DB::commit();
-
+            
             return response()->json([
                 'status' => 'success',
-                'message' => 'Review created successfully and pending approval',
+                'message' => 'Review submitted successfully',
                 'data' => $review
-            ], 201);
-
+            ]);
+            
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to create review',
+                'message' => 'Failed to submit review',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
-} 
+
+    /**
+     * Check pending reviews for a reservation
+     */
+    public function checkPendingReviews($reservationId)
+    {
+        try {
+            $reservation = Reservation::findOrFail($reservationId);
+            $user = auth()->user();
+            
+            // Check if reservation is completed
+            if ($reservation->status !== 'completed') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Reservation is not completed yet'
+                ], 400);
+            }
+            
+            // Check existing reviews
+            $existingReviews = Review::where('reservation_id', $reservationId)->get();
+            
+            $pendingReviews = [
+                'forListing' => true,
+                'forPartner' => true,
+                'forClient' => true
+            ];
+            
+            foreach ($existingReviews as $review) {
+                if ($review->type === 'forObject' && $review->reviewer_id === $user->id) {
+                    $pendingReviews['forListing'] = false;
+                }
+                
+                if ($review->type === 'forPartner' && $review->reviewer_id === $user->id) {
+                    $pendingReviews['forPartner'] = false;
+                }
+                
+                if ($review->type === 'forClient' && $review->reviewer_id === $user->id) {
+                    $pendingReviews['forClient'] = false;
+                }
+            }
+            
+            // If user is partner, they can only review the client
+            if ($user->id === $reservation->partner_id) {
+                $pendingReviews['forListing'] = false;
+                $pendingReviews['forPartner'] = false;
+            }
+            
+            // If user is client, they can only review the listing and partner
+            if ($user->id === $reservation->client_id) {
+                $pendingReviews['forClient'] = false;
+            }
+            
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'pendingReviews' => $pendingReviews
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to check pending reviews',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Helper method to update listing ratings
+     */
+    private function updateListingRatings(Listing $listing)
+    {
+        $avgRating = Review::where('listing_id', $listing->id)
+            ->where('type', 'forObject')
+            ->where('is_visible', true)
+            ->avg('rating') ?? 0;
+            
+        $reviewCount = Review::where('listing_id', $listing->id)
+            ->where('type', 'forObject')
+            ->where('is_visible', true)
+            ->count();
+            
+        $listing->avg_rating = $avgRating;
+        $listing->review_count = $reviewCount;
+        $listing->save();
+    }
+    
+    /**
+     * Helper method to update user ratings
+     */
+    private function updateUserRatings(User $user, $reviewType)
+    {
+        if ($reviewType === 'forClient') {
+            $avgRating = Review::where('reviewee_id', $user->id)
+                ->where('type', 'forClient')
+                ->where('is_visible', true)
+                ->avg('rating') ?? 0;
+                
+            $reviewCount = Review::where('reviewee_id', $user->id)
+                ->where('type', 'forClient')
+                ->where('is_visible', true)
+                ->count();
+                
+            $user->avg_rating_as_client = $avgRating;
+            $user->review_count_as_client = $reviewCount;
+            
+        } elseif ($reviewType === 'forPartner') {
+            $avgRating = Review::where('reviewee_id', $user->id)
+                ->where('type', 'forPartner')
+                ->where('is_visible', true)
+                ->avg('rating') ?? 0;
+                
+            $reviewCount = Review::where('reviewee_id', $user->id)
+                ->where('type', 'forPartner')
+                ->where('is_visible', true)
+                ->count();
+                
+            $user->avg_rating_as_partner = $avgRating;
+            $user->review_count_as_partner = $reviewCount;
+        }
+        
+        $user->save();
+    }
+}

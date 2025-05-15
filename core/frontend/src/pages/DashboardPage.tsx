@@ -10,7 +10,7 @@ import EditProfile from './EditProfile'; // Adjust path if needed
 import { getUserLikedListings, Listing } from '../../app/services/listingService';
 import ToolCard from '../components/tools/ToolCard'; // adjust path if needed
 import ListingLikeButton from './ListingLikedButton'; // adjust path if needed
-
+import ClientReviewSection from '../components/reviews/ClientReviewSection';
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
   { id: 'profile', label: 'Profile', icon: User },
@@ -275,10 +275,11 @@ const DashboardPage = () => {
                 <span className="tn-tag tn-tag-gray">{reservation.status}</span>
               </div>
               {reservation.status === 'completed' && (
-                <div className="flex justify-end mt-4">
-                  <button className="tn-button tn-button-outline">Write a Review</button>
-                </div>
-              )}
+  <ClientReviewSection 
+    reservation={reservation} 
+    onReviewSubmitted={() => fetchReservations()} 
+  />
+)}
             </div>
           ))
         )}
