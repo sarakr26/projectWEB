@@ -4,9 +4,10 @@ import { useAuth } from '../contexts/AuthContext'
 import { 
   Tool, Archive, Star, FileText, Settings, Home, 
   Package, Calendar, Bell, Users, PlusCircle, 
-  DollarSign, BarChart2, Edit, Trash2, Eye, AlertCircle, Check
+  DollarSign, BarChart2, Edit, Trash2, Eye, AlertCircle, Check, User
 } from 'react-feather'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
+import EditProfile from './EditProfile'
 
 // @ts-ignore
 import { getListing, Listing, getPartnerListings } from '@/app/services/listingService'
@@ -20,9 +21,9 @@ import { toast } from 'react-hot-toast'
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
+  { id: 'profile', label: 'Profile', icon: User },
   { id: 'tools', label: 'My Tools', icon: Tool },
   { id: 'reservations', label: 'Reservations', icon: Calendar },
-  { id: 'clients', label: 'Clients', icon: Users },
   { id: 'notifications', label: 'Notifications', icon: Bell }
 ]
 
@@ -530,6 +531,14 @@ const PartnerDashboardPage = () => {
             </div>
           </>
         );
+      case 'profile':
+        return (
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg shadow p-6 mb-6">
+              <EditProfile />
+            </div>
+          </div>
+        );
       case 'tools':
         return (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 mb-8">
@@ -933,22 +942,16 @@ const PartnerDashboardPage = () => {
   return (
     <div className="container mx-auto px-4 py-24">
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar Navigation */}
         <div className="w-full lg:w-64 lg:shrink-0">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+            {/* Profile section */}
             <div className="text-center p-4 border-b border-gray-200 dark:border-gray-700 mb-4">
-              <div className="inline-block relative">
-                <img 
-                  src={user?.avatar || "https://via.placeholder.com/100"}
-                  alt="Profile" 
-                  className="w-16 h-16 rounded-full mx-auto border-2 border-green-500"
-                />
-                <span className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></span>
-              </div>
+              
               <h3 className="font-semibold text-gray-900 dark:text-white mt-2">{user?.name || 'Partner'}</h3>
               <span className="text-sm text-gray-500 dark:text-gray-400">Partner Account</span>
             </div>
             
+            {/* Menu items */}
             <div className="space-y-2">
               {menuItems.map(item => (
                 <button
@@ -956,7 +959,7 @@ const PartnerDashboardPage = () => {
                   onClick={() => setSelectedSection(item.id)}
                   className={`w-full flex items-center space-x-2 p-3 rounded-lg transition-colors
                     ${selectedSection === item.id 
-                      ? 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
+                      ? 'bg-[#0ac5b2]/10 text-[#0ac5b2] dark:bg-[#0ac5b2]/20 dark:text-[#0ac5b2]' 
                       : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50'}`}
                 >
                   <item.icon size={18} />
@@ -964,7 +967,6 @@ const PartnerDashboardPage = () => {
                 </button>
               ))}
             </div>
-            
             <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
               <Link 
                 to="/dashboard" 
@@ -973,18 +975,12 @@ const PartnerDashboardPage = () => {
                 <Users size={18} />
                 <span>Switch to User Dashboard</span>
               </Link>
-              <Link 
-                to="/settings" 
-                className="w-full flex items-center space-x-2 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50"
-              >
-                <Settings size={18} />
-                <span>Account Settings</span>
-              </Link>
+              
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main content area */}
         <div className="flex-1">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
@@ -1005,7 +1001,7 @@ const PartnerDashboardPage = () => {
             </div>
             
             {selectedSection === 'dashboard' && (
-              <Link to="/create-listing" className="mt-4 md:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600">
+              <Link to="/create-listing" className="mt-4 md:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#0ac5b2] hover:bg-[#09b3a2] dark:bg-[#0ac5b2] dark:hover:bg-[#09b3a2]">
                 <PlusCircle size={16} className="mr-2" />
                 New Listing
               </Link>

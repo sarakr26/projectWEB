@@ -439,19 +439,26 @@ const DashboardPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-24">
-      <div className="flex gap-8">
-        {/* Sidebar Navigation */}
-        <div className="w-64 shrink-0">
-          <div className="tn-card p-4">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <div className="w-full lg:w-64 lg:shrink-0">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+            {/* Profile section */}
+            <div className="text-center p-4 border-b border-gray-200 dark:border-gray-700 mb-4">
+              
+              <h3 className="font-semibold text-gray-900 dark:text-white mt-2">{user?.name || 'User'}</h3>
+              <span className="text-sm text-gray-500 dark:text-gray-400">User Account</span>
+            </div>
+            
+            {/* Menu items */}
             <div className="space-y-2">
               {menuItems.map(item => (
                 <button
                   key={item.id}
                   onClick={() => setSelectedSection(item.id)}
-                  className={`w-full flex items-center space-x-2 p-2 rounded-lg transition-colors
+                  className={`w-full flex items-center space-x-2 p-3 rounded-lg transition-colors
                     ${selectedSection === item.id 
-                      ? 'bg-primary-50 text-primary-600' 
-                      : 'text-gray-600 hover:bg-gray-50'}`}
+                      ? 'bg-[#0ac5b2]/10 text-[#0ac5b2] dark:bg-[#0ac5b2]/20 dark:text-[#0ac5b2]' 
+                      : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50'}`}
                 >
                   <item.icon size={18} />
                   <span>{item.label}</span>
@@ -461,38 +468,39 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main content area */}
         <div className="flex-1">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl font-bold">
-              {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
-            </h1>
-            <div className="flex gap-4">
-              {user?.role === 'partner' ? (
-                <Link 
-                  to="/partner-dashboard"
-                  className="tn-button tn-button-secondary flex items-center gap-2"
-                >
-                  <Tool size={16} className="mr-1" />
-                  Partner Dashboard
-                </Link>
-              ) : !upgradeSuccess ? (
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 mt-1">
+                {selectedSection === 'dashboard' 
+                  ? 'Welcome back! Here\'s an overview of your rentals.' 
+                  : selectedSection === 'profile'
+                    ? 'Manage your profile and settings.'
+                    : selectedSection === 'reservations'
+                      ? 'View and manage your tool rentals.'
+                      : 'Stay updated with your activity.'}
+              </p>
+            </div>
+            
+            <div className="mt-4 md:mt-0 flex gap-4">
+              {user?.role === 'client' && !upgradeSuccess && (
                 <button
                   onClick={handlePartnerUpgrade}
                   disabled={isUpgrading}
-                  className="tn-button tn-button-secondary flex items-center gap-2"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#0ac5b2] hover:bg-[#09b3a2] dark:bg-[#0ac5b2] dark:hover:bg-[#09b3a2] shadow-sm"
                 >
-                  <Tool size={16} className="mr-1" />
+                  <Tool size={16} className="mr-2" />
                   {isUpgrading ? 'Processing...' : 'Become a Partner'}
                 </button>
-              ) : null}
+              )}
               
-              <button
-                className="tn-button tn-button-primary"
-                onClick={() => navigate('/search')}
-              >
+              <Link to="/search" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#0ac5b2] hover:bg-[#09b3a2] dark:bg-[#0ac5b2] dark:hover:bg-[#09b3a2]">
                 Find Tools
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -500,9 +508,9 @@ const DashboardPage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DashboardPage
+export default DashboardPage;
 
 
