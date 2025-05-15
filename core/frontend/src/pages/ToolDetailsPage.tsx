@@ -39,7 +39,6 @@ export default function ToolDetailsPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [timeSlot, setTimeSlot] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
   const [reservationSuccess, setReservationSuccess] = useState(false);
@@ -70,7 +69,7 @@ export default function ToolDetailsPage() {
     return;
   }
 
-  if (!listing || !startDate || !endDate || !timeSlot) {
+  if (!listing || !startDate || !endDate) {
     return; // Form validation - all fields required
   }
 
@@ -270,7 +269,10 @@ export default function ToolDetailsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex">
                   <span className="font-medium text-gray-900 dark:text-white w-1/3">Price:</span>
-                  <span className="text-gray-700 dark:text-gray-300">${listing.price_per_day} per day</span>
+                  <div className="flex items-baseline">
+                    <span className="text-3xl font-bold text-green-700">${listing.price_per_day}</span>
+                    <span className="text-gray-500 ml-1">/ day</span>
+                  </div>
                 </div>
                 <div className="flex">
                   <span className="font-medium text-gray-900 dark:text-white w-1/3">Category:</span>
@@ -325,6 +327,25 @@ export default function ToolDetailsPage() {
                 <p className="text-gray-500 dark:text-gray-400">No reviews yet for this tool.</p>
               )}
             </div>
+
+            {/* Available Dates Section */}
+            {listing.availabilities && listing.availabilities.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Available Dates</h3>
+                <div className="space-y-2">
+                  {listing.availabilities.map((availability, index) => (
+                    <div key={index} className="flex items-center text-gray-700 dark:text-gray-300">
+                      <Calendar className="h-5 w-5 mr-2 text-green-600" />
+                      <span>
+                        From {new Date(availability.start_date).toLocaleDateString()} to {new Date(availability.end_date).toLocaleDateString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="text-sm text-gray-500 mt-1">Other duration options available</div>
           </div>
         </div>
 
@@ -367,22 +388,9 @@ export default function ToolDetailsPage() {
                   />
                 </div>
               </div>
-              <div className="border-t border-gray-200 dark:border-gray-700 p-3">
-                <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">TIME SLOT</label>
-                <select
-                  className="w-full bg-transparent text-gray-900 dark:text-white focus:outline-none"
-                  value={timeSlot}
-                  onChange={(e) => setTimeSlot(e.target.value)}
-                >
-                  <option value="">Select a time slot</option>
-                  <option value="morning">Morning (8am - 12pm)</option>
-                  <option value="afternoon">Afternoon (12pm - 5pm)</option>
-                  <option value="evening">Evening (5pm - 9pm)</option>
-                </select>
-              </div>
             </div>
 
-            {startDate && endDate && timeSlot && (
+            {startDate && endDate && (
               <div className="space-y-3 mb-4">
                 <div className="flex justify-between">
                   <span className="text-gray-700 dark:text-gray-300">
@@ -430,7 +438,7 @@ export default function ToolDetailsPage() {
               
               <button
                 onClick={handleRentRequest}
-                disabled={!startDate || !endDate || !timeSlot || isSubmitting}
+                disabled={!startDate || !endDate || isSubmitting}
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (

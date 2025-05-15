@@ -72,7 +72,7 @@ class ListingController extends Controller
 
     public function show($id)
     {
-        $listing = Listing::with(['category', 'city', 'partner', 'images'])
+        $listing = Listing::with(['category', 'city', 'partner', 'images', 'availabilities'])
             ->where('status', 'active')
             ->findOrFail($id);
 
