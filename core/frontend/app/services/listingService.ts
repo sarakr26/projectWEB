@@ -224,3 +224,21 @@ export async function getPartnerListings(): Promise<ApiResponse<Listing[]>> {
     };
   }
 }
+
+export async function createListing(formData: FormData): Promise<ApiResponse<Listing>> {
+  try {
+    const response = await api.post<ApiResponse<Listing>>('/listings', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    
+    return response.data;
+  } catch (error: any) {
+    console.error('Error creating listing:', error);
+    return {
+      status: 'error',
+      message: error.response?.data?.message || error.message || 'Failed to create listing'
+    };
+  }
+}

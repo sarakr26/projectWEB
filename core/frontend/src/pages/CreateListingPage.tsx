@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft, Upload } from 'react-feather';
+import { Check, ChevronLeft, Upload } from 'react-feather';
+import { toast } from 'react-hot-toast';
+import { getCategories, getCities, createListing } from '@/app/services/listingService';
+
+const today = new Date();
+const thirtyDaysFromNow = new Date();
+thirtyDaysFromNow.setDate(today.getDate() + 30);
 
 const initialState = {
   title: '',
@@ -9,8 +15,8 @@ const initialState = {
   category_id: '',
   city_id: '',
   delivery_option: false,
-  start_date: '',
-  end_date: '',
+  start_date: today.toISOString().split('T')[0], // Today
+  end_date: thirtyDaysFromNow.toISOString().split('T')[0], // 30 days from now
   is_premium: false,
   premium_duration: '1',
   main_photo: null,
@@ -38,7 +44,36 @@ const CreateListingPage = () => {
   const [form, setForm] = useState(initialState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [fetchingData, setFetchingData] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setFetchingData(true);
+      try {
+        // Fetch categories
+        const categoriesResponse = await getCategories();
+        if (categoriesResponse.status === 'success' && categoriesResponse.data) {
+          setCategories(categoriesResponse.data);
+        }
+        
+        // Fetch cities
+        const citiesResponse = await getCities();
+        if (citiesResponse.status === 'success' && citiesResponse.data) {
+          setCities(citiesResponse.data);
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load categories and cities. Please try again.');
+      } finally {
+        setFetchingData(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -63,50 +98,82 @@ const CreateListingPage = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+
+  // Validate dates
+  if (new Date(form.start_date) > new Date(form.end_date)) {
+    setError('End date must be after start date');
+    setLoading(false);
+    return;
+  }
+  
+  try {
+    const formData = new FormData();
+    // Add form fields to formData
+    formData.append('title', form.title);
+    formData.append('description', form.description);
+    formData.append('price_per_day', form.price_per_day.toString());
+    formData.append('category_id', form.category_id);
+    formData.append('city_id', form.city_id);
+    formData.append('delivery_option', form.delivery_option ? '1' : '0');
     
-    try {
-      const formData = new FormData();
-      
-      // Ajouter les champs du formulaire
-      Object.entries(form).forEach(([key, value]) => {
-        if (key === 'additional_photos') return;
-        if (key === 'main_photo') {
-          if (value) formData.append(key, value);
-          return;
-        }
-        if (key === 'price_per_day') {
-          formData.append(key, parseFloat(value));
-          return;
-        }
-        if (key === 'category_id' || key === 'city_id' || key === 'premium_duration') {
-          formData.append(key, parseInt(value));
-          return;
-        }
-        formData.append(key, value);
-      });
-
-      // Ajouter les photos supplémentaires
-      form.additional_photos.forEach((photo, index) => {
-        if (photo) formData.append(`additional_photos[]`, photo);
-      });
-
-      const res = await fetch('http://127.0.0.1:8000/api/listings', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!res.ok) throw new Error('Error creating listing.');
-      navigate('/partner-dashboard');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    // Add availability period
+    formData.append('start_date', form.start_date);
+    formData.append('end_date', form.end_date);
+    
+    // Add premium options if selected
+    formData.append('is_premium', form.is_premium ? '1' : '0');
+    if (form.is_premium) {
+      formData.append('premium_duration', form.premium_duration);
     }
-  };
+    
+    // Add main photo (ensure it's not null)
+    if (form.main_photo) {
+      formData.append('images[]', form.main_photo);
+    } else {
+      setError('Main photo is required');
+      setLoading(false);
+      return;
+    }
+    
+    // Add additional photos
+    form.additional_photos.forEach(photo => {
+      if (photo) {
+        formData.append('images[]', photo);
+      }
+    });
+    
+    // Call our API service
+    const response = await createListing(formData);
+    
+    if (response.status === 'success') {
+      // Show success message
+      toast.success('Listing created successfully!');
+      navigate('/partner-dashboard');
+    } else {
+      // Show detailed validation errors if available
+      if (response.errors) {
+        const errorMessages = Object.values(response.errors).flat().join('\n');
+        setError(errorMessages || response.message || 'Failed to create listing');
+      } else {
+        setError(response.message || 'Failed to create listing');
+      }
+    }
+  } catch (err: any) {
+    console.error('Form submission error:', err);
+    if (err.response?.data?.errors) {
+      const errorMessages = Object.values(err.response.data.errors).flat().join('\n');
+      setError(errorMessages);
+    } else {
+      setError(err.message || 'An unexpected error occurred');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Sous-menu items
   const steps = [
@@ -116,234 +183,288 @@ const CreateListingPage = () => {
   ];
 
   const renderStepContent = (step) => {
-    switch (step) {
-      case 0:
-        return (
-          <div className="space-y-6">
+  switch (step) {
+    case 0:
+      return (
+        <div className="space-y-6">
+          <div>
+            <label className="block font-semibold mb-1">Tool Title</label>
+            <input
+              type="text"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              className="tn-input w-full"
+              placeholder="e.g., Bosch GSB 18V-55 Impact Drill"
+              required
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div>
+          <label className="block font-semibold mb-1">Category</label>
+          <select
+            name="category_id"
+            value={form.category_id}
+            onChange={handleChange}
+            className="tn-input w-full"
+            required
+          >
+            <option value="">Select a category</option>
+            {fetchingData ? (
+              <option disabled>Loading categories...</option>
+            ) : (
+              categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))
+            )}
+          </select>
+          </div>
+          <div>
+          <label className="block font-semibold mb-1">City</label>
+          <select
+            name="city_id"
+            value={form.city_id}
+            onChange={handleChange}
+            className="tn-input w-full"
+            required
+          >
+            <option value="">Select a city</option>
+            {fetchingData ? (
+              <option disabled>Loading cities...</option>
+            ) : (
+              cities.map((city) => (
+                <option key={city.id} value={city.id}>{city.name}</option>
+              ))
+            )}
+          </select>
+        </div>
+      </div>
+          <div>
+            <label className="block font-semibold mb-1">Description</label>
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              className="tn-input w-full"
+              rows={4}
+              placeholder="Describe your tool in detail..."
+              required
+            />
+          </div>
+        </div>
+      );
+    case 1:
+      return (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Price and Delivery section */}
             <div>
-              <label className="block font-semibold mb-1">Tool Title</label>
+              <label className="block font-semibold mb-1">Price per day (€)</label>
               <input
-                type="text"
-                name="title"
-                value={form.title}
+                type="number"
+                name="price_per_day"
+                value={form.price_per_day}
                 onChange={handleChange}
                 className="tn-input w-full"
-                placeholder="e.g., Bosch GSB 18V-55 Impact Drill"
+                min="0"
+                step="0.01"
                 required
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block font-semibold mb-1">Category</label>
-                <select
-                  name="category_id"
-                  value={form.category_id}
+            <div>
+              <label className="block font-semibold mb-1">Delivery Option</label>
+              <div className="flex items-center h-full">
+                <input
+                  type="checkbox"
+                  name="delivery_option"
+                  checked={form.delivery_option}
                   onChange={handleChange}
-                  className="tn-input w-full"
-                  required
-                >
-                  <option value="">Select a category</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block font-semibold mb-1">City</label>
-                <select
-                  name="city_id"
-                  value={form.city_id}
-                  onChange={handleChange}
-                  className="tn-input w-full"
-                  required
-                >
-                  <option value="">Select a city</option>
-                  {cities.map((city) => (
-                    <option key={city.id} value={city.id}>{city.name}</option>
-                  ))}
-                </select>
+                  className="mr-2"
+                />
+                <span>Delivery Available</span>
               </div>
             </div>
+          </div>
+
+          {/* Improved Dates section with better labels */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold mb-1">Description</label>
-              <textarea
-                name="description"
-                value={form.description}
+              <label className="block font-semibold mb-1">
+                Available From <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="start_date"
+                value={form.start_date}
                 onChange={handleChange}
                 className="tn-input w-full"
-                rows={4}
-                placeholder="Describe your tool in detail..."
+                min={new Date().toISOString().split('T')[0]} // Can't select dates before today
                 required
               />
-            </div>
-          </div>
-        );
-      case 1:
-        return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Price and Delivery section */}
-              <div>
-                <label className="block font-semibold mb-1">Price per day (€)</label>
-                <input
-                  type="number"
-                  name="price_per_day"
-                  value={form.price_per_day}
-                  onChange={handleChange}
-                  className="tn-input w-full"
-                  min="0"
-                  step="0.01"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block font-semibold mb-1">Delivery Option</label>
-                <div className="flex items-center h-full">
-                  <input
-                    type="checkbox"
-                    name="delivery_option"
-                    checked={form.delivery_option}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  <span>Delivery Available</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Dates section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block font-semibold mb-1">Start Date</label>
-                <input
-                  type="date"
-                  name="start_date"
-                  value={form.start_date}
-                  onChange={handleChange}
-                  className="tn-input w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block font-semibold mb-1">End Date</label>
-                <input
-                  type="date"
-                  name="end_date"
-                  value={form.end_date}
-                  onChange={handleChange}
-                  className="tn-input w-full"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Premium section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block font-semibold mb-1">Premium Listing</label>
-                <div className="flex items-center h-full">
-                  <input
-                    type="checkbox"
-                    name="is_premium"
-                    checked={form.is_premium}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  <span>Promote this listing</span>
-                </div>
-              </div>
-              <div>
-                <label className="block font-semibold mb-1">Premium Duration</label>
-                <select
-                  name="premium_duration"
-                  value={form.premium_duration}
-                  onChange={handleChange}
-                  className="tn-input w-full"
-                  required
-                >
-                  {premiumOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        );
-      case 2:
-        return (
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold mb-1">Tool Photos</h3>
-              <p className="text-sm text-gray-500 mb-4">
-                Upload high-quality photos of your tool. Good photos will increase booking rates.
+              <p className="text-xs text-gray-500 mt-1">
+                First day this tool will be available for rent
               </p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Main Photo */}
-                <div className="border-2 border-dashed rounded-lg p-4 text-center">
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">
+                Available Until <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="end_date"
+                value={form.end_date}
+                onChange={handleChange}
+                className="tn-input w-full"
+                min={form.start_date || new Date().toISOString().split('T')[0]} // Can't select end date before start date
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Last day this tool will be available for rent
+              </p>
+            </div>
+          </div>
+
+          {/* Availability visualization */}
+          {/* Availability visualization */}
+<div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+  <h4 className="text-sm font-medium mb-2">Availability Period</h4>
+  <div className="flex items-center justify-center">
+    <div className="flex items-center">
+      <div className="h-6 w-6 rounded-full bg-green-500"></div>
+      <span className="ml-2 text-sm">Available</span>
+    </div>
+    <span className="mx-4 text-gray-400">•</span>
+    <div className="flex items-center">
+      <div className="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+      <span className="ml-2 text-sm">Unavailable</span>
+    </div>
+  </div>
+  <div className="mt-4 text-center text-sm">
+    {form.start_date && form.end_date ? (
+      <p>
+        Your tool will be available for <strong>{
+          Math.ceil((new Date(form.end_date).getTime() - new Date(form.start_date).getTime()) / (1000 * 60 * 60 * 24))
+        } days</strong>, from <strong>{new Date(form.start_date).toLocaleDateString()}</strong> to <strong>{new Date(form.end_date).toLocaleDateString()}</strong>
+      </p>
+    ) : (
+      <p className="text-yellow-500">Please select both start and end dates</p>
+    )}
+  </div>
+</div>
+
+          {/* Premium section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-semibold mb-1">Premium Listing</label>
+              <div className="flex items-center h-full">
+                <input
+                  type="checkbox"
+                  name="is_premium"
+                  checked={form.is_premium}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                <span>Promote this listing</span>
+              </div>
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Premium Duration</label>
+              <select
+                name="premium_duration"
+                value={form.premium_duration}
+                onChange={handleChange}
+                className="tn-input w-full"
+                required
+              >
+                {premiumOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      );
+    case 2:
+      return (
+        <div className="space-y-4">
+  <div>
+    <h3 className="font-semibold mb-1">Tool Photos</h3>
+    <p className="text-sm text-gray-500 mb-4">
+      Upload high-quality photos of your tool. Good photos will increase booking rates.
+      <span className="text-red-500 ml-1">Main photo is required.</span>
+    </p>
+    
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Main Photo */}
+      <div className={`border-2 ${form.main_photo ? 'border-green-500' : 'border-dashed border-gray-300'} rounded-lg p-4 text-center`}>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => handleFileChange(e)}
+          className="hidden"
+          id="main_photo"
+        />
+        <label 
+          htmlFor="main_photo" 
+          className="cursor-pointer flex flex-col items-center justify-center h-40"
+        >
+          {form.main_photo ? (
+            <div className="relative w-full h-full">
+              <img
+                src={URL.createObjectURL(form.main_photo)}
+                alt="Main preview"
+                className="h-full w-full object-cover rounded"
+              />
+              <div className="absolute top-0 right-0 bg-green-500 text-white rounded-full p-1 m-1">
+                <Check size={12} />
+              </div>
+            </div>
+          ) : (
+            <div className="text-gray-400">
+              <Upload className="w-8 h-8 mx-auto mb-2" />
+              <span className="text-sm">Main Photo (Required)</span>
+            </div>
+          )}
+        </label>
+      </div>
+
+              {/* Additional Photos */}
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="border-2 border-dashed rounded-lg p-4 text-center">
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleFileChange(e)}
+                    onChange={(e) => handleFileChange(e, index)}
                     className="hidden"
-                    id="main_photo"
+                    id={`photo_${index}`}
                   />
                   <label 
-                    htmlFor="main_photo" 
+                    htmlFor={`photo_${index}`}
                     className="cursor-pointer flex flex-col items-center justify-center h-40"
                   >
-                    {form.main_photo ? (
+                    {form.additional_photos[index] ? (
                       <img
-                        src={URL.createObjectURL(form.main_photo)}
-                        alt="Main preview"
+                        src={URL.createObjectURL(form.additional_photos[index])}
+                        alt={`Preview ${index + 1}`}
                         className="h-full w-full object-cover rounded"
                       />
                     ) : (
                       <div className="text-gray-400">
                         <Upload className="w-8 h-8 mx-auto mb-2" />
-                        <span className="text-sm">Main Photo</span>
+                        <span className="text-sm">Additional Photo {index + 1}</span>
                       </div>
                     )}
                   </label>
                 </div>
-
-                {/* Additional Photos */}
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <div key={index} className="border-2 border-dashed rounded-lg p-4 text-center">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileChange(e, index)}
-                      className="hidden"
-                      id={`photo_${index}`}
-                    />
-                    <label 
-                      htmlFor={`photo_${index}`}
-                      className="cursor-pointer flex flex-col items-center justify-center h-40"
-                    >
-                      {form.additional_photos[index] ? (
-                        <img
-                          src={URL.createObjectURL(form.additional_photos[index])}
-                          alt={`Preview ${index + 1}`}
-                          className="h-full w-full object-cover rounded"
-                        />
-                      ) : (
-                        <div className="text-gray-400">
-                          <Upload className="w-8 h-8 mx-auto mb-2" />
-                          <span className="text-sm">Additional Photo {index + 1}</span>
-                        </div>
-                      )}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
-        );
-      default:
-        return null;
-    }
-  };
+        </div>
+      );
+    default:
+      return null;
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -378,7 +499,20 @@ const CreateListingPage = () => {
             </nav>
           </div>
         </div>
+              {fetchingData && (
+        <div className="mb-4 p-4 bg-blue-50 text-blue-700 rounded-lg">
+          <div className="flex items-center">
+            <div className="mr-2 animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700"></div>
+            <span>Loading categories and cities...</span>
+          </div>
+        </div>
+      )}
 
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-8">
           {renderStepContent(activeStep)}
