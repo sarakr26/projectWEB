@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Check, ChevronLeft, Upload } from 'react-feather';
 import { toast } from 'react-hot-toast';
@@ -8,44 +8,43 @@ const today = new Date();
 const thirtyDaysFromNow = new Date();
 thirtyDaysFromNow.setDate(today.getDate() + 30);
 
-const initialState = {
+type ListingFormState = {
+  title: string;
+  description: string;
+  price_per_day: string;
+  category_id: string;
+  city_id: string;
+  delivery_option: boolean;
+  start_date: string;
+  end_date: string;
+  is_premium: boolean;
+  premium_duration: string;
+  main_photo: File | null;
+  additional_photos: (File | null)[];
+};
+
+const initialState: ListingFormState = {
   title: '',
   description: '',
   price_per_day: '',
   category_id: '',
   city_id: '',
   delivery_option: false,
-  start_date: today.toISOString().split('T')[0], // Today
-  end_date: thirtyDaysFromNow.toISOString().split('T')[0], // 30 days from now
+  start_date: '',
+  end_date: '',
   is_premium: false,
   premium_duration: '1',
   main_photo: null,
   additional_photos: Array(5).fill(null),
 };
 
-const categories = [
-  { id: 1, name: 'Power Tools' },
-  { id: 2, name: 'Gardening' },
-  // Add more categories as needed
-];
-const cities = [
-  { id: 1, name: 'Paris' },
-  { id: 2, name: 'Lyon' },
-  // Add more cities as needed
-];
-const premiumOptions = [
-  { value: '1', label: '1 month' },
-  { value: '2', label: '2 weeks' },
-  { value: '3', label: '1 week' },
-];
-
 const CreateListingPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [form, setForm] = useState(initialState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [cities, setCities] = useState([]);
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+  const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
   const [fetchingData, setFetchingData] = useState(true);
   const navigate = useNavigate();
 
@@ -75,15 +74,16 @@ const CreateListingPage = () => {
     fetchData();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
     setForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const handleFileChange = (e, index = -1) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, index = -1) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -182,7 +182,7 @@ const CreateListingPage = () => {
     { id: 'photos', label: 'Photos', step: 2 }
   ];
 
-  const renderStepContent = (step) => {
+  const renderStepContent = (step: number) => {
   switch (step) {
     case 0:
       return (

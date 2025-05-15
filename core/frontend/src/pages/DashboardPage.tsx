@@ -291,7 +291,7 @@ const DashboardPage = () => {
       case 'category':
         // Filtrer par catégorie
         const filteredByCategory = activeTools.filter(tool => 
-          value ? tool.category === value : true
+          value ? (tool.category && (tool.category.id?.toString() === value || tool.category.name === value)) : true
         );
         setDisplayedTools(filteredByCategory);
         break;
