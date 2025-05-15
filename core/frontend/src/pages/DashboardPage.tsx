@@ -65,6 +65,10 @@ const DashboardPage = () => {
   const [likedLoading, setLikedLoading] = useState(false);
   const [likedError, setLikedError] = useState<string | null>(null);
 
+  // state for active tools and displayed tools
+  const [activeTools, setActiveTools] = useState<Listing[]>([]);
+  const [displayedTools, setDisplayedTools] = useState<Listing[]>([]);
+
   useEffect(() => {
     // Redirect if not logged in
     if (!isAuthenticated) {
@@ -282,6 +286,39 @@ const DashboardPage = () => {
     )
   }
 
+  const handleFilterChange = (filterType: string, value: string) => {
+    switch (filterType) {
+      case 'category':
+        // Filtrer par catégorie
+        const filteredByCategory = activeTools.filter(tool => 
+          value ? tool.category === value : true
+        );
+        setDisplayedTools(filteredByCategory);
+        break;
+        
+      case 'price':
+        // Filtrer par gamme de prix
+        let [min, max] = value.split('-').map(Number);
+        const filteredByPrice = activeTools.filter(tool => {
+          if (!value) return true;
+          if (value.includes('+')) {
+            return tool.price_per_day >= min;
+          }
+          return tool.price_per_day >= min && tool.price_per_day <= max;
+        });
+        setDisplayedTools(filteredByPrice);
+        break;
+        
+      case 'availability':
+        // Filtrer par disponibilité
+        const filteredByAvailability = activeTools.filter(tool => 
+          value ? tool.status === value : true
+        );
+        setDisplayedTools(filteredByAvailability);
+        break;
+    }
+  };
+
   const renderContent = () => {
     switch (selectedSection) {
       case 'dashboard':
@@ -424,10 +461,65 @@ const DashboardPage = () => {
         return <div>Notification Center</div>;
       case 'settings':
         return <div>Account Settings</div>;
+      case 'tools':
+        return (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 mb-8">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Tool Management</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Manage your tools, check statistics, and update listings
+                </p>
+              </div>
+              
+              {/* Filtres de recherche */}
+              <div className="flex gap-4 mb-6">
+                {/* Filtre de catégorie */}
+                <select 
+                  className="form-select rounded-md border-gray-300 focus:border-primary-500 focus:ring-primary-500"
+                  onChange={(e) => handleFilterChange('category', e.target.value)}
+                >
+                  <option value="">All Categories</option>
+                  <option value="power-tools">Power Tools</option>
+                  <option value="hand-tools">Hand Tools</option>
+                  <option value="garden-tools">Garden Tools</option>
+                </select>
+
+                {/* Filtre de prix */}
+                <select
+                  className="form-select rounded-md border-gray-300 focus:border-primary-500 focus:ring-primary-500"
+                  onChange={(e) => handleFilterChange('price', e.target.value)}
+                >
+                  <option value="">Any Price</option>
+                  <option value="0-50">$0 - $50</option>
+                  <option value="51-100">$51 - $100</option>
+                  <option value="101+">$101+</option>
+                </select>
+
+                {/* Filtre de disponibilité */}
+                <select
+                  className="form-select rounded-md border-gray-300 focus:border-primary-500 focus:ring-primary-500"
+                  onChange={(e) => handleFilterChange('availability', e.target.value)}
+                >
+                  <option value="">Any Availability</option>
+                  <option value="available">Available Now</option>
+                  <option value="rented">Currently Rented</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Liste des outils (existante) */}
+          </div>
+        );
       default:
         return null;
     }
   };
+
+  // Mettre à jour displayedTools quand activeTools change
+  useEffect(() => {
+    setDisplayedTools(activeTools);
+  }, [activeTools]);
 
   if (loading) {
     return (
