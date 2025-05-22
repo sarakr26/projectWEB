@@ -21,64 +21,59 @@ export default function SignInPage() {
   const searchParams = new URLSearchParams(location.search)
   const redirectUrl = searchParams.get('redirect') || '/'
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+// Define a type for the possible response structure
+type LoginResponse =
+  | { token: string }
+  | { data: { token: string } }
+  | { access_token: string }
+  | null
+  | undefined;
 
-    try {
-      const response: any = await login(email, password, rememberMe)
-      
-      if (response?.status === 'success') {
-        // Navigate to the redirect URL or homepage
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setIsLoading(true);
+  try {
+    const success = await login(email, password, rememberMe);
+    if (success) {
+      navigate('/search');
+    } else {
+      setError("Failed to sign in. Please check your credentials.");
+    }
+  } catch (err) {
+    setError("Failed to sign in. Please check your credentials.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+  
+    const handleGoogleSignIn = async () => {
+      setIsLoading(true)
+      try {
+        await loginWithGoogle()
         navigate(redirectUrl)
-      } else {
-        // Handle error from the response
-        setError(response?.message || "Failed to sign in. Please check your credentials.")
-        
-        // If there are validation errors, show them
-        if (response?.errors) {
-          const firstError = Object.values(response.errors)[0]
-          if (Array.isArray(firstError) && firstError.length > 0) {
-            setError(firstError[0])
-          }
-        }
+      } catch (err) {
+        setError("Failed to sign in with Google.")
+        console.error(err)
+      } finally {
+        setIsLoading(false)
       }
-    } catch (err) {
-      setError("Authentication failed. Please check your credentials or try again later.")
-      console.error("Login error:", err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    try {
-      await loginWithGoogle()
-      navigate(redirectUrl)
-    } catch (err) {
-      setError("Failed to sign in with Google.")
-      console.error(err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleFacebookSignIn = async () => {
-    setIsLoading(true)
-    try {
-      await loginWithFacebook()
-      navigate(redirectUrl)
-    } catch (err) {
-      setError("Failed to sign in with Facebook.")
-      console.error(err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return (
+    };
+  
+    const handleFacebookSignIn = async () => {
+      setIsLoading(true)
+      try {
+        await loginWithFacebook()
+        navigate(redirectUrl)
+      } catch (err) {
+        setError("Failed to sign in with Facebook.")
+        console.error(err)
+      } finally {
+        setIsLoading(false)
+      }
+    };
+  
+    return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-950)] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 z-0 opacity-40 dark:opacity-20">

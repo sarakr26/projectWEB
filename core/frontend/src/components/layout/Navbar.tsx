@@ -13,12 +13,13 @@ import {
 } from "react-feather"
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout, becomePartner } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [upgrading, setUpgrading] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -50,11 +51,36 @@ export default function Navbar() {
     setIsMenuOpen(!isMenuOpen)
   }
 
+  // Handle partner upgrade
+  const handlePartnerUpgrade = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    
+    if (upgrading) return
+    
+    setUpgrading(true)
+    try {
+      const success = await becomePartner()
+      if (success) {
+        // Show success message
+        alert("Congratulations! You are now a partner.")
+        // Redirect to partner dashboard
+        navigate('/partner-dashboard')
+      } else {
+        alert("Failed to upgrade to partner. Please try again later.")
+      }
+    } catch (error) {
+      console.error("Error upgrading to partner:", error)
+      alert("An unexpected error occurred. Please try again later.")
+    } finally {
+      setUpgrading(false)
+    }
+  }
+
   const navbarClasses = `
     fixed top-0 left-0 w-full z-40 transition-all duration-300
     ${isScrolled 
-      ? 'py-2 bg-white/90 backdrop-blur-md shadow-md dark:bg-gray-800/90' 
-      : 'py-4 bg-transparent dark:bg-transparent'}
+      ? 'py-2 bg-[rgb(203,243,239)] backdrop-blur-md shadow-md dark:bg-[rgb(203,243,239)]' 
+      : 'py-4 bg-[rgb(203,243,239)] dark:bg-[rgb(203,243,239)]'}
   `
 
   return (
@@ -74,88 +100,17 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            <Link 
-              to="/" 
-              className={`px-3 py-2 rounded-md transition-all flex items-center space-x-1 text-[var(--toolnest-gray-700)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-gray-300)] dark:hover:text-[var(--toolnest-primary-400)] ${location.pathname === '/' ? 'bg-[var(--toolnest-primary-50)] dark:bg-[var(--toolnest-primary-950)]' : ''}`}
-            >
-              <Home size={18} />
-              <span>Home</span>
-            </Link>
-            
-            <Link 
-              to="/explore" 
-              className={`px-3 py-2 rounded-md transition-all flex items-center space-x-1 text-[var(--toolnest-gray-700)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-gray-300)] dark:hover:text-[var(--toolnest-primary-400)] ${location.pathname === '/explore' ? 'bg-[var(--toolnest-primary-50)] dark:bg-[var(--toolnest-primary-950)]' : ''}`}
-            >
-              <Compass size={18} />
-              <span>Explore</span>
-            </Link>
-            
-            <div className="relative group">
-              <button className="px-3 py-2 rounded-md transition-all flex items-center space-x-1 text-[var(--toolnest-gray-700)] hover:text-[var(--toolnest-primary-700)] dark:text-[var(--toolnest-gray-300)] dark:hover:text-[var(--toolnest-primary-400)]">
-                <Grid size={18} />
-                <span>Categories</span>
-                <ChevronDown size={16} className="ml-1 transition-transform group-hover:rotate-180" />
-              </button>
-              
-              <div className="absolute left-0 mt-2 w-48 origin-top-left rounded-md shadow-lg bg-white dark:bg-[var(--toolnest-gray-800)] border border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] ring-1 ring-black ring-opacity-5 focus:outline-none transition-all opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 z-50">
-                <div className="p-2 space-y-1">
-                  {['Power Tools', 'Hand Tools', 'Garden Tools', 'Measurement', 'Workshop', 'Electrical'].map((category, idx) => (
-                    <Link
-                      key={category}
-                      to={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}
-                      className={`block px-3 py-2 rounded-md text-sm hover:bg-[var(--toolnest-primary-50)] hover:text-[var(--toolnest-primary-700)] transition-colors dark:hover:bg-[var(--toolnest-primary-950)] dark:hover:text-[var(--toolnest-primary-400)] animate-slide-up`}
-                      style={{ animationDelay: `${idx * 0.05}s` }}
-                    >
-                      {category}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </nav>
-
           {/* Search Bar */}
-          <div className={`hidden md:block relative transition-all duration-300 ${isSearchFocused ? 'w-1/3' : 'w-1/4'}`}>
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for tools..."
-                className="w-full py-2 pl-10 pr-4 rounded-full border border-[var(--toolnest-gray-200)] focus:border-[var(--toolnest-primary-500)] transition-all bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-800)] dark:text-white dark:border-[var(--toolnest-gray-700)] focus:ring-2 focus:ring-[var(--toolnest-primary-500)]/20 focus:outline-none"
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-              />
-              <Search 
-                size={18} 
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)] dark:text-[var(--toolnest-gray-500)]" 
-              />
-            </form>
-          </div>
+          
 
           {/* User Menu / Auth Links */}
           <div className="hidden md:flex items-center space-x-3">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-700)] transition-colors text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-300)]"
-              aria-label="Toggle dark mode"
-            >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            
 
             {isAuthenticated ? (
               <div className="relative group">
                 <button className="flex items-center space-x-2 p-1 rounded-full group-hover:bg-[var(--toolnest-gray-100)] dark:group-hover:bg-[var(--toolnest-gray-700)] transition-colors">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-[var(--toolnest-primary-200)] dark:border-[var(--toolnest-primary-800)] animate-pulse-subtle">
-                    <img
-                      src={user?.avatar || 'https://via.placeholder.com/40'}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 ring-2 ring-white dark:ring-[var(--toolnest-gray-800)] ring-opacity-0 group-hover:ring-opacity-100 transition-all duration-300 rounded-full"></div>
-                  </div>
+                  
                   <span className="text-[var(--toolnest-gray-800)] dark:text-white font-medium">
                     {user?.name?.split(' ')[0] || 'User'}
                   </span>
@@ -177,21 +132,29 @@ export default function Navbar() {
                       <span>Dashboard</span>
                     </Link>
                     
-                    <Link
-                      to="/saved"
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-[var(--toolnest-gray-700)] hover:bg-[var(--toolnest-gray-100)] dark:text-[var(--toolnest-gray-300)] dark:hover:bg-[var(--toolnest-gray-700)]"
-                    >
-                      <Heart size={16} />
-                      <span>Saved Tools</span>
-                    </Link>
                     
-                    <Link
-                      to="/settings"
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-[var(--toolnest-gray-700)] hover:bg-[var(--toolnest-gray-100)] dark:text-[var(--toolnest-gray-300)] dark:hover:bg-[var(--toolnest-gray-700)]"
-                    >
-                      <Settings size={16} />
-                      <span>Settings</span>
-                    </Link>
+                    {user?.role === 'partner' ? (
+                      <Link
+                        to="/partner-dashboard"
+                        className="flex items-center space-x-2 px-4 py-2 my-2 rounded-md bg-gradient-to-r from-blue-400 to-green-500 text-white font-bold text-base shadow-lg hover:scale-105 transition-transform duration-200"
+                        style={{ justifyContent: 'center' }}
+                      >
+                        <Tool size={16} className="mr-1" />
+                        <span>Partner Dashboard</span>
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={handlePartnerUpgrade}
+                        disabled={upgrading}
+                        className="flex items-center space-x-2 px-4 py-2 my-2 w-full rounded-md bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 text-white font-bold text-base shadow-lg hover:scale-105 transition-transform duration-200"
+                        style={{ justifyContent: 'center' }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 mr-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.09 6.26L21 9.27l-5 4.87L17.18 21 12 17.27 6.82 21 8 14.14l-5-4.87 6.91-1.01L12 3z" />
+                        </svg>
+                        <span>{upgrading ? 'Processing...' : 'Upgrade to Partner'}</span>
+                      </button>
+                    )}
                   </div>
                   
                   <div className="py-1 border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)] animate-slide-up delay-2">
@@ -325,21 +288,30 @@ export default function Navbar() {
                     <span className="text-[var(--toolnest-gray-800)] dark:text-white">Dashboard</span>
                   </Link>
                   
-                  <Link
-                    to="/saved"
-                    className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-800)]"
-                  >
-                    <Heart size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
-                    <span className="text-[var(--toolnest-gray-800)] dark:text-white">Saved Tools</span>
-                  </Link>
                   
-                  <Link
-                    to="/settings"
-                    className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-800)]"
-                  >
-                    <Settings size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
-                    <span className="text-[var(--toolnest-gray-800)] dark:text-white">Settings</span>
-                  </Link>
+                  
+                  
+                  
+                  {user?.role === 'partner' ? (
+                    <Link
+                      to="/partner-dashboard"
+                      className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-800)]"
+                    >
+                      <Tool size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
+                      <span className="text-[var(--toolnest-gray-800)] dark:text-white">Partner Dashboard</span>
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={handlePartnerUpgrade}
+                      disabled={upgrading}
+                      className="flex items-center space-x-2 px-3 py-2 w-full text-left rounded-md hover:bg-[var(--toolnest-gray-100)] dark:hover:bg-[var(--toolnest-gray-800)]"
+                    >
+                      <Tool size={20} className="text-[var(--toolnest-primary-600)] dark:text-[var(--toolnest-primary-400)]" />
+                      <span className="text-[var(--toolnest-gray-800)] dark:text-white">
+                        {upgrading ? 'Processing...' : 'Upgrade to Partner'}
+                      </span>
+                    </button>
+                  )}
                   
                   <button
                     onClick={logout}

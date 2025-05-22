@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -17,6 +18,7 @@ class AuthController extends Controller
         try {
             \Log::info('Register request data:', $request->all());
             $validated = $request->validate([
+                'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
                 'username' => 'nullable|string|max:255|unique:users',
@@ -28,6 +30,7 @@ class AuthController extends Controller
             
     
             $user = User::create([
+                'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'username' => $validated['username'],
@@ -189,4 +192,50 @@ class AuthController extends Controller
             ], 422);
         }
     }
+
+ 
+// Profile update method
+
+public function updateProfile(Request $request)
+{
+    $user = $request->user();
+
+    $validated = $request->validate([
+        'name' => 'required|string|max:191',
+        'email' => [
+            'required', 'email', 'max:191',
+            Rule::unique('users')->ignore($user->id),
+        ],
+        'username' => [
+            'nullable', 'string', 'max:191',
+            Rule::unique('users')->ignore($user->id),
+        ],
+        'city_id' => 'required|exists:cities,id',
+        'phone_number' => 'nullable|string|max:20',
+        'address' => 'nullable|string|max:255',
+        'role' => 'required|in:client,partner',
+        'password' => 'nullable|string|min:8|confirmed',
+    ]);
+
+    $user->name = $validated['name'];
+    $user->email = $validated['email'];
+    $user->username = $validated['username'] ?? $user->username;
+    $user->city_id = $validated['city_id'];
+    $user->phone_number = $validated['phone_number'] ?? null;
+    $user->address = $validated['address'] ?? null;
+    $user->role = $validated['role'];
+
+    if ($request->filled('password')) {
+        $user->password = \Hash::make($validated['password']);
+    }
+
+    $user->save();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Profile updated successfully.',
+        'user' => $user->fresh('city'),
+    ]);
+    }
 } 
+

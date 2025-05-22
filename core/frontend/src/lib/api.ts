@@ -1,3 +1,4 @@
+import { LoginResponse } from "@/app/services/api";
 import axios from "axios";
 
 const API_URL = "http://localhost:8000/api"; // Adjust this to match your backend URL
@@ -11,7 +12,7 @@ const api = axios.create({
 
 // Add token to requests if it exists
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("auth_token");
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -36,10 +37,6 @@ interface User {
 }
 
 interface AuthResponse {
-  data: any;
-  data: LoginResponse | PromiseLike<LoginResponse>;
-  data: any;
-  data: any;
   data: any;
   user: User;
   token: string;

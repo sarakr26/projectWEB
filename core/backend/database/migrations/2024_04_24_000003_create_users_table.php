@@ -10,9 +10,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('username', 255)->unique();
+            $table->string('name');
+            $table->string('username', 191)->unique();
             $table->string('password', 255);
-            $table->string('email', 255)->unique();
+            $table->string('email', 191)->unique();
             $table->string('phone_number', 20)->nullable();
             $table->text('address')->nullable();
             $table->enum('role', ['client', 'partner']);

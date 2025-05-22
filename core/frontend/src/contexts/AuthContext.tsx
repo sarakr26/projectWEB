@@ -29,15 +29,23 @@ interface RegisterData {
   role?: string
 }
 
+// Generic API response type
+interface ApiResponse {
+  status: string
+  data?: any
+  message?: string
+}
+
 type AuthContextType = {
   user: User | null
   isAuthenticated: boolean
   loading: boolean
   signup: (userData: RegisterData) => Promise<void>
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<boolean>
   logout: () => Promise<void>
   loginWithGoogle: () => Promise<void>
   loginWithFacebook: () => Promise<void>
+  becomePartner: () => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -93,60 +101,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth()
   }, [])
 
-  const login = async (email: string, password: string, rememberMe: boolean = false) => {
-    setIsLoading(true)
+  const login = async (email: string, password: string, rememberMe: boolean = false): Promise<boolean> => {
+    setIsLoading(true);
     try {
       interface LoginResponse {
-        status: string
-        data: {
-          user: User
-          token: string
-        }
-        message?: string
+        status: string;
+        message?: string;
+        data?: {
+          user: User;
+          token: string;
+        };
       }
-
       const response = await axios.post<LoginResponse>(`${API_URL}/login`, {
         email,
-        password,
-        remember_me: rememberMe
-      })
-
-      if (response.data.status === 'success') {
-        const newUser = response.data.data.user
-        const token = response.data.data.token
-
-        if (rememberMe) {
-          // For "remember me", store with no expiration
-          localStorage.setItem('auth_token', token)
-        } else {
-          // For regular login, store in sessionStorage (cleared when browser is closed)
-          sessionStorage.setItem('auth_token', token)
-        }
-        
-        // Set the auth header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        
-        // Update the user state
-        setUser(newUser)
-        
-        return
+        password
+      });
+      if (response.data.status === 'success' && response.data.data) {
+        const newUser = response.data.data.user;
+        const token = response.data.data.token;
+        localStorage.setItem('auth_token', token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        setUser(newUser);
+        return true;
       } else {
-        throw new Error(response.data.message || 'Login failed')
+        return false;
       }
     } catch (error) {
-      console.error("Login error:", error)
-      
-      if (error && typeof error === 'object' && 'response' in error && 
-        error.response && typeof error.response === 'object' && 
-        'data' in error.response) {
-      throw new Error((error.response.data as any).message || 'Authentication failed')
-    }
-      
-      throw error
+      console.error("Login error:", error);
+      return false;
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const signup = async (userData: RegisterData) => {
     setIsLoading(true)
@@ -208,6 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
       localStorage.removeItem('auth_token')
       delete axios.defaults.headers.common['Authorization']
+      window.location.href = '/'; // Redirect to home page
     }
   }
 
@@ -265,6 +252,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const becomePartner = async (): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      // Check if we have a token and user
+      const token = localStorage.getItem('auth_token');
+      if (!token || !user) {
+        console.error("No authentication token or user found");
+        return false;
+      }
+      
+      // Make the API call to upgrade to partner
+      const response = await axios.post<ApiResponse>(`${API_URL}/become-partner`);
+      
+      // Check if the call was successful
+      if (response.data.status === 'success') {
+        // Update the user with the new role
+        setUser({
+          ...user,
+          role: 'partner'
+        });
+        return true;
+      } else {
+        console.error("Failed to upgrade to partner:", response.data.message);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error upgrading to partner:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -276,6 +296,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         loginWithGoogle,
         loginWithFacebook,
+        becomePartner,
       }}
     >
       {children}

@@ -109,3 +109,6 @@ export const logout = async (): Promise<void> => {
     safeRemoveLocalStorage("auth_token");
   }
 };
+
+export const getProfile = () => api.get('/user');
+export const updateProfile = (data: any) => api.put('/profile', data);

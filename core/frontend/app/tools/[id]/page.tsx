@@ -23,103 +23,51 @@ import {
   ArrowRight
 } from "lucide-react"
 
-// Mock data for the tool details - in a real app, this would come from an API
-const getToolData = (id: string) => {
-  // This is a placeholder - in a real app this would fetch from API based on the ID
-  return {
-    id,
-    name: "Professional Drill Kit",
-    description: "High-performance cordless drill kit with multiple speed settings and a complete set of drill bits. Perfect for home improvement projects and professional use.",
-    longDescription: "This professional-grade drill kit includes a powerful 20V cordless drill with a brushless motor for maximum efficiency and runtime. It features variable speed settings from 0-2000 RPM, a 1/2-inch keyless chuck for quick bit changes, and 22 clutch settings for precise control. The ergonomic grip reduces fatigue during extended use, while the LED work light illuminates dark work areas. The kit comes with 2 lithium-ion batteries, a rapid charger, and a comprehensive set of drill bits in a durable carrying case.",
-    price: "8.50",
-    rating: 4.9,
-    reviewCount: 156,
-    image: "https://placehold.co/600x400/e9f5e9/1a8754?text=Professional+Drill+Kit",
-    images: [
-      "https://placehold.co/600x400/e9f5e9/1a8754?text=Professional+Drill+Kit+1",
-      "https://placehold.co/600x400/e9f5e9/1a8754?text=Professional+Drill+Kit+2",
-      "https://placehold.co/600x400/e9f5e9/1a8754?text=Professional+Drill+Kit+3"
-    ],
-    location: "0.8 miles away",
-    owner: {
-      name: "Michael Smith",
-      rating: 4.8,
-      rentalCount: 143,
-      image: "https://placehold.co/200x200/e9f5e9/1a8754?text=MS",
-      memberSince: "March 2022"
-    },
-    category: "Power Tools",
-    availability: true,
-    condition: "Excellent",
-    specifications: [
-      { name: "Brand", value: "DeWalt" },
-      { name: "Power Source", value: "Cordless Electric" },
-      { name: "Voltage", value: "20V" },
-      { name: "Max RPM", value: "2,000" },
-      { name: "Chuck Size", value: "1/2 inch" },
-      { name: "Weight", value: "3.5 lbs" },
-      { name: "Batteries Included", value: "Yes (2)" },
-      { name: "Charger Included", value: "Yes" },
-      { name: "Case Included", value: "Yes" }
-    ],
-    features: [
-      "Variable speed settings for different materials",
-      "LED work light for dark areas",
-      "22 clutch settings for precise control",
-      "Ergonomic grip reduces hand fatigue",
-      "Brushless motor for longer runtime",
-      "Keyless chuck for quick bit changes"
-    ],
-    rentalOptions: [
-      { duration: "1 Day", price: 8.50 },
-      { duration: "Weekend", price: 15.00 },
-      { duration: "1 Week", price: 42.50 },
-      { duration: "2 Weeks", price: 75.00 }
-    ],
-    reviews: [
-      {
-        user: "John D.",
-        rating: 5,
-        date: "July 15, 2023",
-        comment: "Excellent drill, worked perfectly for my cabinet installation project. Great condition and the owner was very helpful with tips.",
-        avatar: "https://placehold.co/100x100/e9f5e9/1a8754?text=JD"
-      },
-      {
-        user: "Sarah M.",
-        rating: 5,
-        date: "June 28, 2023",
-        comment: "This drill was powerful and had plenty of battery life. Completed my deck project without needing to recharge.",
-        avatar: "https://placehold.co/100x100/e9f5e9/1a8754?text=SM"
-      },
-      {
-        user: "Robert K.",
-        rating: 4,
-        date: "June 10, 2023",
-        comment: "Very good drill. The carrying case was a bit worn but the tool itself worked flawlessly.",
-        avatar: "https://placehold.co/100x100/e9f5e9/1a8754?text=RK"
-      }
-    ]
+// Remove the mock data function and add the API fetch function
+const fetchToolData = async (id: string) => {
+  try {
+    const response = await fetch(`/api/listings/${id}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch tool data');
+    }
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching tool data:', error);
+    throw error;
   }
-}
+};
 
 export default function ToolDetails() {
-  const params = useParams()
+  const params = useParams<{ id: string }>()
   const [tool, setTool] = useState<any>(null)
   const [selectedImage, setSelectedImage] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showScrollTop, setShowScrollTop] = useState(false)
   
   useEffect(() => {
-    // Simulate data loading
-    const timer = setTimeout(() => {
-      const data = getToolData(params.id as string);
-      setTool(data);
-      setSelectedImage(data.images[0]);
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [params.id]);
+    const loadToolData = async () => {
+      if (!params?.id) return;
+      
+      try {
+        setIsLoading(true);
+        const data = await fetchToolData(params.id);
+        setTool(data);
+        if (data.images && data.images.length > 0) {
+          setSelectedImage(data.images[0].url);
+        }
+        setError(null);
+      } catch (err) {
+        setError('Failed to load tool details. Please try again later.');
+        console.error('Error loading tool data:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadToolData();
+  }, [params?.id]);
   
   useEffect(() => {
     const handleScroll = () => {
@@ -199,16 +147,11 @@ export default function ToolDetails() {
       </div>
       
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* Left Column - Images */}
-          <div className="w-full lg:w-3/5 space-y-6">
+          <div className="lg:col-span-2 space-y-6">
             {/* Main Image */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden"
-            >
+            <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
               <div className="relative aspect-video overflow-hidden">
                 <img 
                   src={selectedImage} 
@@ -238,15 +181,10 @@ export default function ToolDetails() {
                   </Button>
                 </div>
               </div>
-            </motion.div>
+            </div>
             
             {/* Thumbnail Images */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-3 gap-4"
-            >
+            <div className="grid grid-cols-3 gap-4">
               {tool.images.map((img: string, index: number) => (
                 <div 
                   key={index}
@@ -259,15 +197,10 @@ export default function ToolDetails() {
                   <img src={img} alt={`${tool.name} ${index + 1}`} className="w-full h-full object-cover" />
                 </div>
               ))}
-            </motion.div>
+            </div>
             
             {/* Detailed Information */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden mt-10"
-            >
+            <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden mt-10">
               <Tabs defaultValue="details">
                 <TabsList className="w-full border-b border-gray-200 bg-gray-50 p-0 h-auto">
                   <TabsTrigger 
@@ -383,18 +316,13 @@ export default function ToolDetails() {
                   </div>
                 </TabsContent>
               </Tabs>
-            </motion.div>
+            </div>
           </div>
           
           {/* Right Column - Booking and Owner Info */}
-          <div className="w-full lg:w-2/5 space-y-6">
+          <div className="lg:col-span-1 space-y-6">
             {/* Booking Card */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sticky top-24"
-            >
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-bold text-gray-900">{tool.name}</h1>
                 <div className="flex items-center text-yellow-500">
@@ -414,7 +342,19 @@ export default function ToolDetails() {
                   <span className="text-3xl font-bold text-green-700">${tool.price}</span>
                   <span className="text-gray-500 ml-1">/ day</span>
                 </div>
-                <div className="text-sm text-gray-500 mt-1">Other duration options available</div>
+                {tool.availabilities && tool.availabilities.length > 0 && (
+                  <div className="mt-4 mb-2">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-1">Available Dates</h4>
+                    <ul className="space-y-1">
+                      {tool.availabilities.map((a: any, idx: number) => (
+                        <li key={idx} className="flex items-center text-gray-700">
+                          <Calendar className="h-4 w-4 mr-1 text-green-600" />
+                          From {new Date(a.start_date).toLocaleDateString('fr-FR')} to {new Date(a.end_date).toLocaleDateString('fr-FR')}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               
               <div className="space-y-3 mb-6">
@@ -482,15 +422,10 @@ export default function ToolDetails() {
                   </Button>
                 </div>
               </div>
-            </motion.div>
+            </div>
             
             {/* Similar Tools Preview */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl shadow-md border border-gray-100 p-6"
-            >
+            <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Similar Tools Nearby</h3>
                 <Button variant="link" className="text-green-600 p-0 h-auto">View All</Button>
@@ -522,7 +457,7 @@ export default function ToolDetails() {
                   </Link>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

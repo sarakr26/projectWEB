@@ -6,6 +6,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UserController;
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -25,6 +28,9 @@ Route::get('/listings/{id}', [ListingController::class, 'show']);
 Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:sanctum');
 Route::put('/listings/{id}', [ListingController::class, 'update'])->middleware('auth:sanctum'); // Update listing
 Route::patch('/listings/{id}/archive', [ListingController::class, 'archive'])->middleware('auth:sanctum'); // Archive listing
+Route::middleware('auth:sanctum')->get('/listings', [ListingController::class, 'index']);
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/users/{id}/listings', [UserController::class, 'listings']);
 
 // Reservation routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -35,12 +41,33 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reservations/{id}/accept', [ReservationController::class, 'acceptReservation']); // Accept a reservation
     Route::get('/reservations/confirmed', [ReservationController::class, 'confirmedReservations']); // Get confirmed reservations for client
     Route::post('/reservations/{id}/pay', [ReservationController::class, 'pay']); // Pay for a confirmed reservation
+    Route::post('/reservations/{id}/decline', [ReservationController::class, 'declineReservation']);
+    Route::get('/reservations/user', [ReservationController::class, 'userReservations']); // Get all reservations for logged-in user
+    Route::get('/reservations/partner', [ReservationController::class, 'partnerReservations']);
 });
 
 // Review routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store']);//create a review for a listing
     Route::get('/reviews', [ReviewController::class, 'index']);//show all reviews with filters
+    Route::get('/reviews/pending/{reservationId}', [ReviewController::class, 'checkPendingReviews']);
     Route::get('/reviews/{id}', [ReviewController::class, 'show']);//show a review by id
     Route::put('/reviews/{id}', [ReviewController::class, 'update']);//update a review by id
 }); 
+
+// Profile routes
+Route::middleware('auth:sanctum')->put('/profile', [AuthController::class, 'updateProfile']);
+
+//liked listings
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/listings/{listing}/like', [ListingController::class, 'like']);
+    Route::delete('/listings/{listing}/like', [ListingController::class, 'unlike']);
+    Route::get('/listings/{listing}/liked', [ListingController::class, 'isLiked']);
+});
+// list of liked listings
+Route::middleware('auth:sanctum')->get('/user/liked-listings', [App\Http\Controllers\ListingController::class, 'likedListings']);
+
+// signalee
+Route::middleware('auth:sanctum')->post('/partners/{partner}/signalee', [App\Http\Controllers\PartnerController::class, 'signalee']);
+// view profile
+Route::get('/users/{id}', [UserController::class, 'show']);
