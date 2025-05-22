@@ -238,32 +238,32 @@ class ReservationController extends Controller
     }
 
     public function userReservations(Request $request)
-{
-    try {
-        $query = Reservation::with(['listing', 'partner'])
-            ->where('client_id', $request->user()->id);
-        
-        // Optional filtering
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
+    {
+        try {
+            $query = Reservation::with(['listing', 'partner'])
+                ->where('client_id', $request->user()->id);
+            
+            // Optional filtering
+            if ($request->has('status')) {
+                $query->where('status', $request->status);
+            }
+            
+            // Sort by creation date (newest first)
+            $reservations = $query->orderBy('created_at', 'desc')->paginate(10);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $reservations
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch reservations',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        
-        // Sort by creation date (newest first)
-        $reservations = $query->orderBy('created_at', 'desc')->paginate(10);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $reservations
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Failed to fetch reservations',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 
     public function acceptReservation(Request $request, $id)
     {
@@ -364,45 +364,45 @@ class ReservationController extends Controller
     }
 
     public function declineReservation(Request $request, $id)
-{
-    try {
-        $reservation = Reservation::with(['client', 'listing'])->findOrFail($id);
+    {
+        try {
+            $reservation = Reservation::with(['client', 'listing'])->findOrFail($id);
 
-        // Check if the user is the partner of the listing
-        if ($reservation->partner_id !== $request->user()->id) {
+            // Check if the user is the partner of the listing
+            if ($reservation->partner_id !== $request->user()->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized to decline this reservation'
+                ], 403);
+            }
+
+            // Check if the reservation is pending
+            if ($reservation->status !== 'pending') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Only pending reservations can be declined'
+                ], 400);
+            }
+
+            // Update reservation status to canceled
+            $reservation->update(['status' => 'canceled']);
+
+            // Optionally: Send email to client notifying them of the declined reservation
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Reservation declined successfully',
+                'data' => $reservation->fresh(['client', 'listing'])
+            ]);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized to decline this reservation'
-            ], 403);
+                'message' => 'Failed to decline reservation',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Check if the reservation is pending
-        if ($reservation->status !== 'pending') {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Only pending reservations can be declined'
-            ], 400);
-        }
-
-        // Update reservation status to canceled
-        $reservation->update(['status' => 'canceled']);
-
-        // Optionally: Send email to client notifying them of the declined reservation
-        
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Reservation declined successfully',
-            'data' => $reservation->fresh(['client', 'listing'])
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Failed to decline reservation',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 
     public function partnerReservations(Request $request)
     {
@@ -432,6 +432,7 @@ class ReservationController extends Controller
             ], 500);
         }
     }
+
     public function pay(Request $request, $id)
     {
         try {
@@ -451,7 +452,7 @@ class ReservationController extends Controller
             $days = $reservation->start_date->diffInDays($reservation->end_date);
             $totalAmount = $days * $reservation->listing->price_per_day;
 
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             // Update reservation status to completed
             $reservation->status = 'completed';
@@ -465,10 +466,10 @@ class ReservationController extends Controller
                 'reservation_id' => $reservation->id,
             ]);
 
-            \DB::commit();
+            DB::commit();
 
             // Send payment confirmation email
-            \Mail::to($reservation->client->email)->send(new PaymentConfirmed($reservation, $payment));
+            Mail::to($reservation->client->email)->send(new PaymentConfirmed($reservation, $payment));
 
             return response()->json([
                 'status' => 'success',
@@ -479,7 +480,7 @@ class ReservationController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            \DB::rollBack();
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => 'Payment failed',

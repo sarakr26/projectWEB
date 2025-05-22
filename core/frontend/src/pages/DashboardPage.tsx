@@ -131,47 +131,56 @@ const DashboardPage = () => {
 
   // Function to fetch reservations
   const fetchReservations = async () => {
-  setReservationsLoading(true);
-  try {
-    // Get the current user ID
-    const userId = user?.id;
-    
-    // Create custom parameters to filter by partner_id
-    const params = { as_partner: 'true' };
-    
-    const response = await getUserReservations();
-    if (response.status === 'success' && response.data) {
-      // Handle possible pagination in the response
-      const allReservationData = Array.isArray(response.data) 
-        ? response.data 
-        : (typeof response.data === 'object' && response.data !== null && 'data' in response.data && Array.isArray((response.data as any).data)
-            ? (response.data as { data: Reservation[] }).data
-            : []);
+    setReservationsLoading(true);
+    try {
+      console.log('Fetching reservations...');
+      const response = await getUserReservations();
+      console.log('Reservations response:', response);
       
-      // Filter reservations where the current user is the partner (not the client)
-      const partnerReservations = allReservationData.filter(
-        reservation => String(reservation.partner_id) === String(userId)
-      );
-      
-      setPastReservations(partnerReservations);
-      
-      // Update statistics based on filtered data
-      const totalRevenue = partnerReservations
-        .filter((r: Reservation) => r.status === 'completed')
-        .reduce((sum: number, r: Reservation) => sum + (r.total_price || 0), 0);
+      if (response.status === 'success' && response.data) {
+        // Handle possible pagination in the response
+        const allReservationData = Array.isArray(response.data) 
+          ? response.data 
+          : (typeof response.data === 'object' && response.data !== null && 'data' in response.data && Array.isArray((response.data as any).data)
+              ? (response.data as { data: Reservation[] }).data
+              : []);
         
-      setStatistics(prev => ({
-        ...prev,
-        totalReservations: partnerReservations.length,
-        totalRevenue: `$${totalRevenue.toFixed(2)}`
-      }));
+        console.log('Processed reservations:', allReservationData);
+        
+        // Split reservations into current and past
+        const now = new Date();
+        const current = allReservationData.filter(reservation => 
+          new Date(reservation.end_date) >= now && 
+          reservation.status !== 'canceled' && 
+          reservation.status !== 'completed'
+        );
+        const past = allReservationData.filter(reservation => 
+          new Date(reservation.end_date) < now || 
+          reservation.status === 'canceled' || 
+          reservation.status === 'completed'
+        );
+        
+        setCurrentReservations(current);
+        setPastReservations(past);
+        
+        // Update statistics
+        const totalRevenue = past
+          .filter((r: Reservation) => r.status === 'completed')
+          .reduce((sum: number, r: Reservation) => sum + (r.total_price || 0), 0);
+          
+        setStatistics(prev => ({
+          ...prev,
+          totalReservations: allReservationData.length,
+          totalRevenue: `$${totalRevenue.toFixed(2)}`
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching reservations:', error);
+      setReservationsError('Failed to load reservations');
+    } finally {
+      setReservationsLoading(false);
     }
-  } catch (error) {
-    console.error('Error fetching reservations:', error);
-  } finally {
-    setReservationsLoading(false);
-  }
-};
+  };
 
   const handleProfileUpdate = (e: React.FormEvent) => {
     e.preventDefault()
@@ -212,80 +221,89 @@ const DashboardPage = () => {
     
     return (
       <div className="space-y-4">
-        {selectedTab === 'current' ? (
-          currentReservations.map(reservation => (
-            <div key={reservation.id} className="tn-card p-4">
-              <div className="flex justify-between items-start">
-                <div className="flex space-x-4">
-                  <div className="w-20 h-20 bg-gray-200 rounded-lg">
-                    {reservation.listing?.image_url && (
-                      <img 
-                        src={reservation.listing.image_url} 
-                        alt={reservation.listing?.title || "Tool"} 
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    )}
+        {reservations.map(reservation => (
+          <div key={reservation.id} className="tn-card p-4">
+            <div className="flex justify-between items-start">
+              <div className="flex space-x-4">
+                <div className="w-20 h-20 bg-gray-200 rounded-lg">
+                  {reservation.listing?.image_url && (
+                    <img 
+                      src={reservation.listing.image_url} 
+                      alt={reservation.listing?.title || "Tool"} 
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  )}
+                </div>
+                <div>
+                  <h3 className="font-semibold">{reservation.listing?.title || "Tool Reservation"}</h3>
+                  <p className="text-sm text-gray-500">{reservation.listing?.address || "No location available"}</p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Calendar size={14} className="text-gray-400" />
+                    <span className="text-sm text-gray-600">
+                      {new Date(reservation.start_date).toLocaleDateString()} - {new Date(reservation.end_date).toLocaleDateString()}
+                    </span>
                   </div>
-                  <div>
-                    <h3 className="font-semibold">{reservation.listing?.title || "Tool Reservation"}</h3>
-                    <p className="text-sm text-gray-500">{reservation.listing?.address || "No location available"}</p>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Calendar size={14} className="text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        {new Date(reservation.start_date).toLocaleDateString()} - {new Date(reservation.end_date).toLocaleDateString()}
-                      </span>
-                    </div>
+                  <div className="mt-2">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                      ${reservation.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                        reservation.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
+                        reservation.status === 'completed' ? 'bg-green-100 text-green-800' :
+                        'bg-red-100 text-red-800'}`}>
+                      {reservation.status.charAt(0).toUpperCase() + reservation.status.slice(1)}
+                    </span>
                   </div>
                 </div>
-                <span className={`tn-tag ${reservation.status === 'confirmed' ? 'tn-tag-primary' : 'tn-tag-warning'}`}>
-                  {reservation.status}
-                </span>
               </div>
-              <div className="flex justify-end space-x-2 mt-4">
-                <button className="tn-button tn-button-outline">Report Issue</button>
-                <button className="tn-button tn-button-primary">View Details</button>
+              <div className="flex flex-col items-end space-y-2">
+                {reservation.status === 'confirmed' && (
+                  <button 
+                    onClick={() => handlePayment(reservation.id)}
+                    className="tn-button tn-button-primary"
+                  >
+                    Pay Now
+                  </button>
+                )}
+                <button 
+                  onClick={() => navigate(`/tools/${reservation.listing_id}`)}
+                  className="tn-button tn-button-outline"
+                >
+                  View Details
+                </button>
               </div>
             </div>
-          ))
-        ) : (
-          pastReservations.map(reservation => (
-            <div key={reservation.id} className="tn-card p-4">
-              <div className="flex justify-between items-start">
-                <div className="flex space-x-4">
-                  <div className="w-20 h-20 bg-gray-200 rounded-lg">
-                    {reservation.listing?.image_url && (
-                      <img 
-                        src={reservation.listing.image_url} 
-                        alt={reservation.listing?.title || "Tool"} 
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">{reservation.listing?.title || "Tool Reservation"}</h3>
-                    <p className="text-sm text-gray-500">{reservation.listing?.address || "No location available"}</p>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Clock size={14} className="text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        {new Date(reservation.start_date).toLocaleDateString()} - {new Date(reservation.end_date).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <span className="tn-tag tn-tag-gray">{reservation.status}</span>
-              </div>
-              {reservation.status === 'completed' && (
-  <ClientReviewSection 
-    reservation={reservation} 
-    onReviewSubmitted={() => fetchReservations()} 
-  />
-)}
-            </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
     )
   }
+
+  const handlePayment = async (reservationId: number) => {
+    try {
+      console.log('Processing payment for reservation:', reservationId);
+      const response = await fetch(`http://localhost:8000/api/reservations/${reservationId}/pay`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+
+      const data = await response.json();
+      console.log('Payment response:', data);
+
+      if (data.status === 'success') {
+        // Refresh reservations after successful payment
+        await fetchReservations();
+        // Show success message
+        alert('Payment successful!');
+      } else {
+        throw new Error(data.message || 'Payment failed');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment failed. Please try again.');
+    }
+  };
 
   const handleFilterChange = (filterType: string, value: string) => {
     switch (filterType) {
