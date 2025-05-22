@@ -432,7 +432,7 @@ class ReservationController extends Controller
             ], 500);
         }
     }
-}
+
 
     public function confirmedReservations(Request $request)
     {
