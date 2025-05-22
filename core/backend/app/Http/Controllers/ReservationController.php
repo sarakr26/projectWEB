@@ -6,11 +6,13 @@ use App\Models\Reservation;
 use App\Models\Listing;
 use App\Models\Availability;
 use Illuminate\Http\Request;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationAccepted;
+use App\Mail\PaymentConfirmed;
 use App\Jobs\CancelUnpaidReservation;
 
 class ReservationController extends Controller
@@ -426,6 +428,61 @@ class ReservationController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to fetch partner reservations',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function pay(Request $request, $id)
+    {
+        try {
+            $reservation = Reservation::where('id', $id)
+                ->where('client_id', $request->user()->id)
+                ->where('status', 'confirmed')
+                ->first();
+
+            if (!$reservation) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Reservation not found or not eligible for payment.'
+                ], 404);
+            }
+
+            // Calculate total amount
+            $days = $reservation->start_date->diffInDays($reservation->end_date);
+            $totalAmount = $days * $reservation->listing->price_per_day;
+
+            \DB::beginTransaction();
+
+            // Update reservation status to completed
+            $reservation->status = 'completed';
+            $reservation->save();
+
+            // Create payment record
+            $payment = Payment::create([
+                'amount' => $totalAmount,
+                'status' => 'completed',
+                'client_id' => $reservation->client_id,
+                'reservation_id' => $reservation->id,
+            ]);
+
+            \DB::commit();
+
+            // Send payment confirmation email
+            \Mail::to($reservation->client->email)->send(new PaymentConfirmed($reservation, $payment));
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Payment successful. Reservation completed.',
+                'data' => [
+                    'reservation' => $reservation,
+                    'payment' => $payment
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Payment failed',
                 'error' => $e->getMessage()
             ], 500);
         }

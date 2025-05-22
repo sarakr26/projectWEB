@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reservations/{id}/decline', [ReservationController::class, 'declineReservation']);
     Route::get('/reservations/user', [ReservationController::class, 'userReservations']); // Get all reservations for logged-in user
     Route::get('/reservations/partner', [ReservationController::class, 'partnerReservations']);
+    Route::post('/reservations/{id}/pay', [ReservationController::class, 'pay']);
 });
 
 // Review routes
