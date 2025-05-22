@@ -1,17 +1,6 @@
 node_modules/
-<<<<<<< HEAD
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 .next/
-
-
-
-=======
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
->>>>>>> frontend
