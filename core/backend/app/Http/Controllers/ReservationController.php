@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationAccepted;
 use App\Mail\PaymentConfirmed;
 use App\Jobs\CancelUnpaidReservation;
+use App\Mail\ReservationDeclined;
 
 class ReservationController extends Controller
 {
@@ -288,6 +289,29 @@ class ReservationController extends Controller
 
             DB::beginTransaction();
 
+            // Find and decline overlapping reservations
+            $overlappingReservations = Reservation::where('listing_id', $reservation->listing_id)
+                ->where('id', '!=', $reservation->id) // Exclude the current reservation
+                ->where('status', 'pending') // Only consider pending reservations
+                ->where(function ($query) use ($reservation) {
+                    $query->whereBetween('start_date', [$reservation->start_date, $reservation->end_date])
+                        ->orWhereBetween('end_date', [$reservation->start_date, $reservation->end_date])
+                        ->orWhere(function ($q) use ($reservation) {
+                            $q->where('start_date', '<=', $reservation->start_date)
+                                ->where('end_date', '>=', $reservation->end_date);
+                        });
+                })
+                ->get();
+
+            // Decline overlapping reservations
+            foreach ($overlappingReservations as $overlappingReservation) {
+                $overlappingReservation->update(['status' => 'canceled']);
+                
+                // Send email to clients about declined reservations
+                Mail::to($overlappingReservation->client->email)
+                    ->send(new ReservationDeclined($overlappingReservation, true));
+            }
+
             // Update reservation status to confirmed
             $reservation->update(['status' => 'confirmed']);
 
@@ -345,11 +369,14 @@ class ReservationController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Reservation accepted successfully',
+                'message' => 'Reservation accepted successfully. ' . 
+                    ($overlappingReservations->count() > 0 ? 
+                    $overlappingReservations->count() . ' overlapping reservations were automatically declined.' : ''),
                 'data' => [
                     'reservation' => $reservation,
                     'payment_deadline' => now()->addHours(24),
-                    'total_amount' => $totalAmount
+                    'total_amount' => $totalAmount,
+                    'declined_overlapping' => $overlappingReservations->count()
                 ]
             ]);
 
@@ -387,7 +414,9 @@ class ReservationController extends Controller
             // Update reservation status to canceled
             $reservation->update(['status' => 'canceled']);
 
-            // Optionally: Send email to client notifying them of the declined reservation
+            // Send email to client about the declined reservation
+            Mail::to($reservation->client->email)
+                ->send(new ReservationDeclined($reservation));
             
             return response()->json([
                 'status' => 'success',
