@@ -12,7 +12,9 @@ class CityController extends Controller
     {
         try {
             $cities = Cache::remember('cities', 60*24, function () {
-                return City::select('id', 'name')->orderBy('name')->get();
+                return City::select('id', 'name', 'latitude', 'longitude')
+                    ->orderBy('name')
+                    ->get();
             });
             
             return response()->json([

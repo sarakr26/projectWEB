@@ -110,6 +110,9 @@ class ListingController extends Controller
 
             DB::beginTransaction();
 
+            // Get city coordinates
+            $city = \App\Models\City::findOrFail($request->city_id);
+
             $listing = new Listing([
                 'title' => $request->title,
                 'description' => $request->description,
@@ -121,6 +124,8 @@ class ListingController extends Controller
                 'status' => 'active',
                 'priority' => 4, // Default priority
                 'is_premium' => $request->boolean('is_premium', false),
+                'latitude' => $city->latitude,
+                'longitude' => $city->longitude,
             ]);
             $listing->updatePriority();
 
