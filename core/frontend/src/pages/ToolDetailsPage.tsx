@@ -3,7 +3,7 @@
 import { useState, useEffect, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useQuery } from "react-query"
-import { Star, Heart, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Check } from "react-feather"
+import { Star, Heart, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Check, CheckCircle } from "react-feather"
 import { useAuth } from "../contexts/AuthContext"
 import { getListing, Listing } from "@/app/services/listingService"
 import LoadingSpinner from "../components/ui/LoadingSpinner"
@@ -301,17 +301,18 @@ export default function ToolDetailsPage() {
               </div>
             </div>
 
-            {/* We might not have features from API, so conditionally render */}
-            {listing.features && listing.features.length > 0 && (
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Features</h2>
-                <ul className="list-disc pl-5 space-y-1 text-gray-700 dark:text-gray-300">
-                  {listing.features.map((feature: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, index: Key | null | undefined) => (
-                    <li key={index}>{feature}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {/* Features section */}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Features</h3>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {(listing.features || []).map((feature: string, index: number) => (
+                  <li key={index} className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             {/* Reviews section - this would need to be fetched from a separate API endpoint */}
             <div>
@@ -329,11 +330,11 @@ export default function ToolDetailsPage() {
             </div>
 
             {/* Available Dates Section */}
-            {listing.availabilities && listing.availabilities.length > 0 && (
+            {Array.isArray(listing.availabilities) && listing.availabilities.length > 0 && (
               <div className="mt-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Available Dates</h3>
                 <div className="space-y-2">
-                  {listing.availabilities.map((availability, index) => (
+                  {listing.availabilities.map((availability: { start_date: string | number | Date; end_date: string | number | Date }, index: Key | null | undefined) => (
                     <div key={index} className="flex items-center text-gray-700 dark:text-gray-300">
                       <Calendar className="h-5 w-5 mr-2 text-green-600" />
                       <span>

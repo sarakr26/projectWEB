@@ -3,6 +3,7 @@ import api from "./api";
 
 // Define TypeScript interfaces for the Listing data structure
 export interface Listing {
+  availabilities: boolean;
   total_rentals: number;
   security_deposit: any;
   features: any;

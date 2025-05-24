@@ -23,6 +23,45 @@ import {
   ArrowRight
 } from "lucide-react"
 
+interface Tool {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  longDescription: string;
+  price: number;
+  price_per_day: number;
+  rating: number;
+  reviewCount: number;
+  location: string;
+  condition: string;
+  features: string[];
+  specifications: Array<{ name: string; value: string }>;
+  rentalOptions: Array<{ duration: string; price: number }>;
+  reviews: Array<{
+    user: string;
+    avatar: string;
+    date: string;
+    rating: number;
+    comment: string;
+    images: Array<{ url: string }>;
+  }>;
+  owner: {
+    name: string;
+    image: string;
+    rating: number;
+    rentalCount: number;
+  };
+  images: Array<{ url: string }>;
+  availabilities: Array<{ start_date: string; end_date: string }>;
+  category: {
+    id: number;
+    name: string;
+    created_at: string;
+    updated_at: string;
+  };
+}
+
 // Remove the mock data function and add the API fetch function
 const fetchToolData = async (id: string) => {
   try {
@@ -40,7 +79,7 @@ const fetchToolData = async (id: string) => {
 
 export default function ToolDetails() {
   const params = useParams<{ id: string }>()
-  const [tool, setTool] = useState<any>(null)
+  const [tool, setTool] = useState<Tool | null>(null)
   const [selectedImage, setSelectedImage] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -53,7 +92,26 @@ export default function ToolDetails() {
       try {
         setIsLoading(true);
         const data = await fetchToolData(params.id);
-        setTool(data);
+        // Ensure all required properties have default values
+        setTool({
+          ...data,
+          features: data.features || [],
+          specifications: data.specifications || [],
+          rentalOptions: data.rentalOptions || [],
+          reviews: data.reviews || [],
+          images: data.images || [],
+          availabilities: data.availabilities || [],
+          rating: data.rating || 0,
+          reviewCount: data.reviewCount || 0,
+          condition: data.condition || 'Good',
+          category: data.category || { id: 0, name: 'Uncategorized', created_at: '', updated_at: '' },
+          owner: {
+            name: data.owner?.name || 'Unknown',
+            image: data.owner?.image || '/placeholder.svg',
+            rating: data.owner?.rating || 0,
+            rentalCount: data.owner?.rentalCount || 0
+          }
+        });
         if (data.images && data.images.length > 0) {
           setSelectedImage(data.images[0].url);
         }
@@ -130,7 +188,7 @@ export default function ToolDetails() {
             </Link>
             <span className="mx-2">›</span>
             <Link href="/#popular-tools" className="hover:text-green-600 transition-colors">
-              {tool.category}
+              {tool.category.name}
             </Link>
             <span className="mx-2">›</span>
             <span className="text-gray-900">{tool.name}</span>
@@ -185,16 +243,16 @@ export default function ToolDetails() {
             
             {/* Thumbnail Images */}
             <div className="grid grid-cols-3 gap-4">
-              {tool.images.map((img: string, index: number) => (
-                <div 
+              {tool.images.map((imgObj: { url: string }, index: number) => (
+                <div
                   key={index}
                   className={`
                     aspect-video rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-300
-                    ${selectedImage === img ? 'border-green-500 shadow-md' : 'border-gray-200 hover:border-green-300'}
+                    ${selectedImage === imgObj.url ? 'border-green-500 shadow-md' : 'border-gray-200 hover:border-green-300'}
                   `}
-                  onClick={() => setSelectedImage(img)}
+                  onClick={() => setSelectedImage(imgObj.url)}
                 >
-                  <img src={img} alt={`${tool.name} ${index + 1}`} className="w-full h-full object-cover" />
+                  <img src={imgObj.url} alt={`${tool.name} ${index + 1}`} className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>

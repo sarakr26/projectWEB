@@ -51,6 +51,7 @@ projectWEB/
   - shadcn/ui component library
   - Lucide React for icons
   - Framer Motion for animations
+  - Leaflet for interactive maps
 
 - **UI Components**:
   - Built with Radix UI primitives (45+ components)
@@ -70,6 +71,10 @@ projectWEB/
 - Tool cards with rating, price, and location information
 - Dark/light mode theming
 - Animated UI elements for enhanced user experience
+- Interactive map with city locations
+- Location-based search and filtering
+- User location detection
+- 20 major Moroccan cities with accurate coordinates
 
 ## Getting Started
 
@@ -128,7 +133,7 @@ projectWEB/
    This will:
    - Create all necessary database tables
    - Seed the database with initial data including:
-     - Cities
+     - 20 major Moroccan cities with accurate coordinates
      - Categories
      - Admin account (email: admin@gmail.com, password: admin)
 
@@ -305,6 +310,8 @@ php artisan view:cache
   - RESTful API with Node.js/Express or Next.js API routes
   - Database integration (MongoDB or PostgreSQL)
   - User authentication and authorization
+  - Enhanced location-based features
+  - Distance-based search and filtering
 
 - **Frontend Enhancements**:
   - Complete user authentication flow
@@ -312,6 +319,8 @@ php artisan view:cache
   - User profiles and ratings
   - Booking system
   - Payment integration
+  - Advanced map features (clustering, heatmaps)
+  - Route planning between users
 
 - **Infrastructure**:
   - Deployment configuration
@@ -324,3 +333,4 @@ php artisan view:cache
 - Reduce waste by maximizing the use of existing tools
 - Make DIY projects more accessible and affordable
 - Build a trust-based community of tool owners and renters
+- Enable location-based tool sharing to reduce transportation costs

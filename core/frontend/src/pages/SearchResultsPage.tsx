@@ -5,6 +5,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import ToolCard from '../components/tools/ToolCard'
 import SearchFilters from '../components/search/SearchFilters'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
+import InteractiveMap from '../components/map/InteractiveMap'
 import { 
   Grid, 
   List, 
@@ -88,6 +89,9 @@ const fetchSearchResults = async () => {
         : (response.data && typeof response.data === 'object' && 'data' in response.data && Array.isArray((response.data as any).data)
             ? (response.data as { data: Listing[] }).data
             : [])
+
+      // Debug: Log listings with coordinates
+      console.log('Listings with coordinates:', listings.filter(l => l.latitude && l.longitude));
 
       // Ensure premium listings appear first
       listings.sort((a, b) => {
@@ -184,24 +188,22 @@ const fetchSearchResults = async () => {
       </div>
       
       <div className="flex items-center gap-3 w-full sm:w-auto">
-        
-        
         <div className="relative flex-1 sm:flex-none">
-  <select
-    value={`${sortBy}-${sortOrder}`}
-    onChange={handleSortChange}
-    className="tn-input appearance-none pr-10 py-2 w-full"
-  >
-    <option value="priority-asc">Featured First</option>
-    <option value="price_per_day-asc">Price: Low to High</option>
-    <option value="price_per_day-desc">Price: High to Low</option>
-    <option value="avg_rating-desc">Rating: High to Low</option>
-    <option value="created_at-desc">Newest First</option>
-  </select>
-  <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-    <ChevronDown size={16} />
-  </div>
-</div>
+          <select
+            value={`${sortBy}-${sortOrder}`}
+            onChange={handleSortChange}
+            className="tn-input appearance-none pr-10 py-2 w-full"
+          >
+            <option value="priority-asc">Featured First</option>
+            <option value="price_per_day-asc">Price: Low to High</option>
+            <option value="price_per_day-desc">Price: High to Low</option>
+            <option value="avg_rating-desc">Rating: High to Low</option>
+            <option value="created_at-desc">Newest First</option>
+          </select>
+          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+            <ChevronDown size={16} />
+          </div>
+        </div>
         
         <div className="hidden sm:flex items-center border border-[var(--toolnest-gray-300)] dark:border-[var(--toolnest-gray-700)] rounded-lg overflow-hidden">
           <button
@@ -317,23 +319,34 @@ const fetchSearchResults = async () => {
       {/* Search Header */}
       <div className="bg-[var(--toolnest-gray-100)] dark:bg-[var(--toolnest-gray-900)] py-6 sm:py-10">
         <div className="container mx-auto px-4">
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for tools by name, category, or keyword..."
-                className="tn-input w-full py-3 pl-12 pr-4"
-              />
-              <div className="absolute inset-y-0 left-0 flex items-center pl-4">
-                <SearchIcon size={18} className="text-[var(--toolnest-gray-400)]" />
+          <div className="max-w-2xl mx-auto flex items-center gap-4">
+            <form onSubmit={handleSearch} className="flex-1">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search for tools by name, category, or keyword..."
+                  className="tn-input w-full py-3 pl-12 pr-4"
+                />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-4">
+                  <SearchIcon size={18} className="text-[var(--toolnest-gray-400)]" />
+                </div>
+                <button type="submit" className="absolute inset-y-0 right-0 flex items-center pr-4">
+                  <div className="tn-button-sm tn-button-primary">Search</div>
+                </button>
               </div>
-              <button type="submit" className="absolute inset-y-0 right-0 flex items-center pr-4">
-                <div className="tn-button-sm tn-button-primary">Search</div>
-              </button>
+            </form>
+            <div className="relative">
+              <InteractiveMap 
+                listings={listings} 
+                onMarkerClick={(listing) => {
+                  // Handle marker click - you can navigate to the listing details
+                  console.log('Clicked listing:', listing);
+                }}
+              />
             </div>
-          </form>
+          </div>
         </div>
       </div>
       
