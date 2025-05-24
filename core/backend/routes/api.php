@@ -8,6 +8,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ContractController;
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -70,3 +71,8 @@ Route::middleware('auth:sanctum')->get('/user/liked-listings', [App\Http\Control
 Route::middleware('auth:sanctum')->post('/partners/{partner}/signalee', [App\Http\Controllers\PartnerController::class, 'signalee']);
 // view profile
 Route::get('/users/{id}', [UserController::class, 'show']);
+
+// Contract routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/contracts/sign', [ContractController::class, 'sign']);
+});

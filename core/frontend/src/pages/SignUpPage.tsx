@@ -23,7 +23,8 @@ export default function SignUpPage() {
   const [cities, setCities] = useState<{ id: number; name: string }[]>([])
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const { signup, loginWithGoogle, loginWithFacebook } = useAuth()
+  const [agreementChecked, setAgreementChecked] = useState(false);
+  const { signup, loginWithGoogle, loginWithFacebook, signContract } = useAuth()
   const navigate = useNavigate()
 
   // Fetch cities when component mounts
@@ -52,18 +53,15 @@ export default function SignUpPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
-    if (formData.password !== formData.confirmPassword) {
-      return setError("Passwords do not match")
-    }
-    if (formData.password.length < 8) {
-      return setError("Password must be at least 8 characters long");
+    if (!agreementChecked) {
+      setError("Please accept the Terms and Conditions");
+      return;
     }
 
-    setIsLoading(true)
-
+    setIsLoading(true);
     try {
       // Prepare data for API call
       const userData = {
@@ -77,13 +75,17 @@ export default function SignUpPage() {
         role: formData.role
       }
       
-      await signup(userData)
-      navigate("/search")
+      // First create the user account
+      await signup(userData);
+      
+      // Then sign the client contract
+      await signContract('client');
+      
+      navigate("/search");
     } catch (err) {
-      setError("Failed to create an account. " + (err instanceof Error ? err.message : ""))
-      console.error(err)
+      setError("Failed to create account: " + (err instanceof Error ? err.message : String(err)));
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -329,6 +331,21 @@ export default function SignUpPage() {
               </div>
             </div>
 
+            <div className="mt-6">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="agreement"
+                  checked={agreementChecked}
+                  onChange={(e) => setAgreementChecked(e.target.checked)}
+                  className="form-checkbox h-4 w-4 text-green-600"
+                />
+                <label htmlFor="agreement" className="text-sm text-gray-600 dark:text-gray-400">
+                  I agree to the <Link to="/terms" className="text-green-600 hover:underline">Terms and Conditions</Link>
+                </label>
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={isLoading}
@@ -357,7 +374,7 @@ export default function SignUpPage() {
                 <div className="w-full border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700]"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-[var(--toolnest-gray-800)] text-[var(--toolnest-gray-500)]">
+                <span className="px-2 bg-white dark:bg-[var(--toolnest-gray-800)] text-[var(--toolnest-gray-500]">
                   Or continue with
                 </span>
               </div>

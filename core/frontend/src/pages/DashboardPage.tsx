@@ -45,7 +45,7 @@ const initialStatistics = {
 
 
 const DashboardPage = () => {
-  const { user, isAuthenticated, becomePartner } = useAuth()
+  const { user, isAuthenticated, becomePartner, refreshUser } = useAuth();
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [selectedSection, setSelectedSection] = useState('dashboard')
@@ -69,6 +69,11 @@ const DashboardPage = () => {
   const [activeTools, setActiveTools] = useState<Listing[]>([]);
   const [displayedTools, setDisplayedTools] = useState<Listing[]>([]);
 
+  const [agreementChecked, setAgreementChecked] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showContractModal, setShowContractModal] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
+
   useEffect(() => {
     // Redirect if not logged in
     if (!isAuthenticated) {
@@ -90,29 +95,66 @@ const DashboardPage = () => {
     loadDashboard()
   }, [isAuthenticated, navigate])
 
+  // Debugging useEffect for modal state
+  useEffect(() => {
+    console.log('Modal state:', showContractModal);
+  }, [showContractModal]);
+
+  // Update the button click handler
+  const handleStartPartnerUpgrade = () => {
+    console.log('Opening modal...');
+    setShowContractModal(true);
+  };
+
   // Function to handle partner upgrade
-  const handlePartnerUpgrade = async () => {
-    if (isUpgrading) return
-    
-    setIsUpgrading(true)
+  const handleAcceptContract = async () => {
+    if (!agreementChecked) {
+      setError("Please read and accept the Partner Agreement");
+      return;
+    }
+
+    setIsUpgrading(true);
+    setError(null);
+
     try {
-      const success = await becomePartner()
+      const success = await becomePartner();
       if (success) {
-        setUpgradeSuccess(true)
+        await refreshUser();
+        setUpgradeSuccess(true);
+        setShowContractModal(false);
         setTimeout(() => {
-          // Navigate to partner dashboard after showing success message
-          navigate('/partner-dashboard')
-        }, 2000)
+          navigate('/partner-dashboard');
+        }, 2000);
       } else {
-        alert("Failed to upgrade to partner. Please try again later.")
+        throw new Error("Failed to upgrade to partner status");
       }
     } catch (error) {
-      console.error("Error upgrading to partner:", error)
-      alert("An unexpected error occurred. Please try again later.")
+      console.error("Error upgrading to partner:", error);
+      setError("Failed to complete partner upgrade. Please try again.");
     } finally {
-      setIsUpgrading(false)
+      setIsUpgrading(false);
     }
   }
+
+  // Update renderPartnerUpgradeCard function
+  const renderPartnerUpgradeCard = () => (
+    <div className="tn-card p-6 mb-6 bg-gradient-to-br from-blue-50 to-green-50 border border-green-100">
+      <div className="flex items-center space-x-2 mb-3">
+        <Award size={24} className="text-green-600" />
+        <h3 className="text-xl font-bold">Become a Partner</h3>
+      </div>
+      <p className="text-gray-600 mb-4">
+        List your tools and earn money by renting them to others in your community.
+      </p>
+      <button
+        onClick={() => setShowContractModal(true)}
+        className="w-full tn-button tn-button-primary"
+      >
+        Start Partner Application
+      </button>
+    </div>
+  );
+
   useEffect(() => {
     if (selectedSection === 'favorites') {
       setLikedLoading(true);
@@ -361,37 +403,8 @@ const DashboardPage = () => {
               {renderReservations()}
             </div>
             <div className="lg:col-span-1">
-              {/* Partner Upgrade Card - Show only for clients */}
-              {user?.role === 'client' && !upgradeSuccess && (
-                <div className="tn-card p-6 mb-6 bg-gradient-to-br from-blue-50 to-green-50 border border-green-100">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Award size={24} className="text-green-600" />
-                    <h2 className="font-bold text-lg text-gray-800">Become a Partner</h2>
-                  </div>
-                  <p className="text-gray-600 mb-4">
-                    List your tools and earn money by renting them to others in your community.
-                  </p>
-                  <button
-                    onClick={handlePartnerUpgrade}
-                    disabled={isUpgrading}
-                    className="w-full tn-button tn-button-primary flex items-center justify-center space-x-2"
-                  >
-                    {isUpgrading ? (
-                      <>
-                        <LoadingSpinner size="small" color="white" />
-                        <span>Processing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Tool size={16} />
-                        <span>Upgrade to Partner</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
+              {user?.role === 'client' && !upgradeSuccess && renderPartnerUpgradeCard()}
               
-              {/* Success message after upgrade */}
               {upgradeSuccess && (
                 <div className="tn-card p-6 mb-6 bg-green-50 border border-green-200">
                   <div className="flex items-center space-x-2 mb-3 text-green-600">
@@ -407,6 +420,7 @@ const DashboardPage = () => {
                 </div>
               )}
               
+              {/* Notifications section */}
               <div className="tn-card p-4">
                 <h2 className="font-semibold mb-4">Notifications</h2>
                 <div className="space-y-4">
@@ -549,76 +563,150 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-24">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="w-full lg:w-64 lg:shrink-0">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
-            {/* Profile section */}
-            <div className="text-center p-4 border-b border-gray-200 dark:border-gray-700 mb-4">
+    <>
+      <div className="container mx-auto px-4 py-24">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="w-full lg:w-64 lg:shrink-0">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+              {/* Profile section */}
+              <div className="text-center p-4 border-b border-gray-200 dark:border-gray-700 mb-4">
+                
+                <h3 className="font-semibold text-gray-900 dark:text-white mt-2">{user?.name || 'User'}</h3>
+                <span className="text-sm text-gray-500 dark:text-gray-400">User Account</span>
+              </div>
               
-              <h3 className="font-semibold text-gray-900 dark:text-white mt-2">{user?.name || 'User'}</h3>
-              <span className="text-sm text-gray-500 dark:text-gray-400">User Account</span>
-            </div>
-            
-            {/* Menu items */}
-            <div className="space-y-2">
-              {menuItems.map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => setSelectedSection(item.id)}
-                  className={`w-full flex items-center space-x-2 p-3 rounded-lg transition-colors
-                    ${selectedSection === item.id 
-                      ? 'bg-[#0ac5b2]/10 text-[#0ac5b2] dark:bg-[#0ac5b2]/20 dark:text-[#0ac5b2]' 
-                      : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50'}`}
-                >
-                  <item.icon size={18} />
-                  <span>{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Main content area */}
-        <div className="flex-1">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400 mt-1">
-                {selectedSection === 'dashboard' 
-                  ? 'Welcome back! Here\'s an overview of your rentals.' 
-                  : selectedSection === 'profile'
-                    ? 'Manage your profile and settings.'
-                    : selectedSection === 'reservations'
-                      ? 'View and manage your tool rentals.'
-                      : 'Stay updated with your activity.'}
-              </p>
-            </div>
-            
-            <div className="mt-4 md:mt-0 flex gap-4">
-              {user?.role === 'client' && !upgradeSuccess && (
-                <button
-                  onClick={handlePartnerUpgrade}
-                  disabled={isUpgrading}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#0ac5b2] hover:bg-[#09b3a2] dark:bg-[#0ac5b2] dark:hover:bg-[#09b3a2] shadow-sm"
-                >
-                  <Tool size={16} className="mr-2" />
-                  {isUpgrading ? 'Processing...' : 'Become a Partner'}
-                </button>
-              )}
-              
-              <Link to="/search" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#0ac5b2] hover:bg-[#09b3a2] dark:bg-[#0ac5b2] dark:hover:bg-[#09b3a2]">
-                Find Tools
-              </Link>
+              {/* Menu items */}
+              <div className="space-y-2">
+                {menuItems.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelectedSection(item.id)}
+                    className={`w-full flex items-center space-x-2 p-3 rounded-lg transition-colors
+                      ${selectedSection === item.id 
+                        ? 'bg-[#0ac5b2]/10 text-[#0ac5b2] dark:bg-[#0ac5b2]/20 dark:text-[#0ac5b2]' 
+                        : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50'}`}
+                  >
+                    <item.icon size={18} />
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {renderContent()}
+          {/* Main content area */}
+          <div className="flex-1">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
+                </h1>
+                <p className="text-gray-500 dark:text-gray-400 mt-1">
+                  {selectedSection === 'dashboard' 
+                    ? 'Welcome back! Here\'s an overview of your rentals.' 
+                    : selectedSection === 'profile'
+                      ? 'Manage your profile and settings.'
+                      : selectedSection === 'reservations'
+                        ? 'View and manage your tool rentals.'
+                        : 'Stay updated with your activity.'}
+                </p>
+              </div>
+              
+              <div className="mt-4 md:mt-0 flex gap-4">
+                {user?.role === 'client' && !upgradeSuccess && (
+                  <button
+                    onClick={handleStartPartnerUpgrade}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#0ac5b2] hover:bg-[#09b3a2] shadow-sm"
+                  >
+                    <Tool size={16} className="mr-2" />
+                    Become a Partner
+                  </button>
+                )}
+                
+                <Link to="/search" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#0ac5b2] hover:bg-[#09b3a2]">
+                  Find Tools
+                </Link>
+              </div>
+            </div>
+
+            {renderContent()}
+          </div>
         </div>
       </div>
-    </div>
+      
+      {/* Contract Modal */}
+      {showContractModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Partner Agreement</h2>
+            
+            <div className="prose dark:prose-invert max-w-none mb-6">
+              <h3>Terms and Conditions</h3>
+              <p>Before becoming a partner, please read and accept our terms and conditions:</p>
+              
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>You agree to maintain high-quality standards for your tools and equipment.</li>
+                <li>You must provide accurate descriptions and images of your tools.</li>
+                <li>You are responsible for the maintenance and safety of your tools.</li>
+                <li>You must respond to rental requests within 24 hours.</li>
+                <li>Service fees of 10% will be applied to each successful rental.</li>
+                <li>You must comply with all local laws and regulations.</li>
+                <li>You must maintain appropriate insurance coverage.</li>
+                <li>ToolNest reserves the right to suspend partner accounts for violations.</li>
+              </ol>
+
+              <h3 className="mt-4">Partner Responsibilities</h3>
+              <ul className="list-disc pl-5 space-y-2">
+                <li>Keep your tools well-maintained and safe for use</li>
+                <li>Provide clear pickup/delivery instructions</li>
+                <li>Respond promptly to customer inquiries</li>
+                <li>Handle disputes professionally</li>
+                <li>Maintain accurate calendar availability</li>
+              </ul>
+            </div>
+            
+            <div className="flex items-center space-x-2 mb-6">
+              <input
+                type="checkbox"
+                id="contract-agreement"
+                checked={agreementChecked}
+                onChange={(e) => setAgreementChecked(e.target.checked)}
+                className="form-checkbox h-4 w-4 text-green-600"
+              />
+              <label htmlFor="contract-agreement" className="text-sm">
+                I have read and agree to the Partner Agreement
+              </label>
+            </div>
+            
+            <div className="flex justify-end space-x-4 mt-6 pt-4 border-t">
+              <button
+                onClick={() => {
+                  console.log('Closing modal...');
+                  setShowContractModal(false);
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAcceptContract}
+                disabled={upgrading || !agreementChecked}
+                className="tn-button tn-button-primary"
+              >
+                {upgrading ? (
+                  <div className="flex items-center space-x-2">
+                    <LoadingSpinner size="sm" />
+                    <span>Processing...</span>
+                  </div>
+                ) : (
+                  "Accept & Become Partner"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
