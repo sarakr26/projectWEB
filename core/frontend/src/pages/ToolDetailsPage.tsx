@@ -114,8 +114,7 @@ export default function ToolDetailsPage() {
   }
 
   const rentalCost = calculateRentalCost();
-  const serviceFee = rentalCost * 0.1; // 10% service fee
-  const securityDeposit = 50; // Default to 50, or update if Listing type has a different property
+  const serviceFee = rentalCost * 0.1; // 10% platform fee
   const totalCost = rentalCost + serviceFee;
 
   if (isLoading) {
@@ -399,12 +398,8 @@ export default function ToolDetailsPage() {
                   <span className="text-gray-700 dark:text-gray-300">${rentalCost}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-700 dark:text-gray-300">Service fee</span>
+                  <span className="text-gray-700 dark:text-gray-300">Platform fee</span>
                   <span className="text-gray-700 dark:text-gray-300">${serviceFee.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700 dark:text-gray-300">Security deposit (refundable)</span>
-                  <span className="text-gray-700 dark:text-gray-300">${securityDeposit}</span>
                 </div>
                 <div className="flex justify-between font-semibold border-t border-gray-200 dark:border-gray-700 pt-2">
                   <span className="text-gray-900 dark:text-white">Total</span>
