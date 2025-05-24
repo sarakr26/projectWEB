@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationAccepted;
+use App\Mail\ReservationAcceptedPartner;
 use App\Mail\PaymentConfirmed;
 use App\Jobs\CancelUnpaidReservation;
 
@@ -334,8 +335,12 @@ class ReservationController extends Controller
             $days = $startDate->diffInDays($endDate);
             $totalAmount = $days * $listing->price_per_day;
 
-            // Send email using Laravel's built-in mail system
+            // Send email to client
             Mail::to($client->email)->send(new ReservationAccepted($reservation, $totalAmount));
+
+            // Send email to partner with client details
+            $partner = $reservation->partner;
+            Mail::to($partner->email)->send(new ReservationAcceptedPartner($reservation));
 
             // Schedule automatic cancellation if payment is not made within 24 hours
             $cancelJob = new CancelUnpaidReservation($reservation);
