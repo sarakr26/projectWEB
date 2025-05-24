@@ -9,6 +9,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\ContractController;
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -75,3 +76,7 @@ Route::get('/users/{id}', [UserController::class, 'show']);
 
 // Add this line with your other admin routes
 Route::get('/admin/stats', [AdminDashboardController::class, 'getStats'])->middleware('auth:sanctum');
+// Contract routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/contracts/sign', [ContractController::class, 'sign']);
+});

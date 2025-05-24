@@ -46,6 +46,8 @@ type AuthContextType = {
   loginWithGoogle: () => Promise<void>
   loginWithFacebook: () => Promise<void>
   becomePartner: () => Promise<boolean>
+  refreshUser: () => Promise<void>
+  signContract: (type: 'client' | 'partner') => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -53,6 +55,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   // Configure axios defaults
   useEffect(() => {
@@ -83,6 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const response = await axios.get<UserResponse>(`${API_URL}/user`)
             if (response.data.status === 'success') {
               setUser(response.data.data)
+              setIsAuthenticated(true)
             }
           } catch (apiError) {
             // Token might be invalid or expired
@@ -122,6 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('auth_token', token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setUser(newUser);
+        setIsAuthenticated(true)
         return true;
       } else {
         return false;
@@ -160,6 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         // Update the user state
         setUser(newUser)
+        setIsAuthenticated(true)
         
         return
       } else {
@@ -192,6 +198,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       // Clear local storage and state regardless of API success
       setUser(null)
+      setIsAuthenticated(false)
       localStorage.removeItem('auth_token')
       delete axios.defaults.headers.common['Authorization']
       window.location.href = '/'; // Redirect to home page
@@ -253,35 +260,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const becomePartner = async (): Promise<boolean> => {
-    setIsLoading(true);
     try {
-      // Check if we have a token and user
-      const token = localStorage.getItem('auth_token');
-      if (!token || !user) {
-        console.error("No authentication token or user found");
-        return false;
-      }
-      
-      // Make the API call to upgrade to partner
-      const response = await axios.post<ApiResponse>(`${API_URL}/become-partner`);
-      
-      // Check if the call was successful
+      // First try to upgrade to partner
+      const response = await axios.post(`${API_URL}/become-partner`, {}, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+
       if (response.data.status === 'success') {
-        // Update the user with the new role
-        setUser({
-          ...user,
-          role: 'partner'
-        });
-        return true;
-      } else {
-        console.error("Failed to upgrade to partner:", response.data.message);
-        return false;
+        // Then sign the contract
+        const contractResponse = await signContract('partner');
+        if (contractResponse) {
+          if (user) {
+            setUser({ ...user, role: 'partner' });
+          }
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('Error becoming partner:', error);
+      return false;
+    }
+  };
+
+  const signContract = async (type: 'client' | 'partner'): Promise<boolean> => {
+    try {
+      const response = await axios.post(`${API_URL}/contracts/sign`, {
+        type,
+        agreed: true
+      }, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      return response.data.status === 'success';
+    } catch (error) {
+      console.error('Error signing contract:', error);
+      return false;
+    }
+  };
+
+  const refreshUser = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/user', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.status === 'success') {
+        setUser(data.data);
       }
     } catch (error) {
-      console.error("Error upgrading to partner:", error);
-      return false;
-    } finally {
-      setIsLoading(false);
+      console.error('Error refreshing user:', error);
     }
   };
 
@@ -289,7 +327,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        isAuthenticated,
         loading: isLoading,
         login,
         signup,
@@ -297,6 +335,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginWithGoogle,
         loginWithFacebook,
         becomePartner,
+        refreshUser,
+        signContract,
       }}
     >
       {children}

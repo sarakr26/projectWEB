@@ -3,45 +3,45 @@
 import React from 'react'
 
 interface LoadingSpinnerProps {
-  size?: 'small' | 'medium' | 'large'
-  color?: 'primary' | 'accent' | 'white'
-  className?: string
+  size?: 'sm' | 'small' | 'medium' | 'large';
+  color?: 'primary' | 'white';
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
-  size = 'medium',
-  color = 'primary',
-  className = '',
-}) => {
-  // Determine the size classes
+const LoadingSpinner = ({ size = 'medium', color = 'primary' }: LoadingSpinnerProps) => {
   const sizeClasses = {
+    sm: 'w-4 h-4',
     small: 'w-5 h-5',
     medium: 'w-8 h-8',
-    large: 'w-12 h-12',
-  }
+    large: 'w-12 h-12'
+  };
 
-  // Determine the color classes
   const colorClasses = {
-    primary: 'border-t-[var(--toolnest-primary-500)]',
-    accent: 'border-t-[var(--toolnest-accent-500)]',
-    white: 'border-t-white',
-  }
+    primary: 'text-[#0ac5b2]',
+    white: 'text-white'
+  };
 
   return (
-    <div className={`flex items-center justify-center ${className}`}>
-      <div
-        className={`
-          ${sizeClasses[size]}
-          ${colorClasses[color]}
-          border-4 
-          border-[var(--toolnest-gray-200)]
-          dark:border-[var(--toolnest-gray-700)]
-          rounded-full 
-          animate-spin
-        `}
+    <svg
+      className={`animate-spin ${sizeClasses[size]} ${colorClasses[color]}`}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
       />
-    </div>
-  )
-}
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      />
+    </svg>
+  );
+};
 
-export default LoadingSpinner 
+export default LoadingSpinner;

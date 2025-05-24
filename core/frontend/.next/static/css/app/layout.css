@@ -1189,6 +1189,9 @@ video {
 .max-h-\[70vh\] {
   max-height: 70vh;
 }
+.max-h-\[90vh\] {
+  max-height: 90vh;
+}
 .max-h-screen {
   max-height: 100vh;
 }
@@ -1381,6 +1384,9 @@ video {
 .max-w-md {
   max-width: 28rem;
 }
+.max-w-none {
+  max-width: none;
+}
 .max-w-xl {
   max-width: 36rem;
 }
@@ -1552,6 +1558,12 @@ video {
 }
 .resize {
   resize: both;
+}
+.list-decimal {
+  list-style-type: decimal;
+}
+.list-disc {
+  list-style-type: disc;
 }
 .list-none {
   list-style-type: none;
@@ -1957,18 +1969,8 @@ video {
 .border-l-transparent {
   border-left-color: transparent;
 }
-.border-t-\[var\(--toolnest-accent-500\)\] {
-  border-top-color: var(--toolnest-accent-500);
-}
-.border-t-\[var\(--toolnest-primary-500\)\] {
-  border-top-color: var(--toolnest-primary-500);
-}
 .border-t-transparent {
   border-top-color: transparent;
-}
-.border-t-white {
-  --tw-border-opacity: 1;
-  border-top-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
 }
 .bg-\[\#0ac5b2\] {
   --tw-bg-opacity: 1;
@@ -2595,6 +2597,9 @@ video {
 }
 .pl-4 {
   padding-left: 1rem;
+}
+.pl-5 {
+  padding-left: 1.25rem;
 }
 .pl-7 {
   padding-left: 1.75rem;
@@ -3633,6 +3638,11 @@ body {
   color: rgb(55 65 81 / var(--tw-text-opacity, 1));
 }
 
+.hover\:text-gray-800:hover {
+  --tw-text-opacity: 1;
+  color: rgb(31 41 55 / var(--tw-text-opacity, 1));
+}
+
 .hover\:text-gray-900:hover {
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity, 1));
@@ -3801,6 +3811,10 @@ body {
 .focus\:ring-green-500:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(34 197 94 / var(--tw-ring-opacity, 1));
+}
+
+.focus\:ring-primary:focus {
+  --tw-ring-color: hsl(var(--primary));
 }
 
 .focus\:ring-ring:focus {
@@ -5354,6 +5368,10 @@ body {
 .dark\:hover\:text-white:hover:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.dark\:focus\:ring-offset-gray-800:focus:is(.dark *) {
+  --tw-ring-offset-color: #1f2937;
 }
 
 .group:hover .dark\:group-hover\:bg-\[var\(--toolnest-gray-700\)\]:is(.dark *) {

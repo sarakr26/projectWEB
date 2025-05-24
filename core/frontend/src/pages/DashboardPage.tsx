@@ -3,7 +3,20 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Calendar, Tool, AlertCircle, Home, Heart, Bell, User, Award, MessageSquare, Check } from 'react-feather' // Simplified imports, add others if used
+// Standardized on lucide-react, aliasing Tool and User
+import { 
+  Calendar, 
+  Wrench as ToolIcon, 
+  AlertCircle, 
+  Home, 
+  Heart, 
+  Bell, 
+  User as UserIcon, 
+  Award, 
+  MessageSquare, 
+  Check, 
+  Loader2 
+} from 'lucide-react'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import { getUserReservations, Reservation } from '../../app/services/reservationService'
 import EditProfile from './EditProfile';
@@ -14,12 +27,14 @@ import { checkPendingReviews, submitReview, ReviewSubmission } from '../../app/s
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2 } from 'lucide-react'; // Ensure this is correctly imported
 import { toast } from 'react-hot-toast';
+
+// If you have a local Tool type, you might import it like this:
+// import { Tool as ToolType } from '@/types/Tool'; // Adjust path as needed
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
-  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'profile', label: 'Profile', icon: UserIcon },
   { id: 'reservations', label: 'Reservations', icon: Calendar },
   { id: 'favorites', label: 'Favorites', icon: Heart },
   { id: 'notifications', label: 'Notification', icon: Bell },
@@ -57,7 +72,7 @@ interface PendingReviewInfo {
 }
 
 const DashboardPage = () => {
-  const { user, isAuthenticated, loading: authLoading, becomePartner } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, becomePartner, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState('dashboard');
@@ -81,6 +96,10 @@ const DashboardPage = () => {
   const [reviewModalLoading, setReviewModalLoading] = useState(false);
   const [reviewModalError, setReviewModalError] = useState<string | null>(null);
   const [currentReviewFormDisplay, setCurrentReviewFormDisplay] = useState<'selection' | 'listing' | 'partner' | 'none' | null>(null);
+
+  const [agreementChecked, setAgreementChecked] = useState(false);
+  const [contractError, setContractError] = useState<string | null>(null);
+  const [showContractModal, setShowContractModal] = useState(false);
 
   const fetchReservations = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -139,7 +158,6 @@ const DashboardPage = () => {
     }
   }, [isAuthenticated, authLoading, navigate, fetchReservations]);
 
-
   useEffect(() => {
     if (selectedSection === 'favorites' && isAuthenticated) {
       setLikedLoading(true);
@@ -157,12 +175,68 @@ const DashboardPage = () => {
     }
   }, [selectedSection, isAuthenticated]);
 
-  const handlePartnerUpgrade = async () => {
+  const handleStartPartnerUpgrade = () => {
+    setShowContractModal(true);
+    setContractError(null);
+  };
+
+  const handleAcceptContract = async () => {
+    if (!agreementChecked) {
+      setContractError("Please read and accept the Partner Agreement.");
+      return;
+    }
+    setIsUpgrading(true);
+    setContractError(null);
+    try {
+      const success = await becomePartner();
+      if (success) {
+        if (refreshUser) await refreshUser();
+        setUpgradeSuccess(true);
+        setShowContractModal(false);
+        toast.success("Successfully upgraded to Partner! Redirecting...");
+        setTimeout(() => {
+          navigate('/partner-dashboard');
+        }, 2000);
+      } else {
+        const errorMessage = (typeof success === 'object' && success !== null && 'message' in success)
+                               ? (success as { message: string }).message
+                               : "Failed to upgrade to partner status. Please try again.";
+        setContractError(errorMessage);
+        toast.error(errorMessage);
+      }
+    } catch (error: any) {
+      console.error("Error upgrading to partner:", error);
+      const message = error?.response?.data?.message || error?.message || "An unexpected error occurred during upgrade.";
+      setContractError(message);
+      toast.error(message);
+    } finally {
+      setIsUpgrading(false);
+    }
+  };
+
+  const renderPartnerUpgradeCard = () => (
+    <div className="tn-card bg-card dark:bg-gray-800 p-6 shadow rounded-lg border dark:border-gray-700">
+        <div className="flex items-center space-x-3 mb-3">
+            <Award size={24} className="text-primary" />
+            <h2 className="font-semibold text-lg text-card-foreground dark:text-gray-100">Become a Partner</h2>
+        </div>
+        <p className="text-muted-foreground dark:text-gray-400 mb-4 text-sm">
+            List your tools and earn money by renting them to others in your community.
+        </p>
+        <Button onClick={handleStartPartnerUpgrade} className="w-full" disabled={isUpgrading}>
+            {isUpgrading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ToolIcon size={16} className="mr-2" />}
+            {isUpgrading ? 'Processing...' : 'Start Partner Application'}
+        </Button>
+    </div>
+  );
+
+  const handlePartnerUpgrade_Direct = async () => { // This function might be redundant if modal is primary flow
     if (isUpgrading || !isAuthenticated) return;
     setIsUpgrading(true);
     try {
       const success = await becomePartner();
       if (success) {
+        if (refreshUser) await refreshUser();
         setUpgradeSuccess(true);
         toast.success("Successfully upgraded to Partner! Redirecting...");
         setTimeout(() => {
@@ -196,7 +270,6 @@ const DashboardPage = () => {
       if (response.status === 'success' && response.data && response.data.pendingReviews) {
         const listingTitle = reservation.listing?.title || 'the tool';
         const partnerName = reservation.partner?.name || 'the partner';
-
         const canReviewListing = response.data.pendingReviews.forListing;
         const canReviewPartner = response.data.pendingReviews.forPartner;
 
@@ -244,7 +317,6 @@ const DashboardPage = () => {
   const onReviewSubmitSuccess = useCallback(() => {
     handleCloseReviewModal();
   }, [handleCloseReviewModal]);
-
 
   const renderReservationsList = (reservationsToList: Reservation[], type: 'current' | 'past') => {
     if (reservationsLoading && !reservationsToList.length) {
@@ -318,7 +390,6 @@ const DashboardPage = () => {
     );
   };
 
-
   const renderContent = () => {
     if (loading && !authLoading) {
         return <div className="flex justify-center items-center h-64"><LoadingSpinner /></div>;
@@ -346,21 +417,8 @@ const DashboardPage = () => {
               {selectedTab === 'current' ? renderReservationsList(currentReservations, 'current') : renderReservationsList(pastReservations, 'past')}
             </div>
             <div className="lg:col-span-1 space-y-6">
-              {user?.role === 'client' && !upgradeSuccess && (
-                <div className="tn-card bg-card dark:bg-gray-800 p-6 shadow rounded-lg border dark:border-gray-700">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <Award size={24} className="text-primary" />
-                    <h2 className="font-semibold text-lg text-card-foreground dark:text-gray-100">Become a Partner</h2>
-                  </div>
-                  <p className="text-muted-foreground dark:text-gray-400 mb-4 text-sm">
-                    List your tools and earn money by renting them to others in your community.
-                  </p>
-                  <Button onClick={handlePartnerUpgrade} disabled={isUpgrading} className="w-full">
-                    {isUpgrading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Tool size={16} className="mr-2" />}
-                    {isUpgrading ? 'Processing...' : 'Upgrade to Partner'}
-                  </Button>
-                </div>
-              )}
+              {user?.role === 'client' && !upgradeSuccess && renderPartnerUpgradeCard()}
+              
               {upgradeSuccess && (
                 <Alert variant="default" className="bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-700 dark:text-green-300">
                   <Check className="h-5 w-5 text-green-500" />
@@ -447,7 +505,7 @@ const DashboardPage = () => {
                       owner: {
                         id: listing.partner?.id.toString() || '0',
                         name: listing.partner?.name || 'Unknown',
-                        avatar: listing.partner?.avatar_url || '/placeholder-avatar.svg',
+                        avatar: listing.partner?.avatar_url || '/placeholder-avatar.svg', // Partner avatar can be avatar_url
                         rating: listing.partner?.avg_rating_as_partner || 0
                       }
                     }}
@@ -478,7 +536,7 @@ const DashboardPage = () => {
           <div className="bg-card dark:bg-gray-800 rounded-lg shadow p-4 border dark:border-gray-700">
             <div className="text-center p-4 border-b border-border dark:border-gray-700 mb-4">
               <img
-                src={user?.avatar || '/placeholder-avatar.svg'}
+                src={user?.avatar || '/placeholder-avatar.svg'} // Corrected to user?.avatar
                 alt={user?.name || 'User Avatar'}
                 className="w-20 h-20 rounded-full mx-auto mb-3 object-cover border-2 border-primary"
               />
@@ -519,8 +577,8 @@ const DashboardPage = () => {
             </div>
             <div className="mt-4 sm:mt-0 flex gap-3">
               {user?.role === 'client' && !upgradeSuccess && (
-                <Button onClick={handlePartnerUpgrade} disabled={isUpgrading} variant="outline">
-                  <Tool size={16} className="mr-2" />
+                <Button onClick={handleStartPartnerUpgrade} disabled={isUpgrading} variant="outline">
+                  <ToolIcon size={16} className="mr-2" />
                   {isUpgrading ? 'Processing...' : 'Become a Partner'}
                 </Button>
               )}
@@ -533,7 +591,6 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      {/* Review Modal */}
       {isReviewModalOpen && currentReservationForReview && (
         <Dialog open={isReviewModalOpen} onOpenChange={(isOpen) => { if (!isOpen) handleCloseReviewModal(); }}>
           <DialogContent className="sm:max-w-lg w-[95vw] bg-card dark:bg-gray-850 rounded-lg">
@@ -545,7 +602,6 @@ const DashboardPage = () => {
                 Your feedback helps our community. Please share your experience with the tool and the partner.
               </DialogDescription>
             </DialogHeader>
-
             <div className="space-y-6 py-5 px-1 max-h-[70vh] overflow-y-auto custom-scrollbar">
               {reviewModalLoading && (
                 <div className="flex flex-col justify-center items-center py-10 space-y-3">
@@ -553,7 +609,6 @@ const DashboardPage = () => {
                   <p className="dark:text-gray-300 text-lg">Loading review status...</p>
                 </div>
               )}
-
               {reviewModalError && !reviewModalLoading && (
                 <Alert variant="destructive" className="my-4">
                   <AlertCircle className="h-5 w-5" />
@@ -561,7 +616,6 @@ const DashboardPage = () => {
                   <AlertDescription>{reviewModalError}</AlertDescription>
                 </Alert>
               )}
-
               {!reviewModalLoading && !reviewModalError && pendingReviewInfo && currentReservationForReview && (
                 <>
                   {currentReviewFormDisplay === 'selection' && pendingReviewInfo.canReviewListing && pendingReviewInfo.canReviewPartner && (
@@ -569,25 +623,23 @@ const DashboardPage = () => {
                       <p className="text-lg font-medium text-card-foreground dark:text-gray-200">What would you like to review?</p>
                       <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <Button onClick={() => setCurrentReviewFormDisplay('listing')} className="w-full sm:w-auto">
-                          <Tool size={18} className="mr-2" /> Review the Tool
+                          <ToolIcon size={18} className="mr-2" /> Review the Tool
                         </Button>
                         <Button onClick={() => setCurrentReviewFormDisplay('partner')} className="w-full sm:w-auto">
-                          <User size={18} className="mr-2" /> Review the Partner
+                          <UserIcon size={18} className="mr-2" /> Review the Partner
                         </Button>
                       </div>
                     </div>
                   )}
-
                   {(currentReviewFormDisplay === 'listing' && pendingReviewInfo.canReviewListing && pendingReviewInfo.listingId) && (
                     <div className="p-1">
-                      {/* Show 'Back to selection' button if BOTH review types were initially possible */}
                       {pendingReviewInfo.canReviewListing && pendingReviewInfo.canReviewPartner && (
                         <Button variant="link" onClick={() => setCurrentReviewFormDisplay('selection')} className="mb-2 text-sm pl-0 text-primary hover:text-primary/80 h-auto">
                           &larr; Choose review type
                         </Button>
                       )}
                       <h3 className="text-lg font-semibold mb-3 text-card-foreground dark:text-gray-200 flex items-center">
-                        <Tool size={20} className="mr-2 text-primary-500"/>
+                        <ToolIcon size={20} className="mr-2 text-primary-500"/>
                         Review Tool: <span className="font-normal ml-1">{pendingReviewInfo.listingTitle || currentReservationForReview.listing?.title || 'Listing'}</span>
                       </h3>
                       <ReviewForm
@@ -596,13 +648,7 @@ const DashboardPage = () => {
                         reservationId={currentReservationForReview.id}
                         onSubmit={async (rating, comment) => {
                           try {
-                            const reviewData: ReviewSubmission = {
-                              rating,
-                              comment,
-                              reservation_id: currentReservationForReview.id,
-                              type: 'forObject',
-                              listing_id: pendingReviewInfo.listingId,
-                            };
+                            const reviewData: ReviewSubmission = { rating, comment, reservation_id: currentReservationForReview.id, type: 'forObject', listing_id: pendingReviewInfo.listingId };
                             const apiResponse = await submitReview(reviewData);
                             if (apiResponse.status === 'success') {
                               toast.success('Tool review submitted successfully!');
@@ -612,27 +658,21 @@ const DashboardPage = () => {
                             }
                           } catch (error) {
                             toast.error('An error occurred while submitting the tool review.');
-                            console.error("Error submitting listing review:", error);
                           }
                         }}
                         onCancel={handleCloseReviewModal}
                       />
                     </div>
                   )}
-
                   {(currentReviewFormDisplay === 'partner' && pendingReviewInfo.canReviewPartner && pendingReviewInfo.partnerId) && (
-                     <div className={`p-1 ${
-                       // Add top margin/border if listing review is also an option (even if it was the only other option or part of selection)
-                       pendingReviewInfo.canReviewListing ? "mt-6 pt-6 border-t border-border dark:border-gray-700" : ""
-                     }`}>
-                      {/* Show 'Back to selection' button if BOTH review types were initially possible */}
+                     <div className={`p-1 ${pendingReviewInfo.canReviewListing ? "mt-6 pt-6 border-t border-border dark:border-gray-700" : ""}`}>
                       {pendingReviewInfo.canReviewListing && pendingReviewInfo.canReviewPartner && (
                         <Button variant="link" onClick={() => setCurrentReviewFormDisplay('selection')} className="mb-2 text-sm pl-0 text-primary hover:text-primary/80 h-auto">
                           &larr; Choose review type
                         </Button>
                       )}
                       <h3 className="text-lg font-semibold mb-3 text-card-foreground dark:text-gray-200 flex items-center">
-                        <User size={20} className="mr-2 text-primary-500"/>
+                        <UserIcon size={20} className="mr-2 text-primary-500"/>
                         Review Partner: <span className="font-normal ml-1">{pendingReviewInfo.partnerName || currentReservationForReview.partner?.name || 'Partner'}</span>
                       </h3>
                       <ReviewForm
@@ -641,13 +681,7 @@ const DashboardPage = () => {
                         reservationId={currentReservationForReview.id}
                         onSubmit={async (rating, comment) => {
                           try {
-                            const reviewData: ReviewSubmission = {
-                              rating,
-                              comment,
-                              reservation_id: currentReservationForReview.id,
-                              type: 'forPartner',
-                              reviewee_id: pendingReviewInfo.partnerId,
-                            };
+                            const reviewData: ReviewSubmission = { rating, comment, reservation_id: currentReservationForReview.id, type: 'forPartner', reviewee_id: pendingReviewInfo.partnerId };
                             const apiResponse = await submitReview(reviewData);
                             if (apiResponse.status === 'success') {
                               toast.success('Partner review submitted successfully!');
@@ -657,14 +691,12 @@ const DashboardPage = () => {
                             }
                           } catch (error) {
                             toast.error('An error occurred while submitting the partner review.');
-                            console.error("Error submitting partner review:", error);
                           }
                         }}
                         onCancel={handleCloseReviewModal}
                       />
                     </div>
                   )}
-
                   {currentReviewFormDisplay === 'none' && !reviewModalLoading && (!pendingReviewInfo || (!pendingReviewInfo.canReviewListing && !pendingReviewInfo.canReviewPartner)) && (
                     <div className="text-center text-muted-foreground dark:text-gray-400 py-8 px-4 bg-muted/50 dark:bg-gray-800/30 rounded-md">
                        <Check size={32} className="mx-auto mb-3 text-green-500"/>
@@ -675,12 +707,88 @@ const DashboardPage = () => {
                 </>
               )}
             </div>
-
             <DialogFooter className="pt-4 border-t dark:border-gray-700">
               <Button variant="outline" onClick={handleCloseReviewModal}>Close</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      )}
+
+      {showContractModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-card dark:bg-gray-850 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl border dark:border-gray-700">
+            <DialogHeader className="pb-3 mb-4 border-b dark:border-gray-700">
+                <DialogTitle className="text-card-foreground dark:text-gray-100 text-xl">Partner Agreement</DialogTitle>
+                <DialogDescription className="dark:text-gray-400 text-sm">
+                    Please review and accept the terms to become a partner.
+                </DialogDescription>
+            </DialogHeader>
+            {contractError && (
+                <Alert variant="destructive" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{contractError}</AlertDescription>
+                </Alert>
+            )}
+            <div className="prose dark:prose-invert max-w-none mb-6 text-sm text-muted-foreground dark:text-gray-300">
+              <h3 className="text-base font-semibold text-card-foreground dark:text-gray-200">Terms and Conditions:</h3>
+              <ol className="list-decimal pl-5 space-y-1 mt-2">
+                <li>You agree to maintain high-quality standards for your tools and equipment.</li>
+                <li>You must provide accurate descriptions and images of your tools.</li>
+                <li>You are responsible for the maintenance and safety of your tools.</li>
+                <li>You must respond to rental requests within 24 hours.</li>
+                <li>Service fees of 10% will be applied to each successful rental.</li>
+                <li>You must comply with all local laws and regulations.</li>
+                <li>You must maintain appropriate insurance coverage.</li>
+                <li>ToolNest reserves the right to suspend partner accounts for violations.</li>
+              </ol>
+              <h3 className="mt-3 text-base font-semibold text-card-foreground dark:text-gray-200">Partner Responsibilities:</h3>
+              <ul className="list-disc pl-5 space-y-1 mt-2">
+                <li>Keep your tools well-maintained and safe for use.</li>
+                <li>Provide clear pickup/delivery instructions.</li>
+                <li>Respond promptly to customer inquiries.</li>
+                <li>Handle disputes professionally.</li>
+                <li>Maintain accurate calendar availability.</li>
+              </ul>
+            </div>
+            <div className="flex items-center space-x-2 mb-6">
+              <input
+                type="checkbox"
+                id="contract-agreement"
+                checked={agreementChecked}
+                onChange={(e) => setAgreementChecked(e.target.checked)}
+                className="form-checkbox h-4 w-4 text-primary rounded border-gray-300 dark:border-gray-600 focus:ring-primary dark:focus:ring-offset-gray-800"
+              />
+              <label htmlFor="contract-agreement" className="text-sm text-muted-foreground dark:text-gray-300">
+                I have read and agree to the Partner Agreement.
+              </label>
+            </div>
+            <DialogFooter className="pt-4 border-t dark:border-gray-700">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowContractModal(false);
+                  setContractError(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAcceptContract}
+                disabled={isUpgrading || !agreementChecked}
+              >
+                {isUpgrading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Accept & Become Partner"
+                )}
+              </Button>
+            </DialogFooter>
+          </div>
+        </div>
       )}
     </div>
   );
