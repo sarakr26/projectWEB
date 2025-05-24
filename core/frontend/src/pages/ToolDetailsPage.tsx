@@ -1,28 +1,29 @@
 "use client"
 
-import { useState, useEffect, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react"
+import { useState, useEffect, Key } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useQuery } from "react-query"
-import { Star, Heart, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, Check, CheckCircle } from "react-feather"
+import { Star, MapPin, Calendar, Clock, ChevronLeft, ChevronRight, CheckCircle } from "react-feather" // Removed Heart, Check as they are not directly used or come from elsewhere
 import { useAuth } from "../contexts/AuthContext"
 import { getListing, Listing } from "@/app/services/listingService"
 import LoadingSpinner from "../components/ui/LoadingSpinner"
 import { createReservation } from "@/app/services/reservationService"
-import ListingLikeButton from "./ListingLikedButton";
+import ListingLikeButton from "./ListingLikedButton"; // Assuming this component handles its own Heart icon
 
 // Custom hook for fetching tool details
 const useToolDetails = (id: string | undefined) => {
   return useQuery(
-    ["tool", id], 
+    ["tool", id],
     async () => {
       if (!id) throw new Error("Tool ID is required");
       const listingId = parseInt(id);
+      if (isNaN(listingId)) throw new Error("Invalid Tool ID format");
       const response = await getListing(listingId);
-      
+
       if (response.status !== 'success' || !response.data) {
         throw new Error(response.message || "Failed to fetch tool details");
       }
-      
+
       return response.data;
     },
     {
@@ -45,7 +46,15 @@ export default function ToolDetailsPage() {
 
   const { data: listing, isLoading, error } = useToolDetails(id);
 
-  // Reset image index when listing changes
+  // Helper function to format rating for display (e.g., "4.5" or "New")
+  const displayRating = (ratingInput: any): string => {
+    const rating = Number(ratingInput);
+    if (isNaN(rating) || rating <= 0) {
+      return 'New';
+    }
+    return rating.toFixed(1);
+  };
+
   useEffect(() => {
     setCurrentImageIndex(0);
   }, [listing?.id]);
@@ -62,60 +71,55 @@ export default function ToolDetailsPage() {
     }
   }
 
-
   const handleRentRequest = async () => {
-  if (!isAuthenticated) {
-    alert("Please login to rent this tool");
-    return;
-  }
-
-  if (!listing || !startDate || !endDate) {
-    return; // Form validation - all fields required
-  }
-
-  setIsSubmitting(true);
-  setReservationError(null);
-  
-  try {
-    // Format dates for the API - YYYY-MM-DD format
-    const formattedStartDate = startDate.toISOString().split('T')[0];
-    const formattedEndDate = endDate.toISOString().split('T')[0];
-    
-    // Call the API to create the reservation
-    const response = await createReservation(
-      listing.id,
-      formattedStartDate, 
-      formattedEndDate, 
-      false  // Set delivery_option to false or make it configurable
-    );
-    
-    // Handle the response
-    if (response.status === 'success') {
-      setReservationSuccess(true);
-      // Optionally: Redirect to the user's dashboard
-      // navigate('/dashboard');
-    } else {
-      setReservationError(response.message || 'Failed to create reservation. Please try again.');
+    if (!isAuthenticated) {
+      // Consider using a toast notification or redirecting to login
+      alert("Please login to rent this tool");
+      return;
     }
-  } catch (error) {
-    console.error('Error creating reservation:', error);
-    setReservationError('An unexpected error occurred. Please try again later.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
 
-  // Calculate rental cost
+    if (!listing || !startDate || !endDate) {
+      setReservationError("Please select a start and end date.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setReservationError(null);
+
+    try {
+      const formattedStartDate = startDate.toISOString().split('T')[0];
+      const formattedEndDate = endDate.toISOString().split('T')[0];
+
+      const response = await createReservation(
+        listing.id,
+        formattedStartDate,
+        formattedEndDate,
+        false // Set delivery_option to false or make it configurable
+      );
+
+      if (response.status === 'success') {
+        setReservationSuccess(true);
+      } else {
+        setReservationError(response.message || 'Failed to create reservation. Please try again.');
+      }
+    } catch (err: any) {
+      console.error('Error creating reservation:', err);
+      setReservationError(err?.message || 'An unexpected error occurred. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const calculateRentalCost = () => {
     if (!listing || !startDate || !endDate) return 0;
+    if (endDate < startDate) return 0; // Prevent negative days
 
     const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     return days * listing.price_per_day;
   }
 
   const rentalCost = calculateRentalCost();
-  const serviceFee = rentalCost * 0.1; // 10% service fee
-  const securityDeposit = 50; // Default to 50, or update if Listing type has a different property
+  const serviceFee = rentalCost * 0.1;
   const totalCost = rentalCost + serviceFee;
 
   if (isLoading) {
@@ -133,7 +137,7 @@ export default function ToolDetailsPage() {
           {error instanceof Error ? error.message : "Failed to load tool details. Please try again."}
         </div>
         <div className="mt-4">
-          <Link 
+          <Link
             to="/search"
             className="inline-flex items-center text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300"
           >
@@ -145,11 +149,9 @@ export default function ToolDetailsPage() {
     );
   }
 
-  // Get default image if none available
   const getDefaultImage = () => "/placeholder.svg?height=600&width=600";
-  
-  // Get image at current index or default
-  const getCurrentImage = () => {
+
+  const getCurrentImageUrl = () => {
     if (!listing.images || listing.images.length === 0) return getDefaultImage();
     return listing.images[currentImageIndex]?.url || getDefaultImage();
   };
@@ -167,17 +169,14 @@ export default function ToolDetailsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left column: Images and details */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Image gallery */}
           <div className="relative rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
             <div className="aspect-w-4 aspect-h-3 relative">
               <img
-                src={getCurrentImage()}
+                src={getCurrentImageUrl()}
                 alt={listing.title}
                 className="w-full h-full object-cover"
               />
-
               {listing.images && listing.images.length > 1 && (
                 <>
                   <button
@@ -187,7 +186,6 @@ export default function ToolDetailsPage() {
                   >
                     <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                   </button>
-
                   <button
                     onClick={handleNextImage}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-900 p-2 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -197,14 +195,9 @@ export default function ToolDetailsPage() {
                   </button>
                 </>
               )}
-
-              {/* Like button */}
-              <button
-                className="absolute top-2 right-2 p-2 bg-white dark:bg-gray-900 rounded-full shadow-md"
-                aria-label="Like tool"
-              >
+              <div className="absolute top-2 right-2">
                 <ListingLikeButton listingId={listing.id} />
-              </button>
+              </div>
             </div>
 
             {listing.images && listing.images.length > 1 && (
@@ -213,9 +206,8 @@ export default function ToolDetailsPage() {
                   <button
                     key={image.id || index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`w-16 h-12 rounded overflow-hidden border-2 ${
-                      index === currentImageIndex ? "border-green-500 dark:border-green-400" : "border-transparent"
-                    }`}
+                    className={`w-16 h-12 rounded overflow-hidden border-2 ${index === currentImageIndex ? "border-green-500 dark:border-green-400" : "border-transparent"
+                      }`}
                   >
                     <img
                       src={image.url || getDefaultImage()}
@@ -228,26 +220,22 @@ export default function ToolDetailsPage() {
             )}
           </div>
 
-          {/* Tool details */}
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{listing.title}</h1>
-
               <div className="flex flex-wrap items-center mt-2">
                 <div className="flex items-center">
                   <Star className="h-5 w-5 text-yellow-400" />
                   <span className="ml-1 text-gray-700 dark:text-gray-300">
-                    {listing.avg_rating > 0 ? listing.avg_rating.toFixed(1) : 'New'}
+                    {displayRating(listing.avg_rating)}
                   </span>
                 </div>
                 <span className="mx-1 text-gray-500 dark:text-gray-400">·</span>
-                <span className="text-gray-500 dark:text-gray-400">{listing.review_count} reviews</span>
+                <span className="text-gray-500 dark:text-gray-400">{listing.review_count || 0} reviews</span>
                 <span className="mx-1 text-gray-500 dark:text-gray-400">·</span>
                 <div className="flex items-center text-gray-500 dark:text-gray-400">
                   <MapPin className="h-4 w-4 mr-1" />
-                  <span>
-                    {listing.city?.name || 'Unknown location'}
-                  </span>
+                  <span>{listing.city?.name || 'Unknown location'}</span>
                 </div>
                 {listing.category && (
                   <>
@@ -260,18 +248,17 @@ export default function ToolDetailsPage() {
 
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Description</h2>
-              <p className="text-gray-700 dark:text-gray-300">{listing.description}</p>
+              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{listing.description}</p>
             </div>
 
-            {/* We don't have specifications from API, so let's create some from the data we have */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Details</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex">
                   <span className="font-medium text-gray-900 dark:text-white w-1/3">Price:</span>
                   <div className="flex items-baseline">
-                    <span className="text-3xl font-bold text-green-700">${listing.price_per_day}</span>
-                    <span className="text-gray-500 ml-1">/ day</span>
+                    <span className="text-xl font-bold text-green-700 dark:text-green-500">${listing.price_per_day}</span>
+                    <span className="text-gray-500 dark:text-gray-400 ml-1">/ day</span>
                   </div>
                 </div>
                 <div className="flex">
@@ -295,48 +282,54 @@ export default function ToolDetailsPage() {
                 <div className="flex">
                   <span className="font-medium text-gray-900 dark:text-white w-1/3">Rating:</span>
                   <span className="text-gray-700 dark:text-gray-300">
-                    {listing.avg_rating > 0 ? `${listing.avg_rating.toFixed(1)} (${listing.review_count} reviews)` : 'No ratings yet'}
+                    {(() => {
+                      const ratingValue = Number(listing.avg_rating);
+                      const reviewCount = listing.review_count || 0;
+                      if (!isNaN(ratingValue) && ratingValue > 0) {
+                        return `${ratingValue.toFixed(1)} (${reviewCount} reviews)`;
+                      }
+                      return 'No ratings yet';
+                    })()}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Features section */}
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Features</h3>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {(listing.features || []).map((feature: string, index: number) => (
-                  <li key={index} className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {Array.isArray(listing.features) && listing.features.length > 0 && (
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Features</h3>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {listing.features.map((feature: string, index: number) => (
+                    <li key={index} className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-            {/* Reviews section - this would need to be fetched from a separate API endpoint */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Reviews</h2>
-              {listing.review_count > 0 ? (
+              {(listing.review_count || 0) > 0 ? (
                 <div className="space-y-6">
                   <p className="text-gray-700 dark:text-gray-300">
-                    This listing has {listing.review_count} reviews with an average rating of {listing.avg_rating.toFixed(1)}.
+                    This listing has {listing.review_count} reviews with an average rating of {displayRating(listing.avg_rating)}.
                   </p>
-                  {/* If you have actual reviews data, you would map through them here */}
+                  {/* Actual reviews would be mapped here */}
                 </div>
               ) : (
                 <p className="text-gray-500 dark:text-gray-400">No reviews yet for this tool.</p>
               )}
             </div>
 
-            {/* Available Dates Section */}
             {Array.isArray(listing.availabilities) && listing.availabilities.length > 0 && (
               <div className="mt-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Available Dates</h3>
                 <div className="space-y-2">
                   {listing.availabilities.map((availability: { start_date: string | number | Date; end_date: string | number | Date }, index: Key | null | undefined) => (
                     <div key={index} className="flex items-center text-gray-700 dark:text-gray-300">
-                      <Calendar className="h-5 w-5 mr-2 text-green-600" />
+                      <Calendar className="h-5 w-5 mr-2 text-green-600 dark:text-green-500" />
                       <span>
                         From {new Date(availability.start_date).toLocaleDateString()} to {new Date(availability.end_date).toLocaleDateString()}
                       </span>
@@ -345,14 +338,10 @@ export default function ToolDetailsPage() {
                 </div>
               </div>
             )}
-
-            <div className="text-sm text-gray-500 mt-1">Other duration options available</div>
           </div>
         </div>
 
-        {/* Right column: Booking and owner info */}
         <div className="space-y-8">
-          {/* Booking card */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 sticky top-20">
             <div className="flex justify-between items-center mb-4">
               <div>
@@ -362,50 +351,49 @@ export default function ToolDetailsPage() {
               <div className="flex items-center">
                 <Star className="h-5 w-5 text-yellow-400" />
                 <span className="ml-1 text-gray-700 dark:text-gray-300">
-                  {listing.avg_rating > 0 ? listing.avg_rating.toFixed(1) : 'New'}
+                  {displayRating(listing.avg_rating)}
                 </span>
-                <span className="ml-1 text-gray-500 dark:text-gray-400">({listing.review_count})</span>
+                <span className="ml-1 text-gray-500 dark:text-gray-400">({listing.review_count || 0})</span>
               </div>
             </div>
 
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg mb-4">
               <div className="flex">
                 <div className="w-1/2 p-3 border-r border-gray-200 dark:border-gray-700">
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">START DATE</label>
+                  <label htmlFor="start-date" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">START DATE</label>
                   <input
+                    id="start-date"
                     type="date"
                     className="w-full bg-transparent text-gray-900 dark:text-white focus:outline-none"
                     onChange={(e) => setStartDate(e.target.value ? new Date(e.target.value) : null)}
-                    min={new Date().toISOString().split('T')[0]} // Cannot select past dates
+                    min={new Date().toISOString().split('T')[0]}
                   />
                 </div>
                 <div className="w-1/2 p-3">
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">END DATE</label>
+                  <label htmlFor="end-date" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">END DATE</label>
                   <input
+                    id="end-date"
                     type="date"
                     className="w-full bg-transparent text-gray-900 dark:text-white focus:outline-none"
                     onChange={(e) => setEndDate(e.target.value ? new Date(e.target.value) : null)}
-                    min={startDate ? new Date(startDate.getTime() + 86400000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                    min={startDate ? new Date(new Date(startDate).setDate(startDate.getDate() + 1)).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                    disabled={!startDate}
                   />
                 </div>
               </div>
             </div>
 
-            {startDate && endDate && (
+            {startDate && endDate && endDate >= startDate && (
               <div className="space-y-3 mb-4">
                 <div className="flex justify-between">
                   <span className="text-gray-700 dark:text-gray-300">
                     ${listing.price_per_day} x {Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1} days
                   </span>
-                  <span className="text-gray-700 dark:text-gray-300">${rentalCost}</span>
+                  <span className="text-gray-700 dark:text-gray-300">${rentalCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-700 dark:text-gray-300">Service fee</span>
+                  <span className="text-gray-700 dark:text-gray-300">Platform fee (10%)</span>
                   <span className="text-gray-700 dark:text-gray-300">${serviceFee.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700 dark:text-gray-300">Security deposit (refundable)</span>
-                  <span className="text-gray-700 dark:text-gray-300">${securityDeposit}</span>
                 </div>
                 <div className="flex justify-between font-semibold border-t border-gray-200 dark:border-gray-700 pt-2">
                   <span className="text-gray-900 dark:text-white">Total</span>
@@ -415,64 +403,63 @@ export default function ToolDetailsPage() {
             )}
 
             {reservationSuccess ? (
-            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-green-800 dark:text-green-300 mb-4">
-              <div className="flex items-center">
-                <Check size={20} className="mr-2 flex-shrink-0" />
-                <p>Reservation requested successfully! The owner will review your request.</p>
-              </div>
-              <div className="mt-4">
-                <Link 
-                  to="/dashboard"
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium text-center block"
-                >
-                  View My Reservations
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <>
-              {reservationError && (
-                <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-red-600 dark:text-red-400 mb-4">
-                  {reservationError}
+              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-green-800 dark:text-green-300 mb-4">
+                <div className="flex items-center">
+                  <CheckCircle size={20} className="mr-2 flex-shrink-0 text-green-600 dark:text-green-500" />
+                  <p>Reservation requested successfully! The owner will review your request.</p>
                 </div>
-              )}
-              
-              <button
-                onClick={handleRentRequest}
-                disabled={!startDate || !endDate || isSubmitting}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center justify-center">
-                    <span className="mr-2">Processing...</span>
-                    <LoadingSpinner size="small" color="white" />
+                <div className="mt-4">
+                  <Link
+                    to="/dashboard"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium text-center block"
+                  >
+                    View My Reservations
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <>
+                {reservationError && (
+                  <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg text-red-600 dark:text-red-400 mb-4 text-sm">
+                    {reservationError}
                   </div>
-                ) : (
-                  "Request to Rent"
                 )}
-              </button>
-            </>
-          )}
-
+                <button
+                  onClick={handleRentRequest}
+                  disabled={!startDate || !endDate || endDate < startDate || isSubmitting}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center">
+                      <span className="mr-2">Processing...</span>
+                      <LoadingSpinner size="small" color="white" />
+                    </div>
+                  ) : (
+                    "Request to Rent"
+                  )}
+                </button>
+              </>
+            )}
             <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-3">You won't be charged yet</p>
           </div>
 
-          {/* Owner info */}
           {listing.partner && (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
               <div className="flex items-center mb-4">
                 <img
                   src={listing.partner.avatar_url || "/placeholder.svg?height=100&width=100"}
                   alt={listing.partner.name || listing.partner.username}
-                  className="w-12 h-12 rounded-full mr-4"
+                  className="w-12 h-12 rounded-full mr-4 object-cover"
                 />
                 <div>
                   <h3 className="font-medium text-gray-900 dark:text-white">
                     Owned by {listing.partner.name || listing.partner.username}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {listing.partner.member_since ? `Member since ${listing.partner.member_since}` : ''}
-                  </p>
+                  {listing.partner.member_since && (
+                     <p className="text-sm text-gray-500 dark:text-gray-400">
+                       Member since {new Date(listing.partner.member_since).toLocaleDateString()}
+                     </p>
+                  )}
                 </div>
               </div>
 
@@ -480,28 +467,26 @@ export default function ToolDetailsPage() {
                 <div className="flex items-center">
                   <Star className="h-5 w-5 text-yellow-400 mr-2" />
                   <span className="text-gray-700 dark:text-gray-300">
-                  {typeof listing.partner.avg_rating_as_partner === 'number' 
-                    ? listing.partner.avg_rating_as_partner.toFixed(1)
-                    : (listing.partner.avg_rating_as_partner 
-                        ? Number(listing.partner.avg_rating_as_partner).toFixed(1) 
-                        : 'New')
-                  }
-                  {typeof listing.partner.review_count_as_partner !== 'undefined' && 
-                    ` · ${listing.partner.review_count_as_partner} reviews`}
-                </span>
+                    {displayRating(listing.partner.avg_rating_as_partner)}
+                    {typeof listing.partner.review_count_as_partner !== 'undefined' &&
+                      ` · ${listing.partner.review_count_as_partner} reviews`}
+                  </span>
                 </div>
+                {/* Example static data, replace with actual if available */}
                 <div className="flex items-center">
                   <Clock className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
                   <span className="text-gray-700 dark:text-gray-300">
-                    Quick responses
+                    Usually responds quickly
                   </span>
                 </div>
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-                  <span className="text-gray-700 dark:text-gray-300">
-                    {listing.partner.response_rate ? `${listing.partner.response_rate}% response rate` : 'Active listing'}
-                  </span>
-                </div>
+                {listing.partner.response_rate && (
+                  <div className="flex items-center">
+                    <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {listing.partner.response_rate}% response rate
+                    </span>
+                  </div>
+                )}
               </div>
 
               <Link

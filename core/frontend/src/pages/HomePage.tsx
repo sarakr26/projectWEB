@@ -171,8 +171,8 @@ const HomePage = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-[var(--toolnest-primary-500)] to-[var(--toolnest-secondary-500)] opacity-20 dark:opacity-40 blur-xl rounded-3xl transform rotate-3"></div>
                 <img 
-                  src="https://images.unsplash.com/photo-1581147036623-8d2b4073b0bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                  alt="Tools collection" 
+                  src="/toolnest.jpg" 
+                  alt="Toolnest" 
                   className="relative rounded-3xl shadow-xl object-cover w-full h-[500px] z-10"
                 />
                 
