@@ -13,6 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            CitySeeder::class,
+            CategorySeeder::class,
+            AdminSeeder::class,
+            ReservationSeeder::class,
+        ]);  // <-- Missing closing bracket was added here
+        
         // User::factory(10)->create();
 
         User::factory()->create([

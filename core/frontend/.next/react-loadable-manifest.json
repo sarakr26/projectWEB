@@ -8,6 +8,7 @@
   "ClientApp.tsx -> ./App": {
     "id": "ClientApp.tsx -> ./App",
     "files": [
+      "static/css/_app-pages-browser_src_App_tsx.css",
       "static/chunks/_app-pages-browser_src_App_tsx.js"
     ]
   }
