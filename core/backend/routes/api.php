@@ -8,6 +8,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminDashboardController;
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -70,3 +71,7 @@ Route::middleware('auth:sanctum')->get('/user/liked-listings', [App\Http\Control
 Route::middleware('auth:sanctum')->post('/partners/{partner}/signalee', [App\Http\Controllers\PartnerController::class, 'signalee']);
 // view profile
 Route::get('/users/{id}', [UserController::class, 'show']);
+
+
+// Add this line with your other admin routes
+Route::get('/admin/stats', [AdminDashboardController::class, 'getStats'])->middleware('auth:sanctum');

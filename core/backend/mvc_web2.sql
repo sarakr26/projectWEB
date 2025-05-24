@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `admins` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `admins_username_unique` (`username`),
   UNIQUE KEY `admins_email_unique` (`email`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -56,7 +56,11 @@ CREATE TABLE IF NOT EXISTS `availabilities` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `availabilities_listing_id_start_date_end_date_unique` (`listing_id`,`start_date`,`end_date`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+=======
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+>>>>>>> 5a5fa96c6c50d1325a5f8e1488529e1b2def7ba2
 
 --
 -- Dumping data for table `availabilities`
@@ -102,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `cache` (
   `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL,
   PRIMARY KEY (`key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `cache`
@@ -123,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `cache_locks` (
   `owner` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL,
   PRIMARY KEY (`key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -138,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `categories`
@@ -177,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `cities` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `cities`
@@ -242,7 +246,7 @@ CREATE TABLE IF NOT EXISTS `failed_jobs` (
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -259,6 +263,7 @@ CREATE TABLE IF NOT EXISTS `images` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `images_listing_id_foreign` (`listing_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -281,6 +286,9 @@ INSERT INTO `images` (`id`, `url`, `listing_id`, `created_at`, `updated_at`) VAL
 (13, 'http://localhost/storage/listings/cf87f5ce-18e6-45b7-9b05-0a922a83ce9f.jpg', 20, '2025-05-15 07:00:05', '2025-05-15 07:00:05'),
 (14, '/storage/tool-images/1747297131_6825a36b9def5.jpg', 22, '2025-05-15 07:18:51', '2025-05-15 07:18:51'),
 (15, '/storage/tool-images/1747298736_6825a9b05c2ca.jpg', 23, '2025-05-15 07:45:36', '2025-05-15 07:45:36');
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+>>>>>>> 5a5fa96c6c50d1325a5f8e1488529e1b2def7ba2
 
 -- --------------------------------------------------------
 
@@ -299,6 +307,7 @@ CREATE TABLE IF NOT EXISTS `jobs` (
   `created_at` int UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
   KEY `jobs_queue_index` (`queue`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -314,6 +323,9 @@ INSERT INTO `jobs` (`id`, `queue`, `payload`, `attempts`, `reserved_at`, `availa
 (6, 'default', '{\"uuid\":\"e905e898-d6e9-4de0-8f56-c1dbdbb57079\",\"displayName\":\"App\\\\Jobs\\\\CancelUnpaidReservation\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\CancelUnpaidReservation\",\"command\":\"O:32:\\\"App\\\\Jobs\\\\CancelUnpaidReservation\\\":2:{s:14:\\\"\\u0000*\\u0000reservation\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:22:\\\"App\\\\Models\\\\Reservation\\\";s:2:\\\"id\\\";i:24;s:9:\\\"relations\\\";a:2:{i:0;s:6:\\\"client\\\";i:1;s:7:\\\"listing\\\";}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:5:\\\"delay\\\";O:25:\\\"Illuminate\\\\Support\\\\Carbon\\\":3:{s:4:\\\"date\\\";s:26:\\\"2025-05-16 08:35:50.657307\\\";s:13:\\\"timezone_type\\\";i:3;s:8:\\\"timezone\\\";s:3:\\\"UTC\\\";}}\"}}', 0, NULL, 1747384550, 1747298150),
 (7, 'default', '{\"uuid\":\"e54fe1ad-8e83-411b-9bdb-5bbc9cf4a8e3\",\"displayName\":\"App\\\\Jobs\\\\CancelUnpaidReservation\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\CancelUnpaidReservation\",\"command\":\"O:32:\\\"App\\\\Jobs\\\\CancelUnpaidReservation\\\":2:{s:14:\\\"\\u0000*\\u0000reservation\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:22:\\\"App\\\\Models\\\\Reservation\\\";s:2:\\\"id\\\";i:17;s:9:\\\"relations\\\";a:2:{i:0;s:6:\\\"client\\\";i:1;s:7:\\\"listing\\\";}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:5:\\\"delay\\\";O:25:\\\"Illuminate\\\\Support\\\\Carbon\\\":3:{s:4:\\\"date\\\";s:26:\\\"2025-05-16 08:37:11.229864\\\";s:13:\\\"timezone_type\\\";i:3;s:8:\\\"timezone\\\";s:3:\\\"UTC\\\";}}\"}}', 0, NULL, 1747384631, 1747298231),
 (8, 'default', '{\"uuid\":\"ac6ddcf4-091a-4a0e-b4f4-c5d361c49971\",\"displayName\":\"App\\\\Jobs\\\\CancelUnpaidReservation\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"App\\\\Jobs\\\\CancelUnpaidReservation\",\"command\":\"O:32:\\\"App\\\\Jobs\\\\CancelUnpaidReservation\\\":2:{s:14:\\\"\\u0000*\\u0000reservation\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:22:\\\"App\\\\Models\\\\Reservation\\\";s:2:\\\"id\\\";i:25;s:9:\\\"relations\\\";a:2:{i:0;s:6:\\\"client\\\";i:1;s:7:\\\"listing\\\";}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:5:\\\"delay\\\";O:25:\\\"Illuminate\\\\Support\\\\Carbon\\\":3:{s:4:\\\"date\\\";s:26:\\\"2025-05-16 08:48:56.952555\\\";s:13:\\\"timezone_type\\\";i:3;s:8:\\\"timezone\\\";s:3:\\\"UTC\\\";}}\"}}', 0, NULL, 1747385336, 1747298936);
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+>>>>>>> 5a5fa96c6c50d1325a5f8e1488529e1b2def7ba2
 
 -- --------------------------------------------------------
 
@@ -334,7 +346,7 @@ CREATE TABLE IF NOT EXISTS `job_batches` (
   `created_at` int NOT NULL,
   `finished_at` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -394,7 +406,11 @@ CREATE TABLE IF NOT EXISTS `listings` (
   KEY `listings_category_id_foreign` (`category_id`),
   KEY `listings_city_id_foreign` (`city_id`),
   KEY `listings_partner_id_foreign` (`partner_id`)
+<<<<<<< HEAD
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+=======
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+>>>>>>> 5a5fa96c6c50d1325a5f8e1488529e1b2def7ba2
 
 --
 -- Dumping data for table `listings`
@@ -438,7 +454,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `migrations`
@@ -478,7 +494,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `notifications_user_id_foreign` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -523,7 +539,7 @@ CREATE TABLE IF NOT EXISTS `payments` (
   PRIMARY KEY (`id`),
   KEY `payments_client_id_foreign` (`client_id`),
   KEY `payments_reservation_id_foreign` (`reservation_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -546,7 +562,11 @@ CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM AUTO_INCREMENT=109 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+=======
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+>>>>>>> 5a5fa96c6c50d1325a5f8e1488529e1b2def7ba2
 
 --
 -- Dumping data for table `personal_access_tokens`
@@ -660,7 +680,11 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   KEY `reservations_client_id_foreign` (`client_id`),
   KEY `reservations_partner_id_foreign` (`partner_id`),
   KEY `reservations_listing_id_foreign` (`listing_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+=======
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+>>>>>>> 5a5fa96c6c50d1325a5f8e1488529e1b2def7ba2
 
 --
 -- Dumping data for table `reservations`
@@ -713,6 +737,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
   KEY `reviews_reviewee_id_foreign` (`reviewee_id`),
   KEY `reviews_reservation_id_foreign` (`reservation_id`),
   KEY `reviews_listing_id_foreign` (`listing_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -723,6 +748,9 @@ INSERT INTO `reviews` (`id`, `rating`, `comment`, `is_visible`, `type`, `reviewe
 (1, 4, NULL, 1, 'forClient', 13, 14, 21, NULL, '2025-05-15 06:48:47', '2025-05-15 06:48:47'),
 (2, 5, NULL, 1, 'forClient', 15, 16, 23, NULL, '2025-05-15 07:08:28', '2025-05-15 07:08:28'),
 (3, 3, NULL, 1, 'forClient', 18, 19, 26, NULL, '2025-05-15 07:52:47', '2025-05-15 07:52:47');
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+>>>>>>> 5a5fa96c6c50d1325a5f8e1488529e1b2def7ba2
 
 -- --------------------------------------------------------
 
@@ -741,7 +769,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   PRIMARY KEY (`id`),
   KEY `sessions_user_id_index` (`user_id`),
   KEY `sessions_last_activity_index` (`last_activity`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -777,7 +805,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `users_username_unique` (`username`),
   UNIQUE KEY `users_email_unique` (`email`),
   KEY `users_city_id_foreign` (`city_id`)
+<<<<<<< HEAD
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+=======
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+>>>>>>> 5a5fa96c6c50d1325a5f8e1488529e1b2def7ba2
 
 --
 -- Dumping data for table `users`
@@ -819,3 +851,168 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+<<<<<<< HEAD
+=======
+-- Cities Table
+CREATE TABLE cities (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(191) NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL
+);
+
+
+-- Categories Table
+CREATE TABLE categories (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(191) NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL
+);
+
+-- Users Table
+CREATE TABLE users (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(191) NOT NULL,
+    username VARCHAR(191) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(191) UNIQUE NOT NULL,
+    phone_number VARCHAR(20) NULL,
+    address TEXT NULL,
+    role ENUM('client', 'partner') NOT NULL,
+    avatar_url VARCHAR(512) NULL,
+    join_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    avg_rating_as_client DECIMAL(3,2) NOT NULL DEFAULT 0.00,
+    avg_rating_as_partner DECIMAL(3,2) NOT NULL DEFAULT 0.00,
+    review_count_as_client INT NOT NULL DEFAULT 0,
+    review_count_as_partner INT NOT NULL DEFAULT 0,
+    report_count INT NOT NULL DEFAULT 0,
+    longitude DOUBLE NULL,
+    latitude DOUBLE NULL,
+    city_id BIGINT UNSIGNED NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (city_id) REFERENCES cities(id)
+);
+
+-- Admins Table
+CREATE TABLE admins (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(191) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(191) UNIQUE NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL
+);
+
+-- Listings Table
+CREATE TABLE listings (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NULL,
+    price_per_day DECIMAL(10,2) NOT NULL,
+    status ENUM('active', 'archived', 'inactive') NOT NULL DEFAULT 'active',
+    is_premium BOOLEAN NOT NULL DEFAULT FALSE,
+    premium_start_date TIMESTAMP NULL,
+    premium_end_date TIMESTAMP NULL,
+    longitude DOUBLE NULL,
+    latitude DOUBLE NULL,
+    avg_rating DECIMAL(3,2) NOT NULL DEFAULT 0.00,
+    review_count INT NOT NULL DEFAULT 0,
+    delivery_option BOOLEAN NOT NULL DEFAULT FALSE, 
+    priority INT NOT NULL DEFAULT 4,
+    category_id BIGINT UNSIGNED NULL,
+    city_id BIGINT UNSIGNED NULL,
+    partner_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (city_id) REFERENCES cities(id),
+    FOREIGN KEY (partner_id) REFERENCES users(id)
+);
+
+-- Reservations Table
+CREATE TABLE reservations (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NULL DEFAULT NULL,
+    status ENUM('pending', 'confirmed', 'ongoing', 'canceled', 'completed') NOT NULL DEFAULT 'pending',
+    contract_url VARCHAR(512) NULL,
+    delivery_option BOOLEAN NOT NULL DEFAULT FALSE,
+    client_id BIGINT UNSIGNED NOT NULL,
+    partner_id BIGINT UNSIGNED NOT NULL,
+    listing_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (client_id) REFERENCES users(id),
+    FOREIGN KEY (partner_id) REFERENCES users(id),
+    FOREIGN KEY (listing_id) REFERENCES listings(id)
+);
+
+-- Availabilities Table
+CREATE TABLE availabilities (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    listing_id BIGINT UNSIGNED NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    UNIQUE KEY (listing_id, start_date, end_date),
+    FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE
+);
+
+-- Images Table
+CREATE TABLE images (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    url VARCHAR(512) NOT NULL,
+    listing_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE
+);
+
+-- Reviews Table
+CREATE TABLE reviews (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT NULL,
+    is_visible BOOLEAN NOT NULL DEFAULT TRUE,
+    type ENUM('forObject', 'forClient', 'forPartner') NOT NULL,
+    reviewer_id BIGINT UNSIGNED NOT NULL,
+    reviewee_id BIGINT UNSIGNED NULL,
+    reservation_id BIGINT UNSIGNED NULL,
+    listing_id BIGINT UNSIGNED NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (reviewer_id) REFERENCES users(id),
+    FOREIGN KEY (reviewee_id) REFERENCES users(id),
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id),
+    FOREIGN KEY (listing_id) REFERENCES listings(id)
+);
+
+-- Notifications Table
+CREATE TABLE notifications (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT UNSIGNED NOT NULL,
+    type ENUM('reservation', 'review', 'reminder', 'system') NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Payments Table
+CREATE TABLE payments (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending', 'completed', 'failed') NOT NULL DEFAULT 'pending',
+    partner_id BIGINT UNSIGNED NOT NULL,
+    listing_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (partner_id) REFERENCES users(id),
+    FOREIGN KEY (listing_id) REFERENCES listings(id)
+);
+>>>>>>> 5a5fa96c6c50d1325a5f8e1488529e1b2def7ba2
