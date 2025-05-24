@@ -1,37 +1,86 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
-import { Facebook, Mail, Lock, User, AlertCircle, Box, ArrowRight, GitHub, UserPlus } from "react-feather"
+import { Facebook, Mail, Lock, User, AlertCircle, Box, ArrowRight, GitHub, UserPlus, Phone, MapPin } from "react-feather"
+import '../styles/input.css';
 
 export default function SignUpPage() {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    username: "",
+    phone_number: "",
+    address: "",
+    city_id: "",
+    role: "client" // default role
+  })
+  
+  const [cities, setCities] = useState<{ id: number; name: string }[]>([])
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { signup, loginWithGoogle, loginWithFacebook } = useAuth()
   const navigate = useNavigate()
 
+  // Fetch cities when component mounts
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/cities')
+        const data = await response.json()
+        if (data.status === 'success') {
+          setCities(data.data)
+        }
+      } catch (err) {
+        console.error("Failed to fetch cities:", err)
+      }
+    }
+    
+    fetchCities()
+  }, [])
+
+  const handleChange = (e: { target: { name: any; value: any } }) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       return setError("Passwords do not match")
+    }
+    if (formData.password.length < 8) {
+      return setError("Password must be at least 8 characters long");
     }
 
     setIsLoading(true)
 
     try {
-      await signup(name, email, password)
-      navigate("/")
+      // Prepare data for API call
+      const userData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        username: formData.username || formData.name, // Use name as username if not provided
+        phone_number: formData.phone_number,
+        address: formData.address,
+        city_id: formData.city_id ? parseInt(formData.city_id) : undefined,
+        role: formData.role
+      }
+      
+      await signup(userData)
+      navigate("/search")
     } catch (err) {
-      setError("Failed to create an account.")
+      setError("Failed to create an account. " + (err instanceof Error ? err.message : ""))
       console.error(err)
     } finally {
       setIsLoading(false)
@@ -102,6 +151,7 @@ export default function SignUpPage() {
 
           <form className="space-y-5 mb-8" onSubmit={handleSubmit}>
             <div className="space-y-4">
+              {/* Name Input */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
                   Full name
@@ -115,33 +165,33 @@ export default function SignUpPage() {
                     required
                     className="tn-input icon-input"
                     placeholder="Enter your full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={formData.name}
+                    onChange={handleChange}
                   />
                   <User size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
                 </div>
               </div>
               
+              {/* Email Input */}
               <div>
-                <label htmlFor="email-address" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
                   Email address
                 </label>
-                <div className="relative">
+                <div className="relative input-with-icon">
                   <input
-                    id="email-address"
+                    id="email"
                     name="email"
                     type="email"
-                    autoComplete="email"
-                    required
-                    className="tn-input pl-14 w-full"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    className="tn-input"
+                    placeholder="Your email"
+                    value={formData.email}
+                    onChange={handleChange}
                   />
-                  <Mail size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                  <Mail size={18} />
                 </div>
               </div>
-              
+
+              {/* Password Input */}
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
                   Password
@@ -153,36 +203,129 @@ export default function SignUpPage() {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="tn-input pl-14 w-full"
+                    className="tn-input icon-input"
                     placeholder="Create a password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={formData.password}
+                    onChange={handleChange}
                   />
                   <Lock size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
                 </div>
-                <div className="mt-1 text-xs text-[var(--toolnest-gray-500)] dark:text-[var(--toolnest-gray-500)]">
-                  Password must be at least 8 characters long
-                </div>
               </div>
-              
+
+              {/* Confirm Password Input */}
               <div>
-                <label htmlFor="confirm-password" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
-                  Confirm password
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
+                  Confirm Password
                 </label>
                 <div className="relative">
                   <input
-                    id="confirm-password"
-                    name="confirm-password"
+                    id="confirmPassword"
+                    name="confirmPassword"
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="tn-input pl-14 w-full"
+                    className="tn-input icon-input"
                     placeholder="Confirm your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
                   />
                   <Lock size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
                 </div>
+              </div>
+
+              {/* Username Input */}
+              <div>
+                <label htmlFor="username" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
+                  Username (optional)
+                </label>
+                <div className="relative input-with-icon">
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    className="tn-input"
+                    placeholder="Choose a username"
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
+                  <UserPlus size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                </div>
+              </div>
+
+              {/* Phone Input */}
+              <div>
+                <label htmlFor="phone_number" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
+                  Phone number (optional)
+                </label>
+                <div className="relative input-with-icon">
+                  <input
+                    id="phone_number"
+                    name="phone_number"
+                    type="tel"
+                    className="tn-input"
+                    placeholder="Your phone number"
+                    value={formData.phone_number}
+                    onChange={handleChange}
+                  />
+                  <Phone size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                </div>
+              </div>
+
+              {/* Address Input */}
+              <div>
+                <label htmlFor="address" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
+                  Address (optional)
+                </label>
+                <div className="relative input-with-icon">
+                  <input
+                    id="address"
+                    name="address"
+                    type="text"
+                    className="tn-input"
+                    placeholder="Your address"
+                    value={formData.address}
+                    onChange={handleChange}
+                  />
+                  <MapPin size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--toolnest-gray-400)]" />
+                </div>
+              </div>
+
+              {/* City Select */}
+              <div>
+                <label htmlFor="city_id" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
+                  City
+                </label>
+                <div className="relative input-with-icon">
+                  <select
+                    id="city_id"
+                    name="city_id"
+                    required
+                    className="tn-input appearance-none"
+                    value={formData.city_id}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select your city</option>
+                    {cities.map(city => (
+                      <option key={city.id} value={city.id}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </select>
+                  <MapPin size={18} />
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <input
+                  id="terms"
+                  name="terms"
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-300 text-[var(--toolnest-primary-600)] focus:ring-[var(--toolnest-primary-500)]"
+                  required
+                />
+                <label htmlFor="terms" className="text-sm text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
+                  I agree to the <a href="#" className="text-[var(--toolnest-primary-600)] hover:text-[var(--toolnest-primary-500)]">Terms and Conditions</a>
+                </label>
               </div>
             </div>
 
@@ -211,7 +354,7 @@ export default function SignUpPage() {
           <div className="mb-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)]"></div>
+                <div className="w-full border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700]"></div>
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white dark:bg-[var(--toolnest-gray-800)] text-[var(--toolnest-gray-500)]">
