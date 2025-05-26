@@ -18,10 +18,12 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Initialize authorization header on app startup (for persistent sessions)
-const token = localStorage.getItem('auth_token');
-if (token) {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+// Only run this in the browser
+if (typeof window !== "undefined") {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
 }
 
 // Utility function to set/clear auth token

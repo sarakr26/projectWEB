@@ -10,6 +10,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\ContractController;
+use App\Http\Controllers\AdminController;
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -79,4 +80,15 @@ Route::get('/admin/stats', [AdminDashboardController::class, 'getStats'])->middl
 // Contract routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/contracts/sign', [ContractController::class, 'sign']);
+});
+
+// filepath: e:\s8\web\pro
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/admin/users', [AdminController::class, 'getUsers']);
+});
+
+// Admin routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/admin/partners', [AdminController::class, 'getPartners']);
+    // Add other admin routes here
 });

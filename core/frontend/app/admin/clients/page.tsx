@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { AdminSidebar } from "../components/AdminSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,67 +20,75 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Search, Plus, MoreVertical, Archive } from "lucide-react";
-
-// Données fictives pour la démonstration
-const clientsData = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    status: "Active",
-    joinDate: "2024-01-15",
-    lastActive: "2024-03-20"
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    status: "Active",
-    joinDate: "2024-02-01",
-    lastActive: "2024-03-19"
-  },
-  {
-    id: 3,
-    name: "Mike Johnson",
-    email: "mike@example.com",
-    status: "Archived",
-    joinDate: "2023-12-10",
-    lastActive: "2024-02-15"
-  },
-  {
-    id: 4,
-    name: "Sarah Wilson",
-    email: "sarah@example.com",
-    status: "Active",
-    joinDate: "2024-03-01",
-    lastActive: "2024-03-20"
-  },
-  {
-    id: 5,
-    name: "David Brown",
-    email: "david@example.com",
-    status: "Active",
-    joinDate: "2024-02-15",
-    lastActive: "2024-03-18"
-  }
-];
+import adminService, { User } from "@/app/services/adminService";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { debounce } from "@/app/utils/debounce";
 
 export default function ClientManagement() {
+  const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [clients, setClients] = useState(clientsData);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
-  const filteredClients = clients.filter(client =>
-    client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const fetchUsers = async () => {
+    try {
+      setIsLoading(true);
+      const response = await adminService.getUsers({
+        page: currentPage,
+        per_page: 10,
+        search: searchQuery,
+        role: 'client',
+        sort_by: 'created_at',
+        sort_order: 'desc'
+      });
+      
+      setUsers(response.data.data);
+      setTotalPages(response.data.last_page);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch users');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage, debouncedSearchQuery]);
+
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      setDebouncedSearchQuery(query);
+    }, 500),
+    []
   );
 
-  const handleArchive = (clientId: number) => {
-    setClients(clients.map(client => 
-      client.id === clientId 
-        ? { ...client, status: client.status === "Active" ? "Archived" : "Active" }
-        : client
-    ));
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    debouncedSearch(e.target.value);
   };
+
+  const handleArchive = async (userId: number) => {
+    // Implement archive functionality
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -106,7 +114,7 @@ export default function ClientManagement() {
                     placeholder="Search clients..."
                     className="pl-8 w-[300px]"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleSearch}
                   />
                 </div>
               </div>
@@ -120,26 +128,26 @@ export default function ClientManagement() {
                   <TableHead>Email</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Join Date</TableHead>
-                  <TableHead>Last Active</TableHead>
+                  <TableHead>City</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredClients.map((client) => (
-                  <TableRow key={client.id}>
-                    <TableCell className="font-medium">{client.name}</TableCell>
-                    <TableCell>{client.email}</TableCell>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        client.status === "Active" 
+                        user.status === "active" 
                           ? "bg-[rgb(10,197,178)]/10 text-[rgb(10,197,178)]" 
                           : "bg-gray-100 text-gray-800"
                       }`}>
-                        {client.status}
+                        {user.status}
                       </span>
                     </TableCell>
-                    <TableCell>{client.joinDate}</TableCell>
-                    <TableCell>{client.lastActive}</TableCell>
+                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell>{user.city?.name || 'N/A'}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -149,11 +157,11 @@ export default function ClientManagement() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() => handleArchive(client.id)}
+                            onClick={() => handleArchive(user.id)}
                             className="flex items-center gap-2"
                           >
                             <Archive className="h-4 w-4" />
-                            {client.status === "Active" ? "Archive" : "Unarchive"}
+                            {user.status === "active" ? "Archive" : "Unarchive"}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -162,9 +170,40 @@ export default function ClientManagement() {
                 ))}
               </TableBody>
             </Table>
+            
+            {totalPages > 1 && (
+              <div className="mt-4 flex justify-center">
+                <Pagination>
+                  <PaginationContent>
+                    {currentPage > 1 && (
+                      <PaginationItem>
+                        <PaginationPrevious onClick={() => setCurrentPage(currentPage - 1)} />
+                      </PaginationItem>
+                    )}
+                    
+                    {Array.from({length: totalPages}, (_, i) => i + 1).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          isActive={currentPage === page}
+                          onClick={() => setCurrentPage(page)}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    {currentPage < totalPages && (
+                      <PaginationItem>
+                        <PaginationNext onClick={() => setCurrentPage(currentPage + 1)} />
+                      </PaginationItem>
+                    )}
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>
     </div>
   );
-} 
+}
