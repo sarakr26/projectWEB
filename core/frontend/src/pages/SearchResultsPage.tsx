@@ -16,7 +16,7 @@ import {
   ChevronRight, 
   Search as SearchIcon 
 } from 'react-feather'
-import { searchListings, Listing, ListingSearchParams } from '@/app/services/listingService'
+import { searchListings, getListings, Listing, ListingSearchParams } from '@/app/services/listingService'
 
 const SearchResultsPage: React.FC = () => {
   const [searchParams] = useSearchParams()
@@ -154,13 +154,133 @@ const fetchSearchResults = async () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
   
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
+  
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      // Update query and reset page
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`
+      setLoading(true)
+      setError(null)
+      
+      try {
+        const response = await searchListings({
+          query: searchQuery.trim(),
+          page: 1,
+          per_page: 12,
+          sort_by: 'priority',
+          sort_order: 'asc'
+        })
+        
+        if (response.status === 'success' && response.data) {
+          let listings = Array.isArray(response.data)
+            ? response.data
+            : (response.data && typeof response.data === 'object' && 'data' in response.data && Array.isArray((response.data as any).data)
+                ? (response.data as { data: Listing[] }).data
+                : [])
+
+          // Filter listings to match title exactly
+          listings = listings.filter(listing => 
+            listing.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
+          )
+
+          setListings(listings)
+          setTotalResults(listings.length)
+          setTotalPages(Math.ceil(listings.length / 12))
+          
+          // Update URL
+          const newSearchParams = new URLSearchParams(searchParams)
+          newSearchParams.set('q', searchQuery.trim())
+          newSearchParams.set('page', '1')
+          navigate(`/search?${newSearchParams.toString()}`)
+        } else {
+          setError(response.message || 'Failed to fetch listings')
+          setListings([])
+          setTotalResults(0)
+          setTotalPages(1)
+        }
+      } catch (error) {
+        console.error('Error searching listings:', error)
+        setError('An unexpected error occurred')
+        setListings([])
+        setTotalResults(0)
+        setTotalPages(1)
+      } finally {
+        setLoading(false)
+      }
     }
   }
+  
+  // Modifie fetchAllListings pour accepter un paramètre de page
+  const fetchAllListings = async (page = 1) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await getListings({
+        page,
+        per_page: 12,
+        sort_by: 'priority',
+        sort_order: 'asc'
+      })
+      if (response.status === 'success' && response.data) {
+        let listings = Array.isArray(response.data)
+          ? response.data
+          : (response.data && typeof response.data === 'object' && 'data' in response.data && Array.isArray((response.data as any).data)
+              ? (response.data as { data: Listing[] }).data
+              : [])
+        setListings(listings)
+        setTotalResults(response.meta?.total || 0)
+        setTotalPages(response.meta?.last_page || 1)
+      } else {
+        setError(response.message || 'Failed to fetch listings')
+        setListings([])
+      }
+    } catch (error) {
+      console.error('Error fetching all listings:', error)
+      setError('An unexpected error occurred')
+      setListings([])
+    } finally {
+      setLoading(false)
+    }
+  }
+  
+  // Correction du resetSearch pour forcer la page 1 dans l'URL et le fetch
+  const resetSearch = () => {
+    setCurrentPage(1)
+    setSearchQuery('')
+    setFilters({
+      category_id: undefined,
+      city_id: undefined,
+      min_rating: undefined,
+      min_price: undefined,
+      max_price: undefined
+    })
+    setSortBy('priority')
+    setSortOrder('asc')
+    // Redirige vers /search SANS aucun paramètre
+    navigate('/search', { replace: true })
+  }
+  
+  // Synchronise searchQuery avec l'URL
+  useEffect(() => {
+    const q = searchParams.get('q') || ''
+    setSearchQuery(q)
+  }, [searchParams])
+
+  // Affiche tous les listings si aucun paramètre de recherche/filtre n'est présent dans l'URL
+  useEffect(() => {
+    const hasNoParams =
+      !searchParams.get('q') &&
+      !searchParams.get('category_id') &&
+      !searchParams.get('city_id') &&
+      !searchParams.get('min_rating') &&
+      !searchParams.get('min_price') &&
+      !searchParams.get('max_price')
+    if (hasNoParams) {
+      fetchAllListings(1)
+    }
+  }, [searchParams])
   
   // Render functions
   const renderResultsHeader = () => (
@@ -183,7 +303,7 @@ const fetchSearchResults = async () => {
           )}
         </h2>
         <p className="text-sm text-[var(--toolnest-gray-500)] dark:text-[var(--toolnest-gray-400)]">
-          {query ? `Results for "${query}"` : 'Browse our selection of quality tools available for rent'}
+          {searchQuery ? `Results for "${searchQuery}"` : 'Browse our selection of quality tools available for rent'}
         </p>
       </div>
       
@@ -238,22 +358,13 @@ const fetchSearchResults = async () => {
       </div>
       <h3 className="text-xl font-semibold mb-2">No tools found</h3>
       <p className="text-[var(--toolnest-gray-500)] dark:text-[var(--toolnest-gray-400)] mb-6">
-        We couldn't find any tools matching your search criteria.
+        {searchQuery ? `No tools found matching "${searchQuery}"` : 'We couldn\'t find any tools matching your search criteria.'}
       </p>
       <button
-        onClick={() => {
-          setFilters({
-            category_id: undefined,
-            city_id: undefined,
-            min_rating: undefined,
-            min_price: undefined,
-            max_price: undefined
-          })
-          navigate('/search')
-        }}
+        onClick={resetSearch}
         className="tn-button tn-button-primary"
       >
-        Clear Filters
+        Show All Tools
       </button>
     </div>
   )
@@ -315,43 +426,45 @@ const fetchSearchResults = async () => {
   )
   
   return (
-    <div className="min-h-screen bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-950)] pt-[60px]">
-      {/* Search Header */}
-      <div className="bg-[var(--toolnest-gray-100)] dark:bg-[var(--toolnest-gray-900)] py-6 sm:py-10">
+    <div className="min-h-screen bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-900)] pt-[60px]">
+      {/* Search Bar */}
+      <div className="bg-white dark:bg-[var(--toolnest-gray-800)] shadow-sm py-4 fixed top-[60px] left-0 right-0 z-20">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto flex items-center gap-4">
-            <form onSubmit={handleSearch} className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for tools by name, category, or keyword..."
-                  className="tn-input w-full py-3 pl-12 pr-4"
-                />
-                <div className="absolute inset-y-0 left-0 flex items-center pl-4">
-                  <SearchIcon size={18} className="text-[var(--toolnest-gray-400)]" />
-                </div>
-                <button type="submit" className="absolute inset-y-0 right-0 flex items-center pr-4">
-                  <div className="tn-button-sm tn-button-primary">Search</div>
-                </button>
-              </div>
-            </form>
-            <div className="relative">
-              <InteractiveMap 
-                listings={listings} 
-                onMarkerClick={(listing) => {
-                  // Handle marker click - you can navigate to the listing details
-                  console.log('Clicked listing:', listing);
-                }}
+            <form onSubmit={handleSearch} className="relative flex-1">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+                placeholder="Search for tools by name, category, or keyword..."
+                className="w-full py-3 pl-12 pr-24 rounded-lg border border-[var(--toolnest-gray-200)] focus:border-[var(--toolnest-primary-500)] bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-800)] dark:text-white dark:border-[var(--toolnest-gray-700)]"
               />
-            </div>
+              <div className="absolute inset-y-0 left-0 flex items-center pl-4">
+                <SearchIcon size={18} className="text-[var(--toolnest-gray-400)]" />
+              </div>
+              <button
+                type="submit"
+                className="absolute inset-y-0 right-0 flex items-center pr-3"
+              >
+                <div className="px-4 py-1.5 bg-[var(--toolnest-primary-600)] hover:bg-[var(--toolnest-primary-700)] text-white rounded-md text-sm font-medium transition-colors duration-200 flex items-center gap-2">
+                  <SearchIcon size={16} />
+                  <span>Search</span>
+                </div>
+              </button>
+            </form>
+            <button
+              onClick={resetSearch}
+              className="tn-button tn-button-outline whitespace-nowrap flex items-center gap-2"
+            >
+              <List size={16} />
+              <span>Show All</span>
+            </button>
           </div>
         </div>
       </div>
-      
+
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-12 mt-6">
+      <div className="container mx-auto px-4 py-8 mt-16">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar / Filters */}
           <div className="lg:w-1/4">

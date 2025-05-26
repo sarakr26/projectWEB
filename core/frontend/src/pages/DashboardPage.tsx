@@ -15,7 +15,7 @@ import {
   Award, 
   MessageSquare, 
   Check, 
-  Loader2 
+  Loader2
 } from 'lucide-react'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import { getUserReservations, Reservation } from '../../app/services/reservationService'
@@ -36,8 +36,7 @@ const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
   { id: 'profile', label: 'Profile', icon: UserIcon },
   { id: 'reservations', label: 'Reservations', icon: Calendar },
-  { id: 'favorites', label: 'Favorites', icon: Heart },
-  { id: 'notifications', label: 'Notification', icon: Bell },
+  { id: 'favorites', label: 'Favorites', icon: Heart }
 ];
 
 const notificationsSampleData = [
@@ -224,7 +223,7 @@ const DashboardPage = () => {
             List your tools and earn money by renting them to others in your community.
         </p>
         <Button onClick={handleStartPartnerUpgrade} className="w-full" disabled={isUpgrading}>
-            {isUpgrading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ToolIcon size={16} className="mr-2" />}
+            {isUpgrading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ToolIcon size={18} />}
             {isUpgrading ? 'Processing...' : 'Start Partner Application'}
         </Button>
     </div>
@@ -530,44 +529,52 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+    <div className="container mx-auto px-4 py-24">
+      <div className="flex flex-col lg:flex-row gap-8">
         <div className="w-full lg:w-64 lg:shrink-0">
-          <div className="bg-card dark:bg-gray-800 rounded-lg shadow p-4 border dark:border-gray-700">
-            <div className="text-center p-4 border-b border-border dark:border-gray-700 mb-4">
-              <img
-                src={user?.avatar || '/placeholder-avatar.svg'} // Corrected to user?.avatar
-                alt={user?.name || 'User Avatar'}
-                className="w-20 h-20 rounded-full mx-auto mb-3 object-cover border-2 border-primary"
-              />
-              <h3 className="font-semibold text-card-foreground dark:text-white mt-2">{user?.name || 'User'}</h3>
-              <span className="text-sm text-muted-foreground dark:text-gray-400 capitalize">{user?.role || 'Client'} Account</span>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+            <div className="text-center p-4 border-b border-gray-200 dark:border-gray-700 mb-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white">{user?.name || 'User'}</h3>
+              <span className="text-sm text-gray-500 dark:text-gray-400 capitalize">Client Dashboard</span>
             </div>
-            <nav className="space-y-1">
+            
+            <div className="space-y-2">
               {menuItems.map(item => (
                 <button
                   key={item.id}
                   onClick={() => setSelectedSection(item.id)}
-                  className={`w-full flex items-center space-x-3 p-3 rounded-md transition-colors text-sm font-medium
-                    ${selectedSection === item.id
-                      ? 'bg-primary/10 text-primary dark:bg-primary/20'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground dark:hover:bg-gray-700/50 dark:hover:text-gray-100'}`}
+                  className={`w-full flex items-center space-x-2 p-3 rounded-lg transition-colors
+                    ${selectedSection === item.id 
+                      ? 'bg-[#0ac5b2]/10 text-[#0ac5b2] dark:bg-[#0ac5b2]/20 dark:text-[#0ac5b2]' 
+                      : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50'}`}
                 >
                   <item.icon size={18} />
                   <span>{item.label}</span>
                 </button>
               ))}
-            </nav>
+            </div>
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              {user?.role === 'client' && !upgradeSuccess && (
+                <button
+                  onClick={handleStartPartnerUpgrade}
+                  disabled={isUpgrading}
+                  className="w-full flex items-center space-x-2 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/50"
+                >
+                  <ToolIcon size={18} />
+                  <span>{isUpgrading ? 'Processing...' : 'Become a Partner'}</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <div className="flex-1">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-foreground dark:text-white">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {menuItems.find(item => item.id === selectedSection)?.label || 'Dashboard'}
               </h1>
-              <p className="text-muted-foreground dark:text-gray-400 mt-1 text-sm">
+              <p className="text-gray-500 dark:text-gray-400 mt-1">
                 {selectedSection === 'dashboard' ? 'Overview of your rental activity.' :
                  selectedSection === 'profile' ? 'Manage your personal information.' :
                  selectedSection === 'reservations' ? 'View and manage your tool rentals.' :
@@ -575,16 +582,10 @@ const DashboardPage = () => {
                  'Manage your account notifications.'}
               </p>
             </div>
-            <div className="mt-4 sm:mt-0 flex gap-3">
-              {user?.role === 'client' && !upgradeSuccess && (
-                <Button onClick={handleStartPartnerUpgrade} disabled={isUpgrading} variant="outline">
-                  <ToolIcon size={16} className="mr-2" />
-                  {isUpgrading ? 'Processing...' : 'Become a Partner'}
-                </Button>
-              )}
-              <Button asChild>
-                <Link to="/search">Find Tools</Link>
-              </Button>
+            <div className="mt-4 md:mt-0 flex gap-3">
+              <Link to="/search" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#0ac5b2] hover:bg-[#09b3a2] dark:bg-[#0ac5b2] dark:hover:bg-[#09b3a2]">
+                Find Tools
+              </Link>
             </div>
           </div>
           {renderContent()}
