@@ -34,7 +34,11 @@ export default function SignUpPage() {
         const response = await fetch('http://localhost:8000/api/cities')
         const data = await response.json()
         if (data.status === 'success') {
-          setCities(data.data)
+          // Filter out duplicate cities based on name
+          const uniqueCities = data.data.filter((city: any, index: number, self: any[]) =>
+            index === self.findIndex((c) => c.name === city.name)
+          );
+          setCities(uniqueCities)
         }
       } catch (err) {
         console.error("Failed to fetch cities:", err)
@@ -317,18 +321,7 @@ export default function SignUpPage() {
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-[var(--toolnest-primary-600)] focus:ring-[var(--toolnest-primary-500)]"
-                  required
-                />
-                <label htmlFor="terms" className="text-sm text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
-                  I agree to the <a href="#" className="text-[var(--toolnest-primary-600)] hover:text-[var(--toolnest-primary-500)]">Terms and Conditions</a>
-                </label>
-              </div>
+              
             </div>
 
             <div className="mt-6">
