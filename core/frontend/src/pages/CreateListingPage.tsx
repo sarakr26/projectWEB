@@ -58,10 +58,16 @@ const CreateListingPage = () => {
           setCategories(categoriesResponse.data);
         }
         
-        // Fetch cities
+        // Fetch cities and remove duplicates
         const citiesResponse = await getCities();
         if (citiesResponse.status === 'success' && citiesResponse.data) {
-          setCities(citiesResponse.data);
+          // Remove duplicates based on city id and sort by name
+          const uniqueCities = Array.from(
+            new Map(citiesResponse.data.map(city => [city.id, city]))
+            .values()
+          ).sort((a, b) => a.name.localeCompare(b.name));
+          
+          setCities(uniqueCities);
         }
       } catch (err) {
         console.error('Error fetching data:', err);

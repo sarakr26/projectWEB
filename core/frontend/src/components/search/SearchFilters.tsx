@@ -66,28 +66,33 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   
   // Fetch categories and cities from API
   useEffect(() => {
-    const fetchFilterData = async () => {
-      setLoading(true)
+    const fetchData = async () => {
       try {
-        // Fetch categories from API
-        const categoriesResponse = await getCategories()
+        // Fetch categories
+        const categoriesResponse = await getCategories();
         if (categoriesResponse.status === 'success' && categoriesResponse.data) {
-          setCategories(categoriesResponse.data)
+          setCategories(categoriesResponse.data);
         }
-        
-        // Fetch cities from API
-        const citiesResponse = await getCities()
+
+        // Fetch cities and remove duplicates
+        const citiesResponse = await getCities();
         if (citiesResponse.status === 'success' && citiesResponse.data) {
-          setCities(citiesResponse.data)
+          // Remove duplicates and sort cities
+          const uniqueCities = Array.from(
+            new Map(citiesResponse.data.map(city => [city.id, city]))
+            .values()
+          ).sort((a, b) => a.name.localeCompare(b.name));
+          
+          setCities(uniqueCities);
         }
       } catch (error) {
-        console.error('Error fetching filter data:', error)
+        console.error('Error fetching filter data:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    
-    fetchFilterData()
+    };
+
+    fetchData();
   }, [])
   
   // Reset local filters when prop filters change

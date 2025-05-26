@@ -71,13 +71,8 @@ const fetchSearchResults = async () => {
       query: query,
       page: currentPage,
       per_page: 12,
-      sort_by: 'is_premium',
-      sort_order: 'desc',
-      // Add secondary sort if specified by user
-      ...(sortBy !== 'priority' && { 
-        secondary_sort: sortBy,
-        secondary_order: sortOrder
-      }),
+      sort_by: sortBy,
+      sort_order: sortOrder,
       ...filters
     }
     
@@ -90,15 +85,14 @@ const fetchSearchResults = async () => {
             ? (response.data as { data: Listing[] }).data
             : [])
 
-      // Debug: Log listings with coordinates
-      console.log('Listings with coordinates:', listings.filter(l => l.latitude && l.longitude));
-
-      // Ensure premium listings appear first
-      listings.sort((a, b) => {
-        if (a.is_premium && !b.is_premium) return -1
-        if (!a.is_premium && b.is_premium) return 1
-        return 0
-      })
+      // If not explicitly sorting by other criteria, ensure premium listings appear first
+      if (sortBy === 'priority') {
+        listings.sort((a, b) => {
+          if (a.is_premium && !b.is_premium) return -1;
+          if (!a.is_premium && b.is_premium) return 1;
+          return 0;
+        });
+      }
 
       setListings(listings)
       setTotalResults(response.meta?.total || 0)
@@ -194,7 +188,7 @@ const fetchSearchResults = async () => {
             onChange={handleSortChange}
             className="tn-input appearance-none pr-10 py-2 w-full"
           >
-            <option value="priority-asc">Featured First</option>
+            <option value="priority-desc">Featured First</option>
             <option value="price_per_day-asc">Price: Low to High</option>
             <option value="price_per_day-desc">Price: High to Low</option>
             <option value="avg_rating-desc">Rating: High to Low</option>
