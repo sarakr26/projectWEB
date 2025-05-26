@@ -385,29 +385,33 @@ const fetchSearchResults = async () => {
                     ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
                     : 'grid-cols-1'
                 } animate-fade-in`}>
-                  {listings.map((listing) => (
-                    <ToolCard 
-                      key={listing.id}
-                      tool={{
-                        id: listing.id.toString(),
-                        name: listing.title,
-                        price: listing.price_per_day,
-                        rating: listing.avg_rating,
-                        reviewCount: listing.review_count,
-                        location: listing.city?.name || 'Unknown',
-                        image: listing.images && listing.images.length > 0
-                          ? listing.images[0].url
-                          : 'https://images.unsplash.com/photo-1504148455328-c376907d081c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                        isPremium: listing.is_premium,
-                        owner: {
-                          id: listing.partner?.id.toString() || '0',
-                          name: listing.partner?.name || 'Unknown',
-                          avatar: listing.partner?.avatar_url || '/placeholder.svg',
-                          rating: listing.partner?.avg_rating_as_partner || 0
-                        }
-                      }}
-                    />
-                  ))}
+                  {listings.map((listing) => {
+                    const imageUrl = listing.images && listing.images.length > 0
+                      ? `http://localhost:8000${listing.images[0].url}`
+                      : '/placeholder.jpg';
+
+                    return (
+                      <ToolCard 
+                        key={listing.id}
+                        tool={{
+                          id: listing.id.toString(),
+                          name: listing.title,
+                          price: listing.price_per_day,
+                          rating: listing.avg_rating,
+                          reviewCount: listing.review_count,
+                          location: listing.city?.name || 'Unknown',
+                          image: imageUrl,
+                          isPremium: listing.is_premium,
+                          owner: {
+                            id: listing.partner?.id.toString() || '0',
+                            name: listing.partner?.name || 'Unknown',
+                            avatar: listing.partner?.avatar_url || '/placeholder.svg',
+                            rating: listing.partner?.avg_rating_as_partner || 0
+                          }
+                        }}
+                      />
+                    );
+                  })}
                 </div>
                 
                 {totalPages > 1 && renderPagination()}

@@ -149,11 +149,17 @@ export default function ToolDetailsPage() {
     );
   }
 
+  const getImageUrl = (imageUrl: string) => {
+    if (!imageUrl) return '/placeholder.jpg';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return `http://localhost:8000${imageUrl}`;
+  };
+
   const getDefaultImage = () => "/placeholder.svg?height=600&width=600";
 
   const getCurrentImageUrl = () => {
-    if (!listing.images || listing.images.length === 0) return getDefaultImage();
-    return listing.images[currentImageIndex]?.url || getDefaultImage();
+    if (!listing.images || listing.images.length === 0) return '/placeholder.jpg';
+    return getImageUrl(listing.images[currentImageIndex]?.url);
   };
 
   return (
@@ -176,6 +182,9 @@ export default function ToolDetailsPage() {
                 src={getCurrentImageUrl()}
                 alt={listing.title}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/placeholder.jpg';
+                }}
               />
               {listing.images && listing.images.length > 1 && (
                 <>
@@ -206,13 +215,17 @@ export default function ToolDetailsPage() {
                   <button
                     key={image.id || index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`w-16 h-12 rounded overflow-hidden border-2 ${index === currentImageIndex ? "border-green-500 dark:border-green-400" : "border-transparent"
-                      }`}
+                    className={`w-16 h-12 rounded overflow-hidden border-2 ${
+                      index === currentImageIndex ? "border-green-500 dark:border-green-400" : "border-transparent"
+                    }`}
                   >
                     <img
-                      src={image.url || getDefaultImage()}
+                      src={getImageUrl(image.url)}
                       alt={`Thumbnail ${index + 1}`}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/placeholder.jpg';
+                      }}
                     />
                   </button>
                 ))}
