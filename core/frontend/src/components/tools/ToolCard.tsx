@@ -9,7 +9,8 @@ import ListingLikeButton from '../../pages/ListingLikedButton'
 interface Tool {
   id: string;
   name: string;
-  image: string;
+  image?: string;
+  images?: Array<{ url: string }>;  // Add this to support both old and new image formats
   price: number;
   rating: number;
   reviewCount: number;
@@ -185,9 +186,12 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid', action }) => {
       <div className="relative overflow-hidden">
         <Link to={`/tools/${placeholderTool.id}`}>
           <img 
-            src={placeholderTool.image} 
-            alt={placeholderTool.name} 
-            className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+            src={tool.image}
+            alt={tool.name}
+            className="w-full h-48 object-cover rounded-t-lg"
+            onError={(e) => {
+              e.currentTarget.src = '/placeholder.jpg';
+            }}
           />
         </Link>
         <div className="absolute top-0 left-0 w-full p-3 flex justify-between items-start">

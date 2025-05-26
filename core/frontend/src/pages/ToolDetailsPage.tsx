@@ -215,17 +215,17 @@ export default function ToolDetailsPage() {
     );
   }
 
-  const getDefaultImage = () => "/placeholder.svg?height=600&width=600"; // Ensure this placeholder exists in public
+  const getImageUrl = (imageUrl: string) => {
+    if (!imageUrl) return '/placeholder.jpg';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    return `http://localhost:8000${imageUrl}`;
+  };
+
+  const getDefaultImage = () => "/placeholder.svg?height=600&width=600";
 
   const getCurrentImageUrl = () => {
-    if (!listing.images || listing.images.length === 0) return getDefaultImage();
-    // Ensure image URL is absolute or correctly prefixed if relative
-    const imageUrl = listing.images[currentImageIndex]?.url;
-    if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/')) {
-        // Assuming REACT_APP_API_BASE_URL is set for backend image paths
-        return `${process.env.REACT_APP_API_BASE_URL || ''}${imageUrl}`;
-    }
-    return imageUrl || getDefaultImage();
+    if (!listing.images || listing.images.length === 0) return '/placeholder.jpg';
+    return getImageUrl(listing.images[currentImageIndex]?.url);
   };
   
   const getThumbnailUrl = (url: string | undefined) => {
@@ -261,7 +261,9 @@ export default function ToolDetailsPage() {
                 src={getCurrentImageUrl()}
                 alt={listing.title}
                 className="w-full h-full object-cover"
-                onError={(e) => (e.currentTarget.src = getDefaultImage())}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/placeholder.jpg';
+                }}
               />
               {listing.images && listing.images.length > 1 && (
                 <>
@@ -292,14 +294,17 @@ export default function ToolDetailsPage() {
                   <button
                     key={image.id || index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`w-16 h-12 rounded overflow-hidden border-2 ${index === currentImageIndex ? "border-green-500 dark:border-green-400" : "border-transparent hover:border-gray-300 dark:hover:border-gray-600"
-                      }`}
+                    className={`w-16 h-12 rounded overflow-hidden border-2 ${
+                      index === currentImageIndex ? "border-green-500 dark:border-green-400" : "border-transparent"
+                    }`}
                   >
                     <img
-                      src={getThumbnailUrl(image.url)}
+                      src={getImageUrl(image.url)}
                       alt={`Thumbnail ${index + 1}`}
                       className="w-full h-full object-cover"
-                      onError={(e) => (e.currentTarget.src = getDefaultImage())}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/placeholder.jpg';
+                      }}
                     />
                   </button>
                 ))}

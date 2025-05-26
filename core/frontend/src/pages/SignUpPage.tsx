@@ -242,7 +242,7 @@ export default function SignUpPage() {
               {/* Username Input */}
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
-                  Username (optional)
+                  Username 
                 </label>
                 <div className="relative input-with-icon">
                   <input
@@ -261,7 +261,7 @@ export default function SignUpPage() {
               {/* Phone Input */}
               <div>
                 <label htmlFor="phone_number" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
-                  Phone number (optional)
+                  Phone number 
                 </label>
                 <div className="relative input-with-icon">
                   <input
@@ -280,7 +280,7 @@ export default function SignUpPage() {
               {/* Address Input */}
               <div>
                 <label htmlFor="address" className="block text-sm font-medium text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)] mb-1">
-                  Address (optional)
+                  Address 
                 </label>
                 <div className="relative input-with-icon">
                   <input
