@@ -40,8 +40,8 @@ const SearchResultsPage: React.FC = () => {
   })
   
   // State for sorting and pagination
-  const [sortBy, setSortBy] = useState(searchParams.get('sort_by') || 'priority')
-  const [sortOrder, setSortOrder] = useState(searchParams.get('sort_order') as 'asc' | 'desc' || 'asc')
+  // const [sortBy, setSortBy] = useState(searchParams.get('sort_by') || 'priority')
+  // const [sortOrder, setSortOrder] = useState(searchParams.get('sort_order') as 'asc' | 'desc' || 'asc')
   const [currentPage, setCurrentPage] = useState(searchParams.get('page') ? Number(searchParams.get('page')) : 1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalResults, setTotalResults] = useState(0)
@@ -50,7 +50,7 @@ const SearchResultsPage: React.FC = () => {
   // Fetch listings based on search query and filters
   useEffect(() => {
     fetchSearchResults()
-  }, [query, filters, sortBy, sortOrder, currentPage])
+  }, [query, filters, currentPage])
   
   // Add this useEffect to trigger search on mount if no query/filters are set
   useEffect(() => {
@@ -74,10 +74,7 @@ const fetchSearchResults = async () => {
       sort_by: 'is_premium',
       sort_order: 'desc',
       // Add secondary sort if specified by user
-      ...(sortBy !== 'priority' && { 
-        secondary_sort: sortBy,
-        secondary_order: sortOrder
-      }),
+      
       ...filters
     }
     
@@ -126,12 +123,11 @@ const fetchSearchResults = async () => {
     if (filters.min_rating) newSearchParams.set('min_rating', String(filters.min_rating))
     if (filters.min_price) newSearchParams.set('min_price', String(filters.min_price))
     if (filters.max_price) newSearchParams.set('max_price', String(filters.max_price))
-    if (sortBy !== 'created_at') newSearchParams.set('sort_by', sortBy)
-    if (sortOrder !== 'desc') newSearchParams.set('sort_order', sortOrder)
+    
     if (currentPage > 1) newSearchParams.set('page', String(currentPage))
     
     navigate(`/search?${newSearchParams.toString()}`, { replace: true })
-  }, [filters, sortBy, sortOrder, currentPage, query])
+  }, [filters, currentPage, query])
   
   const handleFilterChange = (newFilters: any) => {
     setFilters((prev) => ({
@@ -141,12 +137,6 @@ const fetchSearchResults = async () => {
     setCurrentPage(1) // Reset to first page when filters change
   }
   
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const [newSortBy, newSortOrder] = e.target.value.split('-')
-    setSortBy(newSortBy)
-    setSortOrder(newSortOrder as 'asc' | 'desc')
-    setCurrentPage(1) // Reset to first page when sorting changes
-  }
   
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -256,9 +246,7 @@ const fetchSearchResults = async () => {
       min_price: undefined,
       max_price: undefined
     })
-    setSortBy('priority')
-    setSortOrder('asc')
-    // Redirige vers /search SANS aucun paramètre
+    
     navigate('/search', { replace: true })
   }
   
@@ -308,22 +296,7 @@ const fetchSearchResults = async () => {
       </div>
       
       <div className="flex items-center gap-3 w-full sm:w-auto">
-        <div className="relative flex-1 sm:flex-none">
-          <select
-            value={`${sortBy}-${sortOrder}`}
-            onChange={handleSortChange}
-            className="tn-input appearance-none pr-10 py-2 w-full"
-          >
-            <option value="priority-asc">Featured First</option>
-            <option value="price_per_day-asc">Price: Low to High</option>
-            <option value="price_per_day-desc">Price: High to Low</option>
-            <option value="avg_rating-desc">Rating: High to Low</option>
-            <option value="created_at-desc">Newest First</option>
-          </select>
-          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-            <ChevronDown size={16} />
-          </div>
-        </div>
+        
         
         <div className="hidden sm:flex items-center border border-[var(--toolnest-gray-300)] dark:border-[var(--toolnest-gray-700)] rounded-lg overflow-hidden">
           <button
