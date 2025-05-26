@@ -58,10 +58,17 @@ const CreateListingPage = () => {
           setCategories(categoriesResponse.data);
         }
         
-        // Fetch cities
+        // Fetch cities and remove duplicates
         const citiesResponse = await getCities();
         if (citiesResponse.status === 'success' && citiesResponse.data) {
-          setCities(citiesResponse.data);
+          // Remove duplicates based on city id
+          const uniqueCities = Array.from(
+            new Map(citiesResponse.data.map(city => [city.id, city]))
+            .values()
+          );
+          // Sort cities by name
+          uniqueCities.sort((a, b) => a.name.localeCompare(b.name));
+          setCities(uniqueCities);
         }
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -327,17 +334,7 @@ const CreateListingPage = () => {
       {/* Availability visualization */}
       <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
         <h4 className="text-sm font-medium mb-2">Availability Period</h4>
-        <div className="flex items-center justify-center">
-          <div className="flex items-center">
-            <div className="h-6 w-6 rounded-full bg-green-500"></div>
-            <span className="ml-2 text-sm">Available</span>
-          </div>
-          <span className="mx-4 text-gray-400">•</span>
-          <div className="flex items-center">
-            <div className="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600"></div>
-            <span className="ml-2 text-sm">Unavailable</span>
-          </div>
-        </div>
+       
         <div className="mt-4 text-center text-sm">
           {form.start_date && form.end_date ? (
             <p>
