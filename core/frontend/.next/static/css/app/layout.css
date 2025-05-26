@@ -827,8 +827,8 @@ video {
 .top-\[60\%\] {
   top: 60%;
 }
-.top-\[64px\] {
-  top: 64px;
+.top-\[60px\] {
+  top: 60px;
 }
 .top-\[calc\(16rem\+4\.5rem\)\] {
   top: calc(16rem + 4.5rem);
@@ -1011,6 +1011,9 @@ video {
 .mt-12 {
   margin-top: 3rem;
 }
+.mt-16 {
+  margin-top: 4rem;
+}
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -1028,9 +1031,6 @@ video {
 }
 .mt-8 {
   margin-top: 2rem;
-}
-.mt-\[146px\] {
-  margin-top: 146px;
 }
 .mt-auto {
   margin-top: auto;

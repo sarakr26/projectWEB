@@ -428,7 +428,7 @@ const fetchSearchResults = async () => {
   return (
     <div className="min-h-screen bg-[var(--toolnest-gray-50)] dark:bg-[var(--toolnest-gray-900)] pt-[60px]">
       {/* Search Bar */}
-      <div className="bg-white dark:bg-[var(--toolnest-gray-800)] shadow-sm py-4 fixed top-[64px] left-0 right-0 z-40">
+      <div className="bg-white dark:bg-[var(--toolnest-gray-800)] shadow-sm py-4 fixed top-[60px] left-0 right-0 z-20">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto flex items-center gap-4">
             <form onSubmit={handleSearch} className="relative flex-1">
@@ -464,7 +464,7 @@ const fetchSearchResults = async () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 mt-[146px]">
+      <div className="container mx-auto px-4 py-8 mt-16">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar / Filters */}
           <div className="lg:w-1/4">
