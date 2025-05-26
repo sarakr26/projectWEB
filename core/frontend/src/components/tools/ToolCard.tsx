@@ -112,11 +112,6 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid', action }) => {
               <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--toolnest-gray-100)] dark:bg-[var(--toolnest-gray-800)] text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
                 {placeholderTool.category}
               </span>
-              <div className="flex items-center">
-                <Star size={14} className="text-[var(--toolnest-accent-500)] mr-1" />
-                <span className="text-sm font-medium text-[var(--toolnest-gray-900)] dark:text-white">{placeholderTool.rating}</span>
-                <span className="text-xs text-[var(--toolnest-gray-500)] dark:text-[var(--toolnest-gray-400)] ml-1">({placeholderTool.reviewCount})</span>
-              </div>
             </div>
             
             <Link to={`/tools/${placeholderTool.id}`} className="block group-hover:text-[var(--toolnest-primary-600)] dark:group-hover:text-[var(--toolnest-primary-400)] transition-colors">
@@ -127,7 +122,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid', action }) => {
             
             <div className="mb-2 flex items-center text-sm text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
               <MapPin size={14} className="mr-1 text-[var(--toolnest-gray-500)]" />
-              <span>{placeholderTool.location} ({placeholderTool.distance})</span>
+              <span>{placeholderTool.location}</span>
             </div>
             
             <div className="mb-2 flex items-center text-sm text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
@@ -204,13 +199,10 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid', action }) => {
       <div className="p-4 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
-            <Star size={14} className="text-[var(--toolnest-accent-500)] mr-1" />
-            <span className="text-sm font-medium text-[var(--toolnest-gray-900)] dark:text-white">{placeholderTool.rating}</span>
-            <span className="text-xs text-[var(--toolnest-gray-500)] dark:text-[var(--toolnest-gray-400)] ml-1">({placeholderTool.reviewCount})</span>
+            {/* Suppression de l'étoile et de la note */}
           </div>
           <div className="flex items-center text-xs text-[var(--toolnest-gray-500)]">
-            <Clock size={12} className="mr-1" />
-            <span>24h rental</span>
+            {/* Suppression de "24h rental" */}
           </div>
         </div>
         
@@ -222,7 +214,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, view = 'grid', action }) => {
         
         <div className="mb-1 flex items-center text-sm text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)]">
           <MapPin size={14} className="mr-1 text-[var(--toolnest-gray-500)]" />
-          <span>{placeholderTool.distance}</span>
+          <span>{placeholderTool.location}</span>
         </div>
         
         <div className="mt-auto pt-4 flex items-center justify-between border-t border-[var(--toolnest-gray-200)] dark:border-[var(--toolnest-gray-700)]">

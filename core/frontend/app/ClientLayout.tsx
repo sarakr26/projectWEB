@@ -74,7 +74,7 @@ function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800 shadow-lg backdrop-blur-sm bg-opacity-95">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-gray-900 border-b border-gray-800 shadow-lg backdrop-blur-sm bg-opacity-95">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
