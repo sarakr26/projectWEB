@@ -7,7 +7,7 @@ import { Inter, Poppins } from "next/font/google"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeProvider } from "@/components/theme-provider"
-import { Menu, X, ArrowRight, Tool, Heart } from "lucide-react"
+import { Menu, X, ArrowRight, Wrench, Heart } from "lucide-react"
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' })
 const poppins = Poppins({ 
@@ -189,8 +189,12 @@ function Header() {
     </header>
   )
 }
+interface MobileMenuProps {
+  activeSection: string;
+  setActiveSection: React.Dispatch<React.SetStateAction<string>>;
+}
 
-function MobileMenu({ activeSection, setActiveSection }) {
+function MobileMenu({ activeSection, setActiveSection }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNavClick = (href: string) => {

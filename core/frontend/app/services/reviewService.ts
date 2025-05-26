@@ -25,12 +25,38 @@ export interface Review {
     name: string;
     avatar_url?: string;
   };
+  listing?: { // Optional, if backend includes it
+    id: number;
+    title: string;
+  };
+  reviewee?: { // Optional, if backend includes it
+    id: number;
+    name: string;
+    avatar_url?: string;
+  };
 }
 
 export interface ApiResponse<T> {
   status: string;
   message?: string;
   data?: T;
+}
+
+// Interface for Laravel's paginated response structure
+export interface LaravelPaginatedResponse<T> {
+  current_page: number;
+  data: T[];
+  first_page_url: string | null;
+  from: number | null;
+  last_page: number;
+  last_page_url: string | null;
+  links: Array<{ url: string | null; label: string; active: boolean }>;
+  next_page_url: string | null;
+  path: string;
+  per_page: number;
+  prev_page_url: string | null;
+  to: number | null;
+  total: number;
 }
 
 export async function submitReview(reviewData: ReviewSubmission): Promise<ApiResponse<Review>> {
@@ -48,15 +74,45 @@ export async function submitReview(reviewData: ReviewSubmission): Promise<ApiRes
 
 export async function getReviewsForReservation(reservationId: number): Promise<ApiResponse<Review[]>> {
   try {
+    // Note: If this endpoint also paginates, its return type and call need adjustment.
     const response = await api.get<ApiResponse<Review[]>>(`/reviews`, {
       params: { reservation_id: reservationId }
     });
     return response.data;
   } catch (error: any) {
-    console.error('Error fetching reviews:', error);
+    console.error('Error fetching reviews for reservation:', error);
     return {
       status: 'error',
-      message: error.response?.data?.message || 'Failed to fetch reviews'
+      message: error.response?.data?.message || 'Failed to fetch reviews for reservation'
+    };
+  }
+}
+
+// New function to get reviews for a specific listing
+export async function getReviewsForListing(
+  listingId: number, 
+  page: number = 1, 
+  perPage: number = 10
+): Promise<ApiResponse<LaravelPaginatedResponse<Review>>> {
+  try {
+    const response = await api.get<ApiResponse<LaravelPaginatedResponse<Review>>>(`/reviews`, {
+      params: { 
+        listing_id: listingId,
+        page: page,
+        per_page: perPage
+      }
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching listing reviews:', error);
+    if (error.response && error.response.data) {
+      return error.response.data; // Return API's error response if available
+    }
+    return {
+      status: 'error',
+      message: 'An unexpected error occurred while fetching listing reviews.',
+      // Ensure the 'data' field is undefined or structured as expected by consumers on error
+      data: undefined 
     };
   }
 }
