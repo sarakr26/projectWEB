@@ -162,19 +162,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               </div>
             </div>
 
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-[var(--toolnest-gray-300)] text-[var(--toolnest-primary-600)] focus:ring-[var(--toolnest-primary-500)] dark:border-[var(--toolnest-gray-600)] dark:bg-[var(--toolnest-gray-800)]"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-[var(--toolnest-gray-700)] dark:text-[var(--toolnest-gray-300)]">
-                Remember me
-              </label>
-            </div>
+            
 
             <button
               type="submit"

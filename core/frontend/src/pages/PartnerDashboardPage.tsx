@@ -24,7 +24,7 @@ const menuItems = [
   { id: 'profile', label: 'Profile', icon: User },
   { id: 'tools', label: 'My Tools', icon: Tool },
   { id: 'reservations', label: 'Reservations', icon: Calendar },
-  { id: 'notifications', label: 'Notifications', icon: Bell }
+  
 ]
 
 // Statistics for the dashboard
@@ -282,16 +282,7 @@ const PartnerDashboardPage = () => {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 mb-8">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Recent Listings</h2>
-                <div className="flex space-x-2">
-                  <Link to="/tools" className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <Settings size={14} className="mr-2" />
-                    Manage All
-                  </Link>
-                  <Link to="/create-listing" className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600">
-                    <PlusCircle size={14} className="mr-2" />
-                    New Listing
-                  </Link>
-                </div>
+                
               </div>
 
               {/* Tools List */}

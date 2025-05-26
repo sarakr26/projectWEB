@@ -100,26 +100,7 @@ const HomePage = () => {
                 Connect with the tools you need and share your expertise with a community of makers, builders, and creators.
               </p>
               
-              <form onSubmit={handleSearch} className="flex w-full max-w-lg mx-auto lg:mx-0 mb-8 animate-slide-up delay-2">
-                <div className="relative flex-grow">
-                  <input 
-                    type="text" 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="What tool are you looking for?" 
-                    className="tn-input pr-10 rounded-r-none h-14"
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <Search size={18} className="text-[var(--toolnest-gray-400)]" />
-                  </div>
-                </div>
-                <button 
-                  type="submit" 
-                  className="tn-button tn-button-primary rounded-l-none h-14 px-6"
-                >
-                  Search
-                </button>
-              </form>
+             
               
               <div className="flex flex-wrap justify-center lg:justify-start gap-2 text-sm text-[var(--toolnest-gray-600)] dark:text-[var(--toolnest-gray-400)] animate-slide-up delay-3">
                 <span>Popular:</span>
